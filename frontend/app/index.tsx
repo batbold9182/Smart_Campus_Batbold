@@ -1,21 +1,43 @@
-import { View, Text } from "react-native";
-import { useEffect } from "react";
-import http from "../config/http";
+import { useEffect, useState } from "react";
+import { Text, View, ActivityIndicator, StyleSheet } from "react-native";
+import API_URL from "../config/api";
 
 export default function Home() {
+  const [status, setStatus] = useState("Checking backend...");
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    http.get("/")
-      .then(res => {
-        console.log("Axios says:", res.data);
+    fetch(API_URL)
+      .then(res => res.text())
+      .then(text => {
+        setStatus(text + " ✅");
+        setLoading(false);
       })
-      .catch(err => {
-        console.error("Axios error:", err.message);
+      .catch(() => {
+        setStatus("❌ Cannot connect to backend");
+        setLoading(false);
       });
   }, []);
 
   return (
-    <View style={{ padding: 40 }}>
-      <Text>Smart Campus Frontend</Text>
+    <View style={styles.container}>
+      {loading ? (
+        <ActivityIndicator size="large" />
+      ) : (
+        <Text style={styles.text}>{status}</Text>
+      )}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  text: {
+    fontSize: 18,
+    textAlign: "center",
+  },
+});
