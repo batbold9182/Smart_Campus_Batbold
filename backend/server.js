@@ -16,6 +16,8 @@ app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");
 });
 
+app.use("/api/protected", require("./routes/protectedRoutes"));
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
