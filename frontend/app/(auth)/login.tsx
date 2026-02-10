@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { login } from "../services/authService";
+import { login } from "../../services/authService";
 import { router } from "expo-router";
 
 
@@ -11,19 +11,24 @@ export default function LoginScreen() {
   const [message, setMessage] = useState("");
 
   const handleLogin = async () => {
-    
-    try {
-      const data = await login(email, password);
-      await AsyncStorage.setItem("token", data.token);
-      setMessage("✅ Login successful!");
-      const token = await AsyncStorage.getItem("token");
-      console.log("TOKEN SAVED:", token);
-      router.replace("/profile");
-    } catch (err:any) {
-      setMessage("❌ Login failed");
-      console.error("Login error:", err.response?.data || err.message);
+  try {
+    const data = await login(email, password);
+    await AsyncStorage.setItem("token", data.token);
+
+    if (data.user.role === "admin") {
+      router.replace("/(admin)/dashboard");
+    } else if (data.user.role === "faculty") {
+      router.replace("/(faculty)/dashboard");
+    } else {
+      router.replace("/(student)/dashboard");
     }
-  };
+
+  } catch (err: any) {
+    setMessage("❌ Login failed");
+    console.error(err.response?.data || err.message);
+  }
+};
+
 
   return (
     <View style={styles.container}>

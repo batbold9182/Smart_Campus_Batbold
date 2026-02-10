@@ -1,13 +1,24 @@
-import { View, Text, StyleSheet } from "react-native";
-import useAuthGuard from "../hooks/useAuthGuard";
+import { View, Text, StyleSheet,Button } from "react-native";
+import useAuthGuard from "../../hooks/useAuthGuard";
 import { useEffect, useState } from "react";
-import { getProfile } from "../services/userService";
+import { getProfile } from "../../services/userService";
 import { useRouter } from "expo-router";
+import { logout } from "../../services/authService";
 
-export default function AdminScreen() {
-  const loading = useAuthGuard();
+export default function AdminDashboard() {
+  const { loading, user: authUser } = useAuthGuard();
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
+
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/login");
+  }
+  useEffect(() => {
+    if (!loading && !authUser) {
+      router.replace("/login");
+    }
+  }, [authUser, loading, router]);
 
   useEffect(() => {
     const load = async () => {
@@ -21,11 +32,17 @@ export default function AdminScreen() {
       setUser(profile);
     };
 
-    load();
-  }, [router]);
+    if (authUser) {
+      load();
+    }
+  }, [authUser, router]);
 
-  if (loading || !user) {
+  if (loading) {
     return <Text style={styles.loading}>Loading admin panel...</Text>;
+  }
+
+  if (!authUser || !user) {
+    return null;
   }
 
   return (
@@ -40,6 +57,11 @@ export default function AdminScreen() {
       <View style={styles.card}>
         <Text>👥 Manage Users</Text>
       </View>
+      <Button
+        title="Profile"
+        onPress={() => router.push("../profile")}
+      />
+      <Button title="Logout" onPress={handleLogout} />
     </View>
   );
 }

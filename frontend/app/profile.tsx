@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+/* import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -9,12 +9,18 @@ export default function ProfileScreen() {
   const [user, setUser] = useState<any>(null);
   const [error, setError] = useState("");
   const router = useRouter();
-  const loading = useAuthGuard();
+  const { loading, user: authUser } = useAuthGuard();
 
   const handleLogout = async () => {
     await AsyncStorage.removeItem("token");
     router.replace("/login");
   };
+
+  useEffect(() => {
+    if (!loading && !authUser) {
+      router.replace("/login");
+    }
+  }, [authUser, loading, router]);
 
   useEffect(() => {
     const loadProfile = async () => {
@@ -27,12 +33,18 @@ export default function ProfileScreen() {
       }
     };
 
-    loadProfile();
-  }, []);
+    if (authUser) {
+      loadProfile();
+    }
+  }, [authUser]);
 
   // 🔹 Auth guard loading
   if (loading) {
     return <ActivityIndicator size="large" />;
+  }
+
+  if (!authUser) {
+    return null;
   }
 
   // 🔹 Error state
@@ -53,8 +65,8 @@ export default function ProfileScreen() {
       <Text>Email: {user.email}</Text>
       <Text>Role: {user.role}</Text>
       {user.role === "admin" && (
-      <Button title="Admin Panel" onPress={() => router.push("../admin")} />
-)}
+        <Button title="Admin Panel" onPress={() => router.push("../admin")} />
+      )}
 
 
       <Button title="Logout" onPress={handleLogout} />
@@ -78,3 +90,5 @@ const styles = StyleSheet.create({
     padding: 20,
   },
 });
+
+*/

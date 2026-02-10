@@ -11,6 +11,8 @@ app.use("/api/auth", require("./routes/authRoutes"));
 
 app.use("/api/protected", require("./routes/protectedRoutes"));
 
+app.use("/api/admin", require("./routes/adminRoutes"));
+
 
 app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");
