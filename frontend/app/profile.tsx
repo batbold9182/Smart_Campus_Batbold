@@ -52,6 +52,10 @@ export default function ProfileScreen() {
       <Text>Name: {user.name}</Text>
       <Text>Email: {user.email}</Text>
       <Text>Role: {user.role}</Text>
+      {user.role === "admin" && (
+      <Button title="Admin Panel" onPress={() => router.push("../admin")} />
+)}
+
 
       <Button title="Logout" onPress={handleLogout} />
     </View>
