@@ -17,6 +17,14 @@ export default function StudentDashboard() {
         title="Profile"
         onPress={() => router.push("../profile")}
       />
+      <Text>Assignment (optional)</Text>
+      <Text> Schedule </Text>
+      <Text>Upcoming exams </Text>
+      <Text>Grades compareable (optional)</Text>
+      <Text>Attendance shown as percentage</Text>
+      <Text>Random chat named lunch buddy etc</Text>
+      <Text>Notifications with emails , section</Text>
+      <Text>Calendar section with holiday ,event , meeting everything shown </Text>
       <Button title="Logout" onPress={handleLogout} />
     </View>
       

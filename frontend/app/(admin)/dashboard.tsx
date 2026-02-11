@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet,Button } from "react-native";
+import { View, Text, StyleSheet,Button,Pressable } from "react-native";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../services/userService";
 import { useRouter } from "expo-router";
 import { logout } from "../../services/authService";
+
 
 export default function AdminDashboard() {
   const { loading, user: authUser } = useAuthGuard();
@@ -50,13 +51,25 @@ export default function AdminDashboard() {
       <Text style={styles.title}>🛠 Admin Dashboard</Text>
       <Text>Welcome, {user.name}</Text>
 
-      <View style={styles.card}>
+      <Pressable style={styles.card}>
         <Text>📚 Manage Courses</Text>
-      </View>
+      </Pressable>
 
-      <View style={styles.card}>
+      <Pressable style={styles.card}>
         <Text>👥 Manage Users</Text>
-      </View>
+      </Pressable>
+
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/create-faculty")}
+       >
+        <Text>➕ Create Faculty</Text>
+      </Pressable>
+        
+      <Pressable style={styles.card} onPress={() => router.push("../users")}>
+        <Text>👤 Users List</Text>
+      </Pressable>
+
       <Button
         title="Profile"
         onPress={() => router.push("../profile")}

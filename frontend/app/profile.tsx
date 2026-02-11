@@ -1,4 +1,4 @@
-/* import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Button, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
@@ -91,4 +91,3 @@ const styles = StyleSheet.create({
   },
 });
 
-*/
