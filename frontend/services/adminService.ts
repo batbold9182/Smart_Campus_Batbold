@@ -13,8 +13,10 @@ export const createFaculty = async (
   return res.data;
 };
 
-export const getUsers = async (page = 1, role?: string) => {
-  const res = await api.get(`/api/admin/users?page=${page}&limit=5${role ? `&role=${role}` : ""}`);
+export const getUsers = async (page = 1, role?: string, limit = 5) => {
+  const res = await api.get(
+    `/api/admin/users?page=${page}&limit=${limit}${role ? `&role=${role}` : ""}`
+  );
   return res.data;
 };
 

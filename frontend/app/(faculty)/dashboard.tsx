@@ -18,11 +18,6 @@ export default function FacultyDashboard() {
       />
 
       <Button
-        title="Create Course"
-        onPress={() => router.push("../(faculty)/create-course")}
-      />
-
-      <Button
         title="Profile"
         onPress={() => router.push("../profile")}
       />

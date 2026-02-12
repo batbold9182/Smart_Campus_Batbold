@@ -37,9 +37,6 @@ export default function AdminUsersScreen() {
     loadUsers();
   }, [page, activeTab]);
 
-  useEffect(() => {
-    console.log("USERS FROM BACKEND:", users);
-  }, [users]);
 
   const handleDelete = async (id: string) => {
     await deleteUser(id);

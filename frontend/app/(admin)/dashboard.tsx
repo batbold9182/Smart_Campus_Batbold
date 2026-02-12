@@ -51,7 +51,10 @@ export default function AdminDashboard() {
       <Text style={styles.title}>🛠 Admin Dashboard</Text>
       <Text>Welcome, {user.name}</Text>
 
-      <Pressable style={styles.card}>
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/(admin)/create-course")}
+      >
         <Text>📚 Manage Courses</Text>
       </Pressable>
 
