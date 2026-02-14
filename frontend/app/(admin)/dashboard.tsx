@@ -58,8 +58,10 @@ export default function AdminDashboard() {
         <Text>📚 Manage Courses</Text>
       </Pressable>
 
-      <Pressable style={styles.card}>
-        <Text>👥 Manage Users</Text>
+      <Pressable style={styles.card}
+        onPress={() => router.push("/(admin)/notifications")}
+      >
+        <Text>🔔 Send Notifications</Text>
       </Pressable>
 
       <Pressable

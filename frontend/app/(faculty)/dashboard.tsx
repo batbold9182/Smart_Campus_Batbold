@@ -21,6 +21,10 @@ export default function FacultyDashboard() {
         title="Profile"
         onPress={() => router.push("../profile")}
       />
+      <Button
+        title="Notifications"
+        onPress={() => router.push("../(faculty)/notifications")}
+      />
       <Button title="Logout" onPress={handleLogout} />
     </View>
   );

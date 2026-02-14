@@ -17,6 +17,10 @@ export default function StudentDashboard() {
         title="Profile"
         onPress={() => router.push("../profile")}
       />
+      <Button
+        title="Notifications"
+        onPress={() => router.push("../notifications")}
+      />
       <Text>Assignment (optional)</Text>
       <Text> Schedule </Text>
       <Text>Upcoming exams </Text>

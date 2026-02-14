@@ -4,6 +4,7 @@ const User = require("../models/user");
 const Course = require("../models/course");
 const auth = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
+const notification = require("../models/notification");
 
 const router = express.Router();
 
@@ -33,6 +34,14 @@ router.post(
       const enrollment = await Enrollment.create({
         student: studentId,
         course: courseId
+      });
+
+      //auto notification
+      await notification.create({
+        recipient: studentId,
+        title: "Course Enrollment",
+        message: `You have been enrolled in the course: ${course.title}`,
+        type: "enrollment"
       });
 
       res.json({
