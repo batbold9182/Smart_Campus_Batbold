@@ -5,7 +5,8 @@ import {
   StyleSheet,
   Button,
   Alert,
-  ActivityIndicator
+  ActivityIndicator,
+  ScrollView
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import api from "../../config/clientAPI";
@@ -15,8 +16,11 @@ export default function AdminEnrollScreen() {
   const router = useRouter();
   const [students, setStudents] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
+  const [enrollments, setEnrollments] = useState<any[]>([]);
   const [studentId, setStudentId] = useState("");
   const [courseId, setCourseId] = useState("");
+  const [viewCourseId, setViewCourseId] = useState("");
+  const [showEnrollments, setShowEnrollments] = useState(false);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -34,9 +38,11 @@ export default function AdminEnrollScreen() {
 
       const studentsRes = await api.get("/api/admin/students");
       const coursesRes = await api.get("/api/admin/courses");
+      const enrollmentsRes = await api.get("/api/admin/enrollments");
 
       setStudents(studentsRes.data || []);
       setCourses(coursesRes.data || []);
+      setEnrollments(enrollmentsRes.data || []);
     } catch (err: any) {
       console.error("Data loading error:", err);
 
@@ -74,6 +80,10 @@ export default function AdminEnrollScreen() {
       setEnrollSuccess("Student enrolled successfully");
       Alert.alert("Success", "Student enrolled successfully");
       console.log("Enrollment successful for studentId:", studentId, "courseId:", courseId);
+
+      const enrollmentsRes = await api.get("/api/admin/enrollments");
+      setEnrollments(enrollmentsRes.data || []);
+
       setStudentId("");
       setCourseId("");
     } catch (err: any) {
@@ -103,6 +113,33 @@ export default function AdminEnrollScreen() {
     }
   };
 
+  const handleUnenroll = async (enrollmentId: string) => {
+    setEnrollError("");
+    setEnrollSuccess("");
+
+    try {
+      setLoading(true);
+      await api.delete(`/api/admin/enrollments/${enrollmentId}`);
+
+      setEnrollments((prev) => prev.filter((enrollment) => enrollment._id !== enrollmentId));
+      setEnrollSuccess("Student unenrolled successfully");
+    } catch (err: any) {
+      const backendMessage = err.response?.data?.message || "";
+      const errorMessage = backendMessage.toLowerCase().includes("not found")
+        ? "Student is not enrolled in this course"
+        : "Unenroll failed. Please try again.";
+
+      setEnrollError(errorMessage);
+      Alert.alert("Error", errorMessage);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const filteredEnrollments = viewCourseId
+    ? enrollments.filter((enrollment) => enrollment.course?._id === viewCourseId)
+    : enrollments;
+
   if (initialLoading) {
     return (
       <View style={styles.container}>
@@ -123,7 +160,8 @@ export default function AdminEnrollScreen() {
   }
 
   return (
-    <View style={styles.container}>
+    <ScrollView contentContainerStyle={styles.scrollContent}>
+      <View style={styles.container}>
       <Text style={styles.title}>🎓 Enroll Student</Text>
 
       {!!enrollError && <Text style={styles.errorText}>{enrollError}</Text>}
@@ -164,25 +202,77 @@ export default function AdminEnrollScreen() {
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
-        <Button
-          title="Enroll Student"
-          onPress={handleEnroll}
-          disabled={students.length === 0 || courses.length === 0}
-        />
+        <>
+          <Button
+            title="Enroll Student"
+            onPress={handleEnroll}
+            disabled={students.length === 0 || courses.length === 0}
+          />
+          <View style={styles.buttonSpacing} />
+          <Button
+            title={showEnrollments ? "Hide Enrollments List" : "Show Enrollments List"}
+            onPress={() => {
+              setShowEnrollments((prev) => !prev);
+            }}
+          />
+        </>
       )}
+
+      {showEnrollments && (
+        <>
+          <Text style={styles.sectionTitle}>Enrollments List</Text>
+          <Text style={styles.label}>View by Course</Text>
+          <Picker
+            selectedValue={viewCourseId}
+            onValueChange={(value) => setViewCourseId(value)}
+            enabled={courses.length > 0}
+          >
+            <Picker.Item label="-- All Courses --" value="" />
+            {courses.map((course) => (
+              <Picker.Item
+                key={course._id}
+                label={`${course.title} (${course.code})`}
+                value={course._id}
+              />
+            ))}
+          </Picker>
+
+          {filteredEnrollments.length === 0 ? (
+            <Text style={styles.emptyText}>No enrollments found</Text>
+          ) : (
+            filteredEnrollments.map((enrollment) => (
+              <View key={enrollment._id} style={styles.enrollmentItem}>
+                <Text style={styles.enrollmentText}>
+                  {enrollment.student?.name || "Unknown Student"} → {enrollment.course?.title || "Unknown Course"}
+                </Text>
+                <Button
+                  title="Unenroll"
+                  color="#c62828"
+                  onPress={() => handleUnenroll(enrollment._id)}
+                  disabled={loading}
+                />
+              </View>
+            ))
+          )}
+        </>
+      )}
+
       <Button
          title  = "Back to Dashboard"
          onPress={() => router.push("../dashboard")}
          />
-    </View>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     padding: 20,
     backgroundColor: "#fff",
+  },
+  scrollContent: {
+    paddingBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -200,5 +290,29 @@ const styles = StyleSheet.create({
   successText: {
     color: "#2e7d32",
     marginBottom: 12,
+  },
+  buttonSpacing: {
+    height: 10,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginTop: 24,
+    marginBottom: 10,
+  },
+  emptyText: {
+    color: "#666",
+    marginBottom: 10,
+  },
+  enrollmentItem: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 10,
+    gap: 8,
+  },
+  enrollmentText: {
+    fontSize: 14,
   },
 });

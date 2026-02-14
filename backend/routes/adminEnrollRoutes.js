@@ -17,19 +17,15 @@ router.post(
   async (req, res) => {
     try {
       const { studentId, courseId } = req.body;
-      
-      console.log("Enroll request:", { studentId, courseId });
 
       // Validate student
       const student = await User.findById(studentId);
-      console.log("Found student:", student);
       if (!student || student.role !== "student") {
         return res.status(400).json({ message: "Invalid student" });
       }
 
       // Validate course
       const course = await Course.findById(courseId);
-      console.log("Found course:", course);
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
       }
@@ -38,15 +34,12 @@ router.post(
         student: studentId,
         course: courseId
       });
-      
-      console.log("Enrollment created:", enrollment);
 
       res.json({
         message: "Student enrolled successfully",
         enrollment
       });
     } catch (err) {
-      console.error("Enrollment error:", err);
       if (err.code === 11000) {
         return res.status(400).json({ message: "Student already enrolled" });
       }
@@ -76,6 +69,20 @@ router.get(
   }
 );
 
+const unenrollHandler = async (req, res) => {
+  try {
+    const enrollment = await Enrollment.findByIdAndDelete(req.params.id);
+
+    if (!enrollment) {
+      return res.status(404).json({ message: "Enrollment not found" });
+    }
+
+    return res.json({ message: "Student unenrolled successfully" });
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
 /**
  * Unenroll student from course
  */
@@ -83,19 +90,7 @@ router.delete(
   "/enrollments/:id",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
-    try {
-      const enrollment = await Enrollment.findByIdAndDelete(req.params.id);
-      
-      if (!enrollment) {
-        return res.status(404).json({ message: "Enrollment not found" });
-      }
-
-      res.json({ message: "Student unenrolled successfully" });
-    } catch (err) {
-      res.status(500).json({ message: err.message });
-    }
-  }
+  unenrollHandler
 );
 
 module.exports = router;

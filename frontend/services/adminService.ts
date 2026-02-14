@@ -1,5 +1,8 @@
 import api from "../config/clientAPI";
-
+export const unenrollStudent = async (enrollmentId: string) => {
+  const res = await api.delete(`/api/admin/enrollments/${enrollmentId}`);
+  return res.data;
+}
 export const createFaculty = async (
   name: string,
   email: string,
