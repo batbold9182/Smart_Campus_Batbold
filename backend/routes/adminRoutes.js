@@ -1,6 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../models/user");
+const Course = require("../models/course");
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
 
@@ -116,5 +117,38 @@ router.patch("/users/:id/toggle", auth, async (req, res) => {
   }
 });
 
+// ✅ Get all students (for enrollment)
+router.get("/students", auth, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const students = await User.find({ role: "student", isActive: true })
+      .select("name email")
+      .sort({ name: 1 });
+
+    res.json(students);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// ✅ Get all courses (for enrollment)
+router.get("/courses", auth, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const courses = await Course.find({ isActive: true })
+      .select("title code credits")
+      .sort({ code: 1 });
+
+    res.json(courses);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 module.exports = router;

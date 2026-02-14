@@ -73,6 +73,10 @@ export default function AdminDashboard() {
         <Text>👤 Users List</Text>
       </Pressable>
 
+      <Pressable style={styles.card} onPress={() => router.push("../enroll")}>
+        <Text>📅 Enroll Students</Text>
+      </Pressable>
+
       <Button
         title="Profile"
         onPress={() => router.push("../profile")}
