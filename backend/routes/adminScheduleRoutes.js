@@ -8,6 +8,27 @@ const authorizeRoles = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 /**
+ * Admin → Get all schedules
+ */
+router.get(
+  "/schedules",
+  auth,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const schedules = await Schedule.find()
+        .populate("course", "name code title")
+        .populate("faculty", "name email")
+        .sort({ day: 1, startTime: 1 });
+
+      res.json(schedules);
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
+/**
  * Admin → Create schedule
  */
 router.post(

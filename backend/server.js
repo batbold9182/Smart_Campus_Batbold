@@ -12,6 +12,7 @@ const adminNotificationRoutes = require("./routes/adminNotificationRoutes.js");
 const notificationRoutes = require("./routes/notificationRoutes.js");
 const scheduleRoutes = require("./routes/adminScheduleRoutes.js");
 const studentScheduleRoutes = require("./routes/studentScheduleRoutes.js");
+const adminStudentScheduleRoutes = require("./routes/adminStudentScheduleRoutes.js");
 
 app.use(cors());
 app.use(express.json());
@@ -36,6 +37,8 @@ app.use("/api/admin", scheduleRoutes);
 
 app.use("/api/schedule", studentScheduleRoutes);
 app.use("/api/schedules", studentScheduleRoutes);
+
+app.use("/api/admin", adminStudentScheduleRoutes);
 
 
 app.get("/", (req, res) => {

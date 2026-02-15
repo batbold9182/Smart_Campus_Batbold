@@ -89,7 +89,12 @@ export default function AdminDashboard() {
       >
         <Text>➕ Create Schedule</Text>
       </Pressable>
-
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/(admin)/assignSchedule")}
+      >
+        <Text>📅 Assign Schedule</Text>
+      </Pressable>
       <Pressable
         style={styles.card}
         onPress={() => router.push("/create-faculty")}
