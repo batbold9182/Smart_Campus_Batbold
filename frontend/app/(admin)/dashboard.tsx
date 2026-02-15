@@ -1,15 +1,30 @@
-import { View, Text, StyleSheet,Button,Pressable } from "react-native";
+import { View, Text, StyleSheet,Button,Pressable,TouchableOpacity } from "react-native";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../services/userService";
 import { useRouter } from "expo-router";
 import { logout } from "../../services/authService";
+import { getUnreadCount } from "../../services/notificationService";
 
 
 export default function AdminDashboard() {
   const { loading, user: authUser } = useAuthGuard();
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
+  const [count , setCount] = useState(0); 
+
+  const loadCount = async () => {
+    try {
+      const data = await getUnreadCount();
+      setCount(data?.unreadCount ?? 0);
+    } catch {
+      setCount(0);
+    }
+  }
+  useEffect(() => {
+    loadCount();
+  }
+  ,[])
 
   const handleLogout = async () => {
     await logout();
@@ -50,7 +65,17 @@ export default function AdminDashboard() {
     <View style={styles.container}>
       <Text style={styles.title}>🛠 Admin Dashboard</Text>
       <Text>Welcome, {user.name}</Text>
+        <TouchableOpacity onPress={() => router.push("/(admin)/notifications")}>
+        <View style={styles.icon}>
+          <Text style={{ fontSize: 24 }}>🔔</Text>
 
+          {count > 0 && (
+            <View style={styles.badge}>
+              <Text style={styles.badgeText}>{count}</Text>
+            </View>
+          )}
+        </View>
+      </TouchableOpacity>
       <Pressable
         style={styles.card}
         onPress={() => router.push("/(admin)/create-course")}
@@ -58,10 +83,11 @@ export default function AdminDashboard() {
         <Text>📚 Manage Courses</Text>
       </Pressable>
 
-      <Pressable style={styles.card}
-        onPress={() => router.push("/(admin)/notifications")}
+      <Pressable
+        style={styles.card}
+        onPress={() => router.push("/(admin)/create-schedule")}
       >
-        <Text>🔔 Send Notifications</Text>
+        <Text>➕ Create Schedule</Text>
       </Pressable>
 
       <Pressable
@@ -89,6 +115,22 @@ export default function AdminDashboard() {
 }
 
 const styles = StyleSheet.create({
+  icon: {
+    position: "relative",
+  },
+  badge: {
+    position: "absolute",
+    right: -6,
+    top: -4,
+    backgroundColor: "red",
+    borderRadius: 10,
+    paddingHorizontal: 6
+  },
+  badgeText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold"
+  },
   container: {
     flex: 1,
     padding: 20,

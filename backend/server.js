@@ -10,6 +10,8 @@ const adminCourseRoutes = require("./routes/adminCourseRoutes");
 const adminEnrollRoutes = require("./routes/adminEnrollRoutes.js");
 const adminNotificationRoutes = require("./routes/adminNotificationRoutes.js");
 const notificationRoutes = require("./routes/notificationRoutes.js");
+const scheduleRoutes = require("./routes/adminScheduleRoutes.js");
+const studentScheduleRoutes = require("./routes/studentScheduleRoutes.js");
 
 app.use(cors());
 app.use(express.json());
@@ -29,6 +31,12 @@ app.use("/api/courses", require("./routes/courseRoutes"));
 app.use("/api/admin", adminNotificationRoutes);
 
 app.use("/api/notifications", notificationRoutes);
+
+app.use("/api/admin", scheduleRoutes);
+
+app.use("/api/schedule", studentScheduleRoutes);
+app.use("/api/schedules", studentScheduleRoutes);
+
 
 app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");

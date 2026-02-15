@@ -3,6 +3,18 @@ const Notification = require("../models/notification.js");
 const auth = require("../middleware/authMiddleware.js");
 
 const router = express.Router();
+// Get unread notifications count
+router.get("/unread-count", auth, async (req, res) => {
+  try {
+    const count = await Notification.countDocuments({
+      recipient: req.user.id,
+      isRead: false
+    });
+    res.json({ unreadCount: count });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
 
 // Get logged-in user's notifications
 router.get("/", auth, async (req, res) => {
