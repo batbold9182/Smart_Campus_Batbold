@@ -7,6 +7,7 @@ import {
   getSchedules,
 } from "../../services/adminScheduleService";
 import { useRouter } from "expo-router";
+import { unassignSchedule } from "@/services/scheduleService";
 
 export default function AssignScheduleScreen() {
   const [students, setStudents] = useState<any[]>([]);
@@ -58,6 +59,25 @@ export default function AssignScheduleScreen() {
     }
   };
 
+  const handleUnassign = async () => {
+    if (!studentId || !scheduleId) {
+      alert("Select student and schedule");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await unassignSchedule(studentId, scheduleId);
+      alert("Schedule unassigned");
+    } catch (error: any) {
+      const message =
+        error?.response?.data?.message || "Failed to unassign schedule";
+      alert(message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🧑‍🎓 Assign Schedule</Text>
@@ -81,6 +101,12 @@ export default function AssignScheduleScreen() {
           />
         ))}
       </Picker>
+      <Button
+        title="Unassign Schedule"
+        color = "red"
+        onPress={handleUnassign}
+        disabled={loading}
+      />
       <Button
         title="Back to dashboard"
         onPress={() => router.push("/(admin)/dashboard")}

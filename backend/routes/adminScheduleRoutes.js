@@ -2,10 +2,41 @@ const express = require("express");
 const Schedule = require("../models/schedule");
 const Course = require("../models/course");
 const User = require("../models/user");
+const StudentSchedule = require("../models/studentSchedule");
 const auth = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
 const router = express.Router();
+/**
+ * Admin → Unassign student from schedule
+ */
+router.delete(
+  "/schedule/unassign",
+  auth,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const { studentId, scheduleId } = req.body;
+
+      const deleted = await StudentSchedule.findOneAndDelete({
+        student: studentId,
+        schedule: scheduleId,
+      });
+
+      if (!deleted) {
+        return res.status(404).json({
+          message: "Assignment not found",
+        });
+      }
+
+      res.json({
+        message: "Student unassigned from schedule successfully",
+      });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
 
 /**
  * Admin → Get all schedules

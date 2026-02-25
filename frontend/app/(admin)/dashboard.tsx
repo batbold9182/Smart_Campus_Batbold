@@ -64,7 +64,8 @@ export default function AdminDashboard() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🛠 Admin Dashboard</Text>
-      <Text>Welcome, {user.name}</Text>
+      <Text>Welcome, {user?.name}</Text>
+      <Text> {user?.role }</Text>
         <TouchableOpacity onPress={() => router.push("/(admin)/notifications")}>
         <View style={styles.icon}>
           <Text style={{ fontSize: 24 }}>🔔</Text>

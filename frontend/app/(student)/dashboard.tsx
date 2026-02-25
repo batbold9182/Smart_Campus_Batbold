@@ -3,10 +3,14 @@ import { useEffect, useState } from "react";
 import {logout} from "../../services/authService";
 import { useRouter } from "expo-router";
 import { getUnreadCount } from "../../services/notificationService";
+import { getProfile } from "../../services/userService";
+import useAuthGuard from "../../hooks/useAuthGuard";
 
 export default function StudentDashboard() {
+  const { loading, user: authUser } = useAuthGuard();
   const router = useRouter();
   const [count, setCount] = useState(0);
+  const [user, setUser] = useState<any>(null);
 
   const loadCount = async () => {
     try {
@@ -25,11 +29,27 @@ export default function StudentDashboard() {
     await logout();
     router.replace("/login");
   }
+  useEffect(() => {
+      const load = async () => {
+        const profile = await getProfile();
+  
+        if (profile.role !== "student") {
+          router.replace("/profile");
+          return;
+        }
+  
+        setUser(profile);
+      };
+  
+      if (authUser) {
+        load();
+      }
+    }, [authUser, router]);
   
   return (
     <View style={styles.container}>
       <Text style={styles.title}>🎓 Student Dashboard</Text>
-      <Text>Welcome, Student</Text>
+      <Text>Welcome, {user?.name}</Text>
       <TouchableOpacity onPress={() => router.push("/(student)/notifications")}> 
         <View style={styles.icon}>
           <Text style={{ fontSize: 24 }}>🔔</Text>
