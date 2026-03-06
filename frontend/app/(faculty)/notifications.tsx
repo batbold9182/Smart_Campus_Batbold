@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
+import { useFocusEffect } from "@react-navigation/native";
 type NotificationItem = {
   _id: string;
   title: string;
@@ -41,6 +42,12 @@ export default function NotificationsScreen() {
   useEffect(() => {
     loadNotifications();
   }, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      loadNotifications();
+    }, [])
+  );
 
   const markAsRead = async (id: string) => {
     try {

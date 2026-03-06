@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  StyleSheet,
   Button,
   Alert,
   ActivityIndicator,
@@ -11,6 +10,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
+import { adminStyles } from "../../styles/adminStyles";
 
 export default function AdminEnrollScreen() {
   const router = useRouter();
@@ -142,8 +142,8 @@ export default function AdminEnrollScreen() {
 
   if (initialLoading) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>🎓 Enroll Student</Text>
+      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
+        <Text className="mb-4 text-2xl font-bold text-[#111827]">🎓 Enroll Student</Text>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -151,53 +151,57 @@ export default function AdminEnrollScreen() {
 
   if (loadError) {
     return (
-      <View style={styles.container}>
-        <Text style={styles.title}>🎓 Enroll Student</Text>
-        <Text style={styles.errorText}>{loadError}</Text>
+      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
+        <Text className="mb-4 text-2xl font-bold text-[#111827]">🎓 Enroll Student</Text>
+        <Text className="mb-3 text-[#c62828]">{loadError}</Text>
         <Button title="Retry" onPress={loadData} />
       </View>
     );
   }
 
   return (
-    <ScrollView contentContainerStyle={styles.scrollContent}>
-      <View style={styles.container}>
-      <Text style={styles.title}>🎓 Enroll Student</Text>
+    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
+      <View className={adminStyles.card}>
+      <Text className="mb-5 text-2xl font-bold text-[#111827]">🎓 Enroll Student</Text>
 
-      {!!enrollError && <Text style={styles.errorText}>{enrollError}</Text>}
-      {!!enrollSuccess && <Text style={styles.successText}>{enrollSuccess}</Text>}
+      {!!enrollError && <Text className="mb-3 text-[#c62828]">{enrollError}</Text>}
+      {!!enrollSuccess && <Text className="mb-3 text-[#2e7d32]">{enrollSuccess}</Text>}
 
-      <Text style={styles.label}>Select Student</Text>
-      <Picker
-        selectedValue={studentId}
-        onValueChange={(value) => setStudentId(value)}
-        enabled={!loading && students.length > 0}
-      >
-        <Picker.Item label="-- Choose Student --" value="" />
-        {students.map((s) => (
-          <Picker.Item
-            key={s._id}
-            label={`${s.name} (${s.email})`}
-            value={s._id}
-          />
-        ))}
-      </Picker>
+      <Text className="mb-2 text-[16px] text-[#111827]">Select Student</Text>
+      <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
+        <Picker
+          selectedValue={studentId}
+          onValueChange={(value) => setStudentId(value)}
+          enabled={!loading && students.length > 0}
+        >
+          <Picker.Item label="-- Choose Student --" value="" />
+          {students.map((s) => (
+            <Picker.Item
+              key={s._id}
+              label={`${s.name} (${s.email})`}
+              value={s._id}
+            />
+          ))}
+        </Picker>
+      </View>
 
-      <Text style={styles.label}>Select Course</Text>
-      <Picker
-        selectedValue={courseId}
-        onValueChange={(value) => setCourseId(value)}
-        enabled={!loading && courses.length > 0}
-      >
-        <Picker.Item label="-- Choose Course --" value="" />
-        {courses.map((c) => (
-          <Picker.Item
-            key={c._id}
-            label={`${c.title} (${c.code})`}
-            value={c._id}
-          />
-        ))}
-      </Picker>
+      <Text className="mb-2 text-[16px] text-[#111827]">Select Course</Text>
+      <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
+        <Picker
+          selectedValue={courseId}
+          onValueChange={(value) => setCourseId(value)}
+          enabled={!loading && courses.length > 0}
+        >
+          <Picker.Item label="-- Choose Course --" value="" />
+          {courses.map((c) => (
+            <Picker.Item
+              key={c._id}
+              label={`${c.title} (${c.code})`}
+              value={c._id}
+            />
+          ))}
+        </Picker>
+      </View>
 
       {loading ? (
         <ActivityIndicator size="large" />
@@ -208,7 +212,7 @@ export default function AdminEnrollScreen() {
             onPress={handleEnroll}
             disabled={students.length === 0 || courses.length === 0}
           />
-          <View style={styles.buttonSpacing} />
+          <View className="h-[10px]" />
           <Button
             title={showEnrollments ? "Hide Enrollments List" : "Show Enrollments List"}
             onPress={() => {
@@ -220,29 +224,31 @@ export default function AdminEnrollScreen() {
 
       {showEnrollments && (
         <>
-          <Text style={styles.sectionTitle}>Enrollments List</Text>
-          <Text style={styles.label}>View by Course</Text>
-          <Picker
-            selectedValue={viewCourseId}
-            onValueChange={(value) => setViewCourseId(value)}
-            enabled={courses.length > 0}
-          >
-            <Picker.Item label="-- All Courses --" value="" />
-            {courses.map((course) => (
-              <Picker.Item
-                key={course._id}
-                label={`${course.title} (${course.code})`}
-                value={course._id}
-              />
-            ))}
-          </Picker>
+          <Text className="mb-2 mt-6 text-[20px] font-bold text-[#111827]">Enrollments List</Text>
+          <Text className="mb-2 text-[16px] text-[#111827]">View by Course</Text>
+          <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
+            <Picker
+              selectedValue={viewCourseId}
+              onValueChange={(value) => setViewCourseId(value)}
+              enabled={courses.length > 0}
+            >
+              <Picker.Item label="-- All Courses --" value="" />
+              {courses.map((course) => (
+                <Picker.Item
+                  key={course._id}
+                  label={`${course.title} (${course.code})`}
+                  value={course._id}
+                />
+              ))}
+            </Picker>
+          </View>
 
           {filteredEnrollments.length === 0 ? (
-            <Text style={styles.emptyText}>No enrollments found</Text>
+            <Text className="mb-3 text-[#666]">No enrollments found</Text>
           ) : (
             filteredEnrollments.map((enrollment) => (
-              <View key={enrollment._id} style={styles.enrollmentItem}>
-                <Text style={styles.enrollmentText}>
+              <View key={enrollment._id} className="mb-3 gap-2 rounded-lg border border-[#ddd] p-[10px]">
+                <Text className="text-[14px]">
                   {enrollment.student?.name || "Unknown Student"} → {enrollment.course?.title || "Unknown Course"}
                 </Text>
                 <Button
@@ -265,54 +271,3 @@ export default function AdminEnrollScreen() {
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  scrollContent: {
-    paddingBottom: 20,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  label: {
-    fontSize: 16,
-    marginBottom: 10,
-  },
-  errorText: {
-    color: "#c62828",
-    marginBottom: 12,
-  },
-  successText: {
-    color: "#2e7d32",
-    marginBottom: 12,
-  },
-  buttonSpacing: {
-    height: 10,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginTop: 24,
-    marginBottom: 10,
-  },
-  emptyText: {
-    color: "#666",
-    marginBottom: 10,
-  },
-  enrollmentItem: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
-    gap: 8,
-  },
-  enrollmentText: {
-    fontSize: 14,
-  },
-});

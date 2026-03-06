@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, Button, StyleSheet } from "react-native";
+import { View, Text, Button } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import {
   assignSchedule,
@@ -8,6 +8,7 @@ import {
 } from "../../services/adminScheduleService";
 import { useRouter } from "expo-router";
 import { unassignSchedule } from "@/services/scheduleService";
+import { adminStyles } from "../../styles/adminStyles";
 
 export default function AssignScheduleScreen() {
   const [students, setStudents] = useState<any[]>([]);
@@ -79,48 +80,52 @@ export default function AssignScheduleScreen() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🧑‍🎓 Assign Schedule</Text>
+    <View className={adminStyles.screen}>
+      <View className={adminStyles.card}>
+        <Text className="mb-3 text-[22px] font-bold text-[#111827]">🧑‍🎓 Assign Schedule</Text>
 
-      <Text>Student</Text>
-      <Picker selectedValue={studentId} onValueChange={setStudentId}>
-        <Picker.Item label="Select student" value="" />
-        {students.map((s) => (
-          <Picker.Item key={s._id} label={s.name} value={s._id} />
-        ))}
-      </Picker>
+        <Text className="mb-1 font-medium text-[#374151]">Student</Text>
+        <View className={adminStyles.pickerWrap}>
+          <Picker selectedValue={studentId} onValueChange={setStudentId}>
+            <Picker.Item label="Select student" value="" />
+            {students.map((s) => (
+              <Picker.Item key={s._id} label={s.name} value={s._id} />
+            ))}
+          </Picker>
+        </View>
 
-      <Text>Schedule</Text>
-      <Picker selectedValue={scheduleId} onValueChange={setScheduleId}>
-        <Picker.Item label="Select schedule" value="" />
-        {schedules.map((sc) => (
-          <Picker.Item
-            key={sc._id}
-            label={`${sc.course?.title || sc.course?.name || "Course"} - ${sc.day} ${sc.startTime}`}
-            value={sc._id}
+        <Text className="mb-1 font-medium text-[#374151]">Schedule</Text>
+        <View className={adminStyles.pickerWrap}>
+          <Picker selectedValue={scheduleId} onValueChange={setScheduleId}>
+            <Picker.Item label="Select schedule" value="" />
+            {schedules.map((sc) => (
+              <Picker.Item
+                key={sc._id}
+                label={`${sc.course?.title || sc.course?.name || "Course"} - ${sc.day} ${sc.startTime}`}
+                value={sc._id}
+              />
+            ))}
+          </Picker>
+        </View>
+
+        <View className="gap-2">
+          <Button
+            title={loading ? "Please wait..." : "Assign Schedule"}
+            onPress={handleAssign}
+            disabled={loading}
           />
-        ))}
-      </Picker>
-      <Button
-        title="Unassign Schedule"
-        color = "red"
-        onPress={handleUnassign}
-        disabled={loading}
-      />
-      <Button
-        title="Back to dashboard"
-        onPress={() => router.push("/(admin)/dashboard")}
-      />
-      <Button
-        title={loading ? "Please wait..." : "Assign Schedule"}
-        onPress={handleAssign}
-        disabled={loading}
-      />
+          <Button
+            title="Unassign Schedule"
+            color="red"
+            onPress={handleUnassign}
+            disabled={loading}
+          />
+          <Button
+            title="Back to dashboard"
+            onPress={() => router.push("/(admin)/dashboard")}
+          />
+        </View>
+      </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 22, fontWeight: "bold", marginBottom: 12 },
-});

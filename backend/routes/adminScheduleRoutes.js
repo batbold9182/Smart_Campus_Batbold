@@ -97,4 +97,30 @@ router.post(
   }
 );
 
+/**
+ * Admin → Delete schedule
+ */
+router.delete(
+  "/schedule/:id",
+  auth,
+  authorizeRoles("admin"),
+  async (req, res) => {
+    try {
+      const scheduleId = req.params.id;
+
+      const deleted = await Schedule.findByIdAndDelete(scheduleId);
+
+      if (!deleted) {
+        return res.status(404).json({ message: "Schedule not found" });
+      }
+
+      await StudentSchedule.deleteMany({ schedule: scheduleId });
+
+      res.json({ message: "Schedule deleted successfully" });
+    } catch (err) {
+      res.status(500).json({ message: err.message });
+    }
+  }
+);
+
 module.exports = router;

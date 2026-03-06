@@ -1,15 +1,16 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
   Button,
   FlatList,
-  StyleSheet,
   TextInput,
-  TouchableOpacity
+  TouchableOpacity,
+  ScrollView,
 } from "react-native";
 import { getUsers, deleteUser, toggleUserStatus } from "../../services/adminService";
 import { useRouter } from "expo-router";
+import { adminStyles } from "../../styles/adminStyles";
 
 export default function AdminUsersScreen() {
   const [users, setUsers] = useState<any[]>([]);
@@ -21,21 +22,21 @@ export default function AdminUsersScreen() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const loadUsers = async () => {
-  try {
-    setLoading(true);
-    const data = await getUsers(page, activeTab);
-    setUsers(data.users || []);
-    setPagination(data.pagination);
-    setCounters(data.counters);
-  } finally {
-    setLoading(false);
-  }
-};
+  const loadUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const data = await getUsers(page, activeTab);
+      setUsers(data.users || []);
+      setPagination(data.pagination);
+      setCounters(data.counters);
+    } finally {
+      setLoading(false);
+    }
+  }, [page, activeTab]);
 
   useEffect(() => {
     loadUsers();
-  }, [page, activeTab]);
+  }, [loadUsers]);
 
 
   const handleDelete = async (id: string) => {
@@ -50,138 +51,82 @@ export default function AdminUsersScreen() {
 );
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>👥 User Management</Text>
+    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
+      <View className={adminStyles.card}>
+        <Text className="mb-3 text-[22px] font-bold text-[#111827]">👥 User Management</Text>
 
-      {/* 🔘 TABS */}
-      <View style={styles.tabs}>
-        {["faculty", "student"].map((role) => (
-          <TouchableOpacity
-            key={role}
-            style={[
-              styles.tab,
-              activeTab === role && styles.activeTab,
-            ]}
-            onPress={() => {
-              setActiveTab(role as any);
-              setPage(1);
-            }}
-          >
-            <Text style={styles.tabText}>
-              {role === "faculty" ? "Faculty" : "Students"}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-        
-      <View style={styles.counters}>
-        <Text>Faculty: {counters?.faculty}</Text>
-        <Text>Students: {counters?.students}</Text>
-        <Text>Disabled: {counters?.disabled}</Text>
-      </View>
-      <View style={styles.pagination}>
+        <View className="mb-3 flex-row">
+          {["faculty", "student"].map((role) => (
+            <TouchableOpacity
+              key={role}
+              className={`flex-1 items-center border p-[10px] ${
+                activeTab === role ? "border-[#9ca3af] bg-[#e5e7eb]" : "border-[#d1d5db] bg-white"
+              }`}
+              onPress={() => {
+                setActiveTab(role as any);
+                setPage(1);
+              }}
+            >
+              <Text className="font-bold text-[#111827]">
+                {role === "faculty" ? "Faculty" : "Students"}
+              </Text>
+            </TouchableOpacity>
+          ))}
+        </View>
+
+        <View className="mb-3 flex-row justify-around">
+          <Text>Faculty: {counters?.faculty}</Text>
+          <Text>Students: {counters?.students}</Text>
+          <Text>Disabled: {counters?.disabled}</Text>
+        </View>
+
+        <View className="mb-3 flex-row items-center justify-between">
           <Button
             title="Prev"
             disabled={page === 1}
             onPress={() => setPage(page - 1)}
-             />
-           <Text>Page {page}</Text>
-           <Button
+          />
+          <Text>Page {page}</Text>
+          <Button
             title="Next"
             disabled={page === pagination?.totalPages}
             onPress={() => setPage(page + 1)}
-             />
-       </View>
-      {/* 🔍 SEARCH */}
-      <TextInput
-        placeholder={`Search ${activeTab}`}
-        value={search}
-        onChangeText={setSearch}
-        style={styles.search}
-      />
-        {loading && <Text>Loading users...</Text>}
-      {/* 📋 LIST */}
-      <FlatList
-     
-        data={filteredUsers}
-        keyExtractor={(item) => item._id}
-        renderItem={({ item }) => (
-          <View style={styles.userRow}>
-            <Text>{item.name}</Text>
+          />
+        </View>
 
-             <Button
-              title="Delete"
-              color="red"
-              onPress={() => handleDelete(item._id)}
-            
-            />
-            <View style={{ gap: 6 }}>
+        <TextInput
+          placeholder={`Search ${activeTab}`}
+          value={search}
+          onChangeText={setSearch}
+          className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3"
+        />
+        {loading && <Text className="mb-2 text-[#6b7280]">Loading users...</Text>}
+
+        <FlatList
+          data={filteredUsers}
+          keyExtractor={(item) => item._id}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <View className="mb-[10px] rounded-lg border-b border-[#d1d5db] pb-2">
+              <Text className="mb-2 font-semibold text-[#111827]">{item.name}</Text>
+              <View className="gap-[6px]">
                 <Button
-                    title={item.isActive ? "Disable" : "Enable"}
-                    color={item.isActive ? "orange" : "green"}
-                    onPress={() => toggleUserStatus(item._id).then(loadUsers)}
+                  title={item.isActive ? "Disable" : "Enable"}
+                  color={item.isActive ? "orange" : "green"}
+                  onPress={() => toggleUserStatus(item._id).then(loadUsers)}
                 />
-                </View>
-          </View>
-          
-        )}
-      />
-      
-      <Button title="Go Back" onPress={() => router.push("../dashboard")} />
-    </View>
+                <Button
+                  title="Delete"
+                  color="red"
+                  onPress={() => handleDelete(item._id)}
+                />
+              </View>
+            </View>
+          )}
+        />
+
+        <Button title="Go Back" onPress={() => router.push("../dashboard")} />
+      </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-    pagination: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 12,
-    },
-    counters: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginBottom: 12,
-    },
-  container: { flex: 1, padding: 20 },
-  title: { fontSize: 22, marginBottom: 12, textAlign: "center" },
-
-  tabs: {
-    flexDirection: "row",
-    marginBottom: 12,
-  },
-  tab: {
-    flex: 1,
-    padding: 10,
-    borderWidth: 1,
-    alignItems: "center",
-  },
-  activeTab: {
-    backgroundColor: "#ddd",
-  },
-  tabText: {
-    fontWeight: "bold",
-  },
-
-  search: {
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 12,
-  },
-
-  userRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 10,
-    borderBottomWidth: 1,
-    paddingBottom: 8,
-  },
-  card: {
-    padding: 15,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-});

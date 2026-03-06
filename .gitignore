@@ -8,6 +8,8 @@ node_modules/
 dist/
 web-build/
 expo-env.d.ts
+nativewind-end.d.ts
+expo-env.d.ts
 
 # Native
 .kotlin/

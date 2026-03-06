@@ -28,3 +28,13 @@ export const getCourses = async () => {
   const res = await api.get("/api/courses");
   return res.data;
 };
+
+export const getAdminSchedules = async () => {
+  const res = await api.get("/api/admin/schedules");
+  return res.data;
+};
+
+export const deleteSchedule = async (scheduleId: string) => {
+  const res = await api.delete(`/api/admin/schedule/${scheduleId}`);
+  return res.data;
+};

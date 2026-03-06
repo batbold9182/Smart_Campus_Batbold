@@ -4,15 +4,16 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
   Button,
   TextInput,
   Alert,
+  ScrollView,
 } from "react-native";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
+import { adminStyles } from "../../styles/adminStyles";
 type NotificationItem = {
   _id: string;
   title: string;
@@ -117,8 +118,8 @@ export default function NotificationsScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={styles.title}>Notifications</Text>
+      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
+        <Text className="mb-3 text-2xl font-bold text-[#111827]">Notifications</Text>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -126,163 +127,77 @@ export default function NotificationsScreen() {
 
   if (error) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={styles.title}>Notifications</Text>
-        <Text style={styles.errorText}>{error}</Text>
+      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
+        <Text className="mb-3 text-2xl font-bold text-[#111827]">Notifications</Text>
+        <Text className="mb-[14px] text-[#c62828]">{error}</Text>
         <Button title="Retry" onPress={loadNotifications} />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Notifications</Text>
+    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
+      <View className={adminStyles.card}>
+        <Text className="mb-5 text-2xl font-bold text-[#111827]">Notifications</Text>
 
-      <View style={styles.composeCard}>
-        <Text style={styles.composeTitle}>Send Notification</Text>
+        <View className="mb-[14px] rounded-lg border border-[#ddd] bg-[#fafafa] p-3">
+          <Text className="mb-[10px] text-[16px] font-bold text-[#111827]">Send Notification</Text>
 
-        <TextInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Title"
-          style={styles.input}
-        />
+          <TextInput
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Title"
+            className="mb-[10px] rounded-md border border-[#ddd] bg-white px-[10px] py-2"
+          />
 
-        <TextInput
-          value={message}
-          onChangeText={setMessage}
-          placeholder="Message"
-          style={[styles.input, styles.messageInput]}
-          multiline
-        />
+          <TextInput
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Message"
+            className="mb-[10px] min-h-[80px] rounded-md border border-[#ddd] bg-white px-[10px] py-2"
+            multiline
+            textAlignVertical="top"
+          />
 
-        <Text style={styles.audienceLabel}>Audience</Text>
-        <View style={styles.pickerWrap}>
-          <Picker
-            selectedValue={audience}
-            onValueChange={(value) => setAudience(value)}
-          >
-            <Picker.Item label="Students" value="students" />
-            <Picker.Item label="Faculty" value="faculty" />
-            <Picker.Item label="Students + Faculty" value="all" />
-          </Picker>
+          <Text className="mb-[6px] text-[14px] text-[#333]">Audience</Text>
+          <View className="mb-[10px] rounded-md border border-[#ddd] bg-white">
+            <Picker
+              selectedValue={audience}
+              onValueChange={(value) => setAudience(value)}
+            >
+              <Picker.Item label="Students" value="students" />
+              <Picker.Item label="Faculty" value="faculty" />
+              <Picker.Item label="Students + Faculty" value="all" />
+            </Picker>
+          </View>
+
+          {sending ? (
+            <ActivityIndicator size="small" />
+          ) : (
+            <Button title="Send Notification" onPress={handleSendNotification} />
+          )}
         </View>
 
-        {sending ? (
-          <ActivityIndicator size="small" />
-        ) : (
-          <Button title="Send Notification" onPress={handleSendNotification} />
-        )}
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item._id}
+          scrollEnabled={false}
+          ListEmptyComponent={<Text className="mt-5 text-center text-[#666]">No notifications found</Text>}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => markAsRead(item._id)}
+              className={`mb-[10px] rounded-lg border border-[#ddd] p-3 ${item.isRead ? "bg-[#f5f5f5]" : "bg-[#e3f2fd]"}`}
+            >
+              <Text className="mb-[6px] text-[16px] font-bold text-[#111827]">{item.title}</Text>
+              <Text className="mb-2 text-[14px] text-[#333]">{item.message}</Text>
+              <Text className="text-[12px] text-[#666]">{item.isRead ? "Read" : "Tap to mark as read"}</Text>
+            </TouchableOpacity>
+          )}
+        />
+        <Button title ="back to dashboard" onPress={() => router.push("../dashboard")} />
       </View>
-
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item._id}
-        ListEmptyComponent={<Text style={styles.emptyText}>No notifications found</Text>}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => markAsRead(item._id)}
-            style={[styles.card, item.isRead ? styles.readCard : styles.unreadCard]}
-          >
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardMessage}>{item.message}</Text>
-            <Text style={styles.cardMeta}>{item.isRead ? "Read" : "Tap to mark as read"}</Text>
-          </TouchableOpacity>
-        )}
-      />
-      <Button title ="back to dashboard" onPress={() => router.push("../dashboard")} />
-    </View>
+    </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  center: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  errorText: {
-    color: "#c62828",
-    marginBottom: 14,
-  },
-  emptyText: {
-    color: "#666",
-    textAlign: "center",
-    marginTop: 20,
-  },
-  composeCard: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 14,
-    backgroundColor: "#fafafa",
-  },
-  composeTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 10,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-  },
-  messageInput: {
-    minHeight: 80,
-    textAlignVertical: "top",
-  },
-  audienceLabel: {
-    fontSize: 14,
-    marginBottom: 6,
-    color: "#333",
-  },
-  pickerWrap: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 6,
-    marginBottom: 10,
-    backgroundColor: "#fff",
-  },
-  card: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
-  },
-  unreadCard: {
-    backgroundColor: "#e3f2fd",
-  },
-  readCard: {
-    backgroundColor: "#f5f5f5",
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 6,
-  },
-  cardMessage: {
-    fontSize: 14,
-    color: "#333",
-    marginBottom: 8,
-  },
-  cardMeta: {
-    fontSize: 12,
-    color: "#666",
-  },
-});
 

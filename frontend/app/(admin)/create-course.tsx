@@ -5,8 +5,8 @@ import {
   TextInput,
   Button,
   FlatList,
-  StyleSheet,
   Pressable,
+  ScrollView,
 } from "react-native";
 import { useRouter } from "expo-router";
 import {
@@ -16,6 +16,7 @@ import {
   getAllCourses,
 } from "../../services/courseService";
 import { getUsers } from "../../services/adminService";
+import { adminStyles } from "../../styles/adminStyles";
 
 type Faculty = {
   _id: string;
@@ -143,151 +144,96 @@ export default function AdminCreateCourse() {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Create Course</Text>
+    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
+      <View className={adminStyles.card}>
+        <Text className="mb-3 text-[22px] font-bold text-[#111827]">Create Course</Text>
 
-      <TextInput
-        placeholder="Title"
-        value={title}
-        onChangeText={setTitle}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Code (e.g. CS101)"
-        value={code}
-        onChangeText={setCode}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Description"
-        value={description}
-        onChangeText={setDescription}
-        style={styles.input}
-      />
-      <TextInput
-        placeholder="Credits"
-        value={credits}
-        onChangeText={setCredits}
-        keyboardType="numeric"
-        style={styles.input}
-      />
+        <TextInput
+          placeholder="Title"
+          value={title}
+          onChangeText={setTitle}
+          className={`${adminStyles.input} mb-3`}
+        />
+        <TextInput
+          placeholder="Code (e.g. CS101)"
+          value={code}
+          onChangeText={setCode}
+          className={`${adminStyles.input} mb-3`}
+        />
+        <TextInput
+          placeholder="Description"
+          value={description}
+          onChangeText={setDescription}
+          className={`${adminStyles.input} mb-3`}
+        />
+        <TextInput
+          placeholder="Credits"
+          value={credits}
+          onChangeText={setCredits}
+          keyboardType="numeric"
+          className={`${adminStyles.input} mb-4`}
+        />
 
-      <Text style={styles.sectionTitle}>Assign to Faculty</Text>
-      <FlatList
-        data={faculty}
-        keyExtractor={(item) => item._id}
-        ListEmptyComponent={<Text>No faculty found</Text>}
-        renderItem={({ item }) => (
-          <Pressable
-            style={[
-              styles.facultyRow,
-              selectedFacultyId === item._id && styles.facultySelected,
-            ]}
-            onPress={() => setSelectedFacultyId(item._id)}
-          >
-            <Text style={styles.facultyName}>{item.name}</Text>
-            <Text style={styles.facultyEmail}>{item.email}</Text>
-          </Pressable>
-        )}
-      />
+        <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Assign to Faculty</Text>
+        <FlatList
+          data={faculty}
+          keyExtractor={(item) => item._id}
+          scrollEnabled={false}
+          ListEmptyComponent={<Text className="text-[#6b7280]">No faculty found</Text>}
+          renderItem={({ item }) => (
+            <Pressable
+              className={`mb-2 rounded-lg border p-3 ${
+                selectedFacultyId === item._id ? "border-blue-400 bg-blue-50" : "border-[#d1d5db] bg-white"
+              }`}
+              onPress={() => setSelectedFacultyId(item._id)}
+            >
+              <Text className="font-semibold text-[#111827]">{item.name}</Text>
+              <Text className="text-[#555]">{item.email}</Text>
+            </Pressable>
+          )}
+        />
 
-      <Button
-        title={loading ? "Creating..." : "Create and Assign"}
-        onPress={handleCreate}
-      />
+        <View className="mt-2 mb-3">
+          <Button
+            title={loading ? "Creating..." : "Create and Assign"}
+            onPress={handleCreate}
+          />
+        </View>
 
-      {message ? <Text style={styles.message}>{message}</Text> : null}
+        {message ? <Text className="mb-3 text-[#374151]">{message}</Text> : null}
 
-      <Text style={styles.sectionTitle}>Manage Courses</Text>
-      <FlatList
-        data={courses}
-        keyExtractor={(item) => item._id}
-        ListEmptyComponent={<Text>No courses found</Text>}
-        renderItem={({ item }) => (
-          <View style={styles.courseRow}>
-            <View style={styles.courseInfo}>
-              <Text style={styles.courseTitle}>{item.title}</Text>
-              <Text>{item.code}</Text>
-              <Text style={styles.courseFaculty}>
-                Faculty: {item.faculty?.name || "Unassigned"}
-              </Text>
+        <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Manage Courses</Text>
+        <FlatList
+          data={courses}
+          keyExtractor={(item) => item._id}
+          scrollEnabled={false}
+          ListEmptyComponent={<Text className="text-[#6b7280]">No courses found</Text>}
+          renderItem={({ item }) => (
+            <View className="mb-2 rounded-lg border border-[#d1d5db] p-3">
+              <View className="mb-2">
+                <Text className="font-semibold text-[#111827]">{item.title}</Text>
+                <Text>{item.code}</Text>
+                <Text className="text-[#555]">
+                  Faculty: {item.faculty?.name || "Unassigned"}
+                </Text>
+              </View>
+              <View className="gap-2">
+                <Button
+                  title={assigningId === item._id ? "Assigning..." : "Assign"}
+                  onPress={() => handleAssign(item._id)}
+                />
+                <Button
+                  title={deletingId === item._id ? "Deleting..." : "Delete"}
+                  color="red"
+                  onPress={() => handleDelete(item._id)}
+                />
+              </View>
             </View>
-            <View style={styles.courseActions}>
-              <Button
-                title={assigningId === item._id ? "Assigning..." : "Assign"}
-                onPress={() => handleAssign(item._id)}
-              />
-              <Button
-                title={deletingId === item._id ? "Deleting..." : "Delete"}
-                color="red"
-                onPress={() => handleDelete(item._id)}
-              />
-            </View>
-          </View>
-        )}
-      />
+          )}
+        />
 
-      <Button title="Back to dashboard" onPress={() => router.push("../dashboard")} />
-    </View>
+        <Button title="Back to dashboard" onPress={() => router.push("../dashboard")} />
+      </View>
+    </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    gap: 10,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 8,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    marginTop: 8,
-  },
-  input: {
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
-  },
-  facultyRow: {
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 8,
-  },
-  facultySelected: {
-    backgroundColor: "#e6f4ff",
-    borderColor: "#3399ff",
-  },
-  facultyName: {
-    fontWeight: "bold",
-  },
-  facultyEmail: {
-    color: "#555",
-  },
-  message: {
-    marginTop: 6,
-  },
-  courseRow: {
-    borderWidth: 1,
-    borderRadius: 6,
-    padding: 10,
-    marginBottom: 8,
-  },
-  courseInfo: {
-    marginBottom: 8,
-  },
-  courseTitle: {
-    fontWeight: "bold",
-  },
-  courseFaculty: {
-    color: "#555",
-  },
-  courseActions: {
-    gap: 8,
-  },
-});

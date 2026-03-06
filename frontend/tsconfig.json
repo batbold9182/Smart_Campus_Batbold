@@ -12,6 +12,10 @@
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
-    "expo-env.d.ts"
-, "services/authService.ts", "services/attandanceService.ts", "services/userService.ts"  ]
+    "expo-env.d.ts",
+    "services/authService.ts",
+    "services/attandanceService.ts",
+    "services/userService.ts",
+    "nativewind-env.d.ts"
+  ]
 }
