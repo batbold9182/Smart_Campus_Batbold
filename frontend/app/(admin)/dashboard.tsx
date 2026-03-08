@@ -1,4 +1,5 @@
 import { View, Text, Pressable, TouchableOpacity, ScrollView } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../services/userService";
@@ -102,16 +103,17 @@ useEffect(() => {
   }
 
   return (
-    <ScrollView className="flex-1 bg-[#f5f7fb] px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
+    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
       <View className="mb-4 flex-row items-start justify-between">
-        <View>
-          <Text className="text-[26px] font-bold text-[#111827]">Admin Dashboard</Text>
+        <View className="flex-1 pr-2">
+          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Admin Dashboard</Text>
           <Text className="mt-1 text-[#666]">Welcome, {user?.name}</Text>
         </View>
 
         <View className="flex-row items-center">
           <View className="mr-3 items-end">
-            <Text className="text-[20px] font-bold text-[#111827]">{formatTime(time)}</Text>
+            <Text className="text-[18px] font-bold text-[#111827]">{formatTime(time)}</Text>
             <Text className="text-[12px] text-[#666]">{formatDate(time)}</Text>
           </View>
 
@@ -224,6 +226,7 @@ useEffect(() => {
           <Text className="font-semibold text-white">Logout</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+      </ScrollView>
+    </SafeAreaView>
   );
 }

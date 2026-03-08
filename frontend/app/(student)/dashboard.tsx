@@ -1,16 +1,44 @@
-import { View, Text, StyleSheet, Button, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Pressable, TouchableOpacity } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { useEffect, useState } from "react";
-import {logout} from "../../services/authService";
+import { logout } from "../../services/authService";
 import { useRouter } from "expo-router";
 import { getUnreadCount } from "../../services/notificationService";
 import { getProfile } from "../../services/userService";
 import useAuthGuard from "../../hooks/useAuthGuard";
+import { formatTime, formatDate } from "../../services/clockService";
+import { getStudentSchedule } from "../../services/scheduleService";
 
 export default function StudentDashboard() {
   const { loading, user: authUser } = useAuthGuard();
   const router = useRouter();
   const [count, setCount] = useState(0);
   const [user, setUser] = useState<any>(null);
+  const [time, setTime] = useState(new Date());
+  const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
+
+  const getScheduleStatus = (startTime: string, endTime: string) => {
+    const now = time.getHours() * 60 + time.getMinutes();
+    const [startH, startM] = String(startTime || "0:0").split(":").map(Number);
+    const [endH, endM] = String(endTime || "0:0").split(":").map(Number);
+    const start = startH * 60 + startM;
+    const end = endH * 60 + endM;
+
+    if (now >= start && now <= end) return "Now";
+    if (now < start) return "Upcoming";
+    return "Done";
+  };
+
+  const loadTodaySchedule = async () => {
+    try {
+      const allSchedules = await getStudentSchedule();
+      const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
+      const filtered = (Array.isArray(allSchedules) ? allSchedules : []).filter((item) => item?.day === today);
+      setTodaySchedule(filtered);
+    } catch {
+      setTodaySchedule([]);
+    }
+  };
 
   const loadCount = async () => {
     try {
@@ -23,94 +51,175 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     loadCount();
+    loadTodaySchedule();
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTime(new Date());
+    }, 1000);
+
+    return () => clearInterval(timer);
   }, []);
 
   const handleLogout = async () => {
     await logout();
     router.replace("/login");
-  }
-  useEffect(() => {
-      const load = async () => {
-        const profile = await getProfile();
-  
-        if (profile.role !== "student") {
-          router.replace("/profile");
-          return;
-        }
-  
-        setUser(profile);
-      };
-  
-      if (authUser) {
-        load();
-      }
-    }, [authUser, router]);
-  
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>🎓 Student Dashboard</Text>
-      <Text>Welcome, {user?.name}</Text>
-      <TouchableOpacity onPress={() => router.push("/(student)/notifications")}> 
-        <View style={styles.icon}>
-          <Text style={{ fontSize: 24 }}>🔔</Text>
+  };
 
-          {count > 0 && (
-            <View style={styles.badge}>
-              <Text style={styles.badgeText}>{count}</Text>
-            </View>
-          )}
+  useEffect(() => {
+    const load = async () => {
+      const profile = await getProfile();
+
+      if (profile.role !== "student") {
+        router.replace("/profile");
+        return;
+      }
+
+      setUser(profile);
+    };
+
+    if (authUser) {
+      load();
+    }
+  }, [authUser, router]);
+
+  if (loading) {
+    return <Text className="flex-1 pt-20 text-center text-[18px] text-[#666]">Loading dashboard...</Text>;
+  }
+
+  if (!authUser || !user) {
+    return null;
+  }
+
+  return (
+    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
+      <View className="mb-4 flex-row items-start justify-between">
+        <View className="flex-1 pr-2">
+          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Student Dashboard</Text>
+          <Text className="mt-1 text-[#666]">Welcome, {user?.name}</Text>
         </View>
-      </TouchableOpacity>
-      <Button
-        title="Profile"
-        onPress={() => router.push("../profile")}
-      />
-      <Button
-        title="Notifications"
-        onPress={() => router.push("../notifications")}
-      />
-      <Button
-        title="My Schedule"
-        onPress={() => router.push("../schedule")}
-      />
-      {/*<Text>Assignment (optional)</Text>
-      <Text> Schedule </Text>
-      <Text>Upcoming exams </Text>
-      <Text>Grades compareable (optional)</Text>
-      <Text>Attendance shown as percentage</Text>
-      <Text>Random chat named lunch buddy etc</Text>
-      <Text>Notifications with emails , section</Text>
-      <Text>Calendar section with holiday ,event , meeting everything shown </Text> // can be added in future */}
-      <Button title="Logout" onPress={handleLogout} />
-    </View>
-      
+
+        <View className="flex-row items-center">
+          <View className="mr-3 items-end">
+            <Text className="text-[18px] font-bold text-[#111827]">{formatTime(time)}</Text>
+            <Text className="text-[12px] text-[#666]">{formatDate(time)}</Text>
+          </View>
+
+          <TouchableOpacity onPress={() => router.push("/(student)/notifications")}>
+            <View className="relative">
+              <Text className="text-[26px]">🔔</Text>
+
+              {count > 0 && (
+                <View className="absolute -right-[6px] -top-1 rounded-full bg-red-500 px-[6px]">
+                  <Text className="text-[12px] font-bold text-white">{count}</Text>
+                </View>
+              )}
+            </View>
+          </TouchableOpacity>
+        </View>
+      </View>
+
+      <View className="mb-4 flex-row justify-between gap-2">
+        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-[#111827]">{todaySchedule.length}</Text>
+          <Text className="mt-1 text-[11px] text-[#6b7280]">Today Classes</Text>
+        </View>
+        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-[#111827]">{count}</Text>
+          <Text className="mt-1 text-[11px] text-[#6b7280]">Unread Alerts</Text>
+        </View>
+        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-[#111827]">Student</Text>
+          <Text className="mt-1 text-[11px] text-[#6b7280]">Role</Text>
+        </View>
+      </View>
+
+      <View className="mb-[22px] rounded-xl bg-white p-4 shadow">
+        <Text className="mb-[10px] text-[18px] font-bold text-[#111827]">Today&apos;s Schedule</Text>
+
+        {todaySchedule.length === 0 ? (
+          <View className="items-center gap-2 py-[10px]">
+            <Text className="text-[28px]">🗓️</Text>
+            <Text className="text-[#888]">No classes scheduled today</Text>
+            <TouchableOpacity className="rounded-lg bg-blue-500 px-[14px] py-2" onPress={() => router.push("/(student)/schedule")}>
+              <Text className="font-semibold text-white">Open Full Schedule</Text>
+            </TouchableOpacity>
+          </View>
+        ) : (
+          todaySchedule.map((item, index) => {
+            const status = getScheduleStatus(item.startTime, item.endTime);
+
+            return (
+              <View key={index} className="mb-3 flex-row items-center border-b border-[#edf0f4] pb-[10px]">
+                <Text className="mr-3 w-[90px] font-bold text-[#111827]">{item.startTime}-{item.endTime}</Text>
+                <View className="flex-1">
+                  <Text className="font-semibold text-[#111827]">{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
+                  <Text className="mt-[2px] text-[12px] text-[#374151]">Prof: {item.faculty?.name || "Unassigned"}</Text>
+                  <Text className="text-[12px] text-[#666]">{item.room}</Text>
+                </View>
+                <View
+                  className={`rounded-full px-[10px] py-1 ${
+                    status === "Now" ? "bg-green-100" : status === "Done" ? "bg-gray-200" : "bg-blue-100"
+                  }`}
+                >
+                  <Text className="text-[11px] font-bold text-[#1f2937]">{status}</Text>
+                </View>
+              </View>
+            );
+          })
+        )}
+      </View>
+
+      <View className="mt-[2px] flex-row flex-wrap justify-between">
+        <Pressable
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
+          onPress={() => router.push("/(student)/schedule")}
+        >
+          <Text className="mb-2 text-[30px]">📅</Text>
+          <Text className="font-semibold">My Schedule</Text>
+        </Pressable>
+
+        <Pressable
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
+          onPress={() => router.push("/(student)/notifications")}
+        >
+          <Text className="mb-2 text-[30px]">🔔</Text>
+          <Text className="font-semibold">Notifications</Text>
+        </Pressable>
+
+        <Pressable
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
+          onPress={() => router.push("/(student)/profile")}
+        >
+          <Text className="mb-2 text-[30px]">👤</Text>
+          <Text className="font-semibold">Profile</Text>
+        </Pressable>
+
+        <Pressable
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
+          onPress={() => router.push("/(student)/randomChat")}
+        >
+          <Text className="mb-2 text-[30px]">🍽️❤️</Text>
+          <Text className="font-semibold">Lunch buddy</Text>
+        </Pressable>
+      </View>
+
+      <View className="mt-3">
+        <TouchableOpacity className="mb-[10px] items-center rounded-lg bg-blue-500 p-[14px]" onPress={() => router.push("/(student)/profile")}>
+          <Text className="font-semibold text-white">Profile</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity className="items-center rounded-lg bg-red-500 p-[14px]" onPress={handleLogout}>
+          <Text className="font-semibold text-white">Logout</Text>
+        </TouchableOpacity>
+      </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  icon: {
-    position: "relative",
-  },
-  badge: {
-    position: "absolute",
-    right: -6,
-    top: -4,
-    backgroundColor: "red",
-    borderRadius: 10,
-    paddingHorizontal: 6,
-  },
-  badgeText: {
-    color: "white",
-    fontSize: 12,
-    fontWeight: "bold",
-  },
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: "bold",
-  },
-});
