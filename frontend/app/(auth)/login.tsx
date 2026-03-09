@@ -1,8 +1,20 @@
 import { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
+  Image,
+  ScrollView,
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { login } from "../../services/authService";
 import { router } from "expo-router";
+import { setToken } from "../../services/tokenStorage";
 
 
 export default function LoginScreen() {
@@ -37,7 +49,7 @@ export default function LoginScreen() {
         return;
       }
 
-      await AsyncStorage.setItem("token", data.token);
+      await setToken(data.token);
 
       if (data.user.role === "admin") {
         router.replace("/(admin)/dashboard");
@@ -68,77 +80,188 @@ export default function LoginScreen() {
 
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Smart Campus Login</Text>
+    <SafeAreaView style={styles.safe}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <View style={styles.backgroundShapeTop} />
+        <View style={styles.backgroundShapeBottom} />
 
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={(value) => {
-          setEmail(value);
-          if (emailError) {
-            setEmailError("");
-          }
-          if (message) {
-            setMessage("");
-          }
-        }}
-        style={styles.input}
-        autoCapitalize="none"
-      />
-      {emailError ? <Text style={styles.fieldError}>{emailError}</Text> : null}
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <View style={styles.card}>
+            <Image
+              source={require("../../assets/images/Logo_VIZJA.png")}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+            <Text style={styles.brand}>Vizja Smart Campus</Text>
+            <Text style={styles.title}>Welcome Back</Text>
+            <Text style={styles.subtitle}>Sign in to continue to your dashboard</Text>
 
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={(value) => {
-          setPassword(value);
-          if (passwordError) {
-            setPasswordError("");
-          }
-          if (message) {
-            setMessage("");
-          }
-        }}
-        secureTextEntry
-        style={styles.input}
-      />
-      {passwordError ? (
-        <Text style={styles.fieldError}>{passwordError}</Text>
-      ) : null}
+            <TextInput
+              placeholder="Email"
+              placeholderTextColor="#6b7280"
+              value={email}
+              onChangeText={(value) => {
+                setEmail(value);
+                if (emailError) {
+                  setEmailError("");
+                }
+                if (message) {
+                  setMessage("");
+                }
+              }}
+              style={styles.input}
+              autoCapitalize="none"
+              keyboardType="email-address"
+              autoCorrect={false}
+              textContentType="emailAddress"
+              autoComplete="email"
+            />
+            {emailError ? <Text style={styles.fieldError}>{emailError}</Text> : null}
 
-      <Button
-        title={isLoading ? "Logging in..." : "Login"}
-        onPress={handleLogin}
-        disabled={isLoading}
-      />
+            <TextInput
+              placeholder="Password"
+              placeholderTextColor="#6b7280"
+              value={password}
+              onChangeText={(value) => {
+                setPassword(value);
+                if (passwordError) {
+                  setPasswordError("");
+                }
+                if (message) {
+                  setMessage("");
+                }
+              }}
+              secureTextEntry
+              style={styles.input}
+              autoCorrect={false}
+              textContentType="password"
+              autoComplete="password"
+            />
+            {passwordError ? <Text style={styles.fieldError}>{passwordError}</Text> : null}
 
-      {message ? <Text style={styles.message}>{message}</Text> : null}
-    </View>
+            <TouchableOpacity
+              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+              onPress={handleLogin}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <ActivityIndicator color="#ffffff" />
+              ) : (
+                <Text style={styles.loginButtonText}>Login</Text>
+              )}
+            </TouchableOpacity>
+
+            {message ? <Text style={styles.message}>{message}</Text> : null}
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  logo:{
+    width: 120,
+    height: 120,
+    alignSelf: "center",
+    marginBottom: 8,
+  },
+  safe: {
+    flex: 1,
+    backgroundColor: "#eef4ff",
+  },
   container: {
     flex: 1,
+    paddingHorizontal: 20,
+    position: "relative",
+    overflow: "hidden",
+  },
+  scrollContent: {
+    flexGrow: 1,
     justifyContent: "center",
+    paddingVertical: 24,
+  },
+  backgroundShapeTop: {
+    position: "absolute",
+    top: -120,
+    right: -100,
+    width: 260,
+    height: 260,
+    borderRadius: 130,
+    backgroundColor: "#c7dcff",
+  },
+  backgroundShapeBottom: {
+    position: "absolute",
+    bottom: -130,
+    left: -120,
+    width: 280,
+    height: 280,
+    borderRadius: 140,
+    backgroundColor: "#d9e8ff",
+  },
+  card: {
+    backgroundColor: "#ffffff",
+    borderRadius: 18,
     padding: 20,
+    boxShadow: "0px 8px 14px rgba(0, 0, 0, 0.08)",
+    elevation: 4,
+  },
+  brand: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#2563eb",
+    marginBottom: 6,
+    textAlign: "center",
   },
   title: {
-    fontSize: 22,
-    marginBottom: 20,
+    fontSize: 28,
+    fontWeight: "700",
+    color: "#0f172a",
+    textAlign: "center",
+  },
+  subtitle: {
+    marginTop: 4,
+    marginBottom: 18,
+    color: "#475569",
     textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    padding: 10,
+    borderColor: "#dbe3f3",
+    backgroundColor: "#f8fbff",
+    color: "#0f172a",
+    paddingHorizontal: 14,
+    paddingVertical: 12,
     marginBottom: 12,
-    borderRadius: 6,
+    borderRadius: 10,
+  },
+  loginButton: {
+    marginTop: 6,
+    backgroundColor: "#2563eb",
+    borderRadius: 10,
+    alignItems: "center",
+    justifyContent: "center",
+    minHeight: 48,
+  },
+  loginButtonDisabled: {
+    opacity: 0.7,
+  },
+  loginButtonText: {
+    color: "#ffffff",
+    fontSize: 16,
+    fontWeight: "700",
   },
   message: {
-    marginTop: 20,
+    marginTop: 14,
     textAlign: "center",
-    fontSize: 16,
+    color: "#b91c1c",
   },
   fieldError: {
     color: "#B00020",

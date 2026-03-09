@@ -71,7 +71,7 @@ export default function FacultyDashboard() {
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1 pr-2">
-          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Faculty Dashboard</Text>
+          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Dashboard</Text>
           <Text className="mt-1 text-[#666]">Welcome, {user?.name}</Text>
         </View>
 

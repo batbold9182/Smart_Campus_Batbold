@@ -1,5 +1,5 @@
 import api from "../config/clientAPI";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { clearToken } from "./tokenStorage";
 export const login = async (email: string, password: string) => {
   const response = await api.post("/api/auth/login", {
     email,
@@ -8,7 +8,7 @@ export const login = async (email: string, password: string) => {
   return response.data;
 };
 export const logout = async () => {
-  await AsyncStorage.removeItem("token");
+  await clearToken();
 }
 
 

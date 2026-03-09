@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "expo-router";
+import { clearToken, getToken } from "../services/tokenStorage";
 
 type UserPayload = {
   id: string;
@@ -17,7 +17,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = await AsyncStorage.getItem("token");
+        const token = await getToken();
 
         if (!token) {
           setLoading(false);
@@ -29,7 +29,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
 
         // token expired
         if (decoded.exp * 1000 < Date.now()) {
-          await AsyncStorage.removeItem("token");
+          await clearToken();
           setLoading(false);
           router.replace("/login");
           return;
@@ -45,7 +45,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
         setUser(decoded);
         setLoading(false);
       } catch (err) {
-        await AsyncStorage.removeItem("token");
+        await clearToken();
         console.error("Auth guard error:", err);
         setLoading(false);
         router.replace("/login");

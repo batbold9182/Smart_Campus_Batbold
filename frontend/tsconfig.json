@@ -17,5 +17,10 @@
     "services/attandanceService.ts",
     "services/userService.ts",
     "nativewind-env.d.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "dist",
+    "build"
   ]
 }

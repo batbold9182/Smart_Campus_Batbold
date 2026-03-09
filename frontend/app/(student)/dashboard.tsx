@@ -97,7 +97,7 @@ export default function StudentDashboard() {
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1 pr-2">
-          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Student Dashboard</Text>
+          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Dashboard</Text>
           <Text className="mt-1 text-[#666]">Welcome, {user?.name}</Text>
         </View>
 
@@ -211,9 +211,6 @@ export default function StudentDashboard() {
       </View>
 
       <View className="mt-3">
-        <TouchableOpacity className="mb-[10px] items-center rounded-lg bg-blue-500 p-[14px]" onPress={() => router.push("/(student)/profile")}>
-          <Text className="font-semibold text-white">Profile</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity className="items-center rounded-lg bg-red-500 p-[14px]" onPress={handleLogout}>
           <Text className="font-semibold text-white">Logout</Text>

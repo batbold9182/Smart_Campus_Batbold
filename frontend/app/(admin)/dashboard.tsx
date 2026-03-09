@@ -107,7 +107,7 @@ useEffect(() => {
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1 pr-2">
-          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Admin Dashboard</Text>
+          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Dashboard</Text>
           <Text className="mt-1 text-[#666]">Welcome, {user?.name}</Text>
         </View>
 
@@ -215,12 +215,14 @@ useEffect(() => {
           <Text className="mb-2 text-[30px]">🎓</Text>
           <Text className="font-semibold">Enroll Students</Text>
         </Pressable>
+
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/profile")}>
+          <Text className="mb-2 text-[30px]">👤</Text>
+          <Text className="font-semibold">Profile</Text>
+        </Pressable>
       </View>
 
       <View className="mt-3">
-        <TouchableOpacity className="mb-[10px] items-center rounded-lg bg-blue-500 p-[14px]" onPress={() => router.push("/(admin)/profile")}>
-          <Text className="font-semibold text-white">Profile</Text>
-        </TouchableOpacity>
 
         <TouchableOpacity className="items-center rounded-lg bg-red-500 p-[14px]" onPress={handleLogout}>
           <Text className="font-semibold text-white">Logout</Text>
