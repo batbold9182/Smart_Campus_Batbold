@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { View, Text, Button, FlatList, StyleSheet } from "react-native";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { getMyCourses } from "../../services/courseService";
 import { useRouter } from "expo-router";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FacultyCoursesScreen() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -17,47 +18,37 @@ export default function FacultyCoursesScreen() {
   }, []);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.header}>📚 My Courses</Text>
+    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+      <View className="flex-1 px-5 pb-4">
+        <Text className="mb-4 text-[22px] font-bold text-[#111827]">My Courses</Text>
 
-      <Button
-        title="Back to dashboard"
-        onPress={() => router.push("../dashboard")}
-      />
+        <View className="mb-4 rounded-xl bg-white p-4 shadow">
+          <Text className="text-[#6b7280]">Total Assigned Courses: {courses.length}</Text>
+        </View>
 
-      {/* COURSE LIST */}
-      <FlatList
-        data={courses}
-        keyExtractor={(item) => item._id}
-        ListEmptyComponent={<Text>No courses yet</Text>}
-        renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Text style={styles.courseTitle}>{item.title}</Text>
-            <Text>{item.code}</Text>
-          </View>
-        )}
-      />
-    </View>
+        <FlatList
+          data={courses}
+          keyExtractor={(item) => item._id}
+          ListEmptyComponent={
+            <View className="rounded-xl bg-white p-4 shadow">
+              <Text className="text-center text-[#6b7280]">No courses assigned yet</Text>
+            </View>
+          }
+          renderItem={({ item }) => (
+            <View className="mb-3 rounded-xl bg-white p-4 shadow">
+              <Text className="text-[16px] font-bold text-[#111827]">{item.title || "Untitled Course"}</Text>
+              <Text className="mt-1 text-[#6b7280]">Code: {item.code || "-"}</Text>
+            </View>
+          )}
+        />
+
+        <TouchableOpacity
+          className="mt-3 items-center rounded-lg bg-blue-500 p-[14px]"
+          onPress={() => router.push("/(faculty)/dashboard")}
+        >
+          <Text className="font-semibold text-white">Back to Dashboard</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    padding: 15,
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 12,
-  },
-  container: {
-    flex: 1,
-    padding: 16,
-  },
-  header: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 16,
-  },
-  courseTitle: {
-    fontWeight: "bold",
-  },
-});

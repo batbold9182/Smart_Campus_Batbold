@@ -172,9 +172,7 @@ export default function FacultyDashboard() {
       </View>
 
       <View className="mt-3">
-        <TouchableOpacity className="mb-[10px] items-center rounded-lg bg-blue-500 p-[14px]" onPress={() => router.push("/(faculty)/profile")}>
-          <Text className="font-semibold text-white">Profile</Text>
-        </TouchableOpacity>
+        
 
         <TouchableOpacity className="items-center rounded-lg bg-red-500 p-[14px]" onPress={handleLogout}>
           <Text className="font-semibold text-white">Logout</Text>

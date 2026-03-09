@@ -4,13 +4,12 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  StyleSheet,
   ActivityIndicator,
-  Button,
 } from "react-native";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { useFocusEffect } from "@react-navigation/native";
+import { SafeAreaView } from "react-native-safe-area-context";
 type NotificationItem = {
   _id: string;
   title: string;
@@ -62,8 +61,8 @@ export default function NotificationsScreen() {
 
   if (loading) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={styles.title}>Notifications</Text>
+      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
+        <Text className="mb-3 text-2xl font-bold text-[#111827]">Notifications</Text>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -71,88 +70,45 @@ export default function NotificationsScreen() {
 
   if (error) {
     return (
-      <View style={[styles.container, styles.center]}>
-        <Text style={styles.title}>Notifications</Text>
-        <Text style={styles.errorText}>{error}</Text>
-        <Button title="Retry" onPress={loadNotifications} />
+      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
+        <Text className="mb-3 text-2xl font-bold text-[#111827]">Notifications</Text>
+        <Text className="mb-[14px] text-[#c62828]">{error}</Text>
+        <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2" onPress={loadNotifications}>
+          <Text className="font-semibold text-white">Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Notifications</Text>
+    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+      <View className="flex-1 px-5 pb-4">
+        <Text className="mb-4 text-[22px] font-bold text-[#111827]">Notifications</Text>
 
-      <FlatList
-        data={notifications}
-        keyExtractor={(item) => item._id}
-        ListEmptyComponent={<Text style={styles.emptyText}>No notifications found</Text>}
-        renderItem={({ item }) => (
-          <TouchableOpacity
-            onPress={() => markAsRead(item._id)}
-            style={[styles.card, item.isRead ? styles.readCard : styles.unreadCard]}
-          >
-            <Text style={styles.cardTitle}>{item.title}</Text>
-            <Text style={styles.cardMessage}>{item.message}</Text>
-            <Text style={styles.cardMeta}>{item.isRead ? "Read" : "Tap to mark as read"}</Text>
-          </TouchableOpacity>
-        )}
-      />
-      <Button title ="back to dashboard" onPress={() => router.push("../dashboard")} />
-    </View>
+        <FlatList
+          data={notifications}
+          keyExtractor={(item) => item._id}
+          ListEmptyComponent={<Text className="mt-5 text-center text-[#666]">No notifications found</Text>}
+          renderItem={({ item }) => (
+            <TouchableOpacity
+              onPress={() => markAsRead(item._id)}
+              className={`mb-[10px] rounded-lg border border-[#ddd] p-3 ${item.isRead ? "bg-[#f5f5f5]" : "bg-[#e3f2fd]"}`}
+            >
+              <Text className="mb-[6px] text-[16px] font-bold text-[#111827]">{item.title}</Text>
+              <Text className="mb-2 text-[14px] text-[#333]">{item.message}</Text>
+              <Text className="text-[12px] text-[#666]">{item.isRead ? "Read" : "Tap to mark as read"}</Text>
+            </TouchableOpacity>
+          )}
+        />
+
+        <TouchableOpacity
+          className="mt-3 items-center rounded-lg bg-blue-500 p-[14px]"
+          onPress={() => router.push("/(faculty)/dashboard")}
+        >
+          <Text className="font-semibold text-white">Back to Dashboard</Text>
+        </TouchableOpacity>
+      </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#fff",
-  },
-  center: {
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-  },
-  errorText: {
-    color: "#c62828",
-    marginBottom: 14,
-  },
-  emptyText: {
-    color: "#666",
-    textAlign: "center",
-    marginTop: 20,
-  },
-  card: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 10,
-  },
-  unreadCard: {
-    backgroundColor: "#e3f2fd",
-  },
-  readCard: {
-    backgroundColor: "#f5f5f5",
-  },
-  cardTitle: {
-    fontSize: 16,
-    fontWeight: "700",
-    marginBottom: 6,
-  },
-  cardMessage: {
-    fontSize: 14,
-    color: "#333",
-    marginBottom: 8,
-  },
-  cardMeta: {
-    fontSize: 12,
-    color: "#666",
-  },
-});
 
