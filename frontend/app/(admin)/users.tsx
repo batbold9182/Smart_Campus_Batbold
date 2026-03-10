@@ -20,6 +20,7 @@ export default function AdminUsersScreen() {
   const [pagination, setPagination] = useState<any>(null);
   const [counters, setCounters] = useState<any>(null);
   const [loading, setLoading] = useState(false);
+  const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
   const router = useRouter();
 
   const loadUsers = useCallback(async () => {
@@ -65,6 +66,7 @@ export default function AdminUsersScreen() {
               onPress={() => {
                 setActiveTab(role as any);
                 setPage(1);
+                setExpandedUserId(null);
               }}
             >
               <Text className="font-bold text-[#111827]">
@@ -108,19 +110,46 @@ export default function AdminUsersScreen() {
           scrollEnabled={false}
           renderItem={({ item }) => (
             <View className="mb-[10px] rounded-lg border-b border-[#d1d5db] pb-2">
-              <Text className="mb-2 font-semibold text-[#111827]">{item.name}</Text>
-              <View className="gap-[6px]">
-                <Button
-                  title={item.isActive ? "Disable" : "Enable"}
-                  color={item.isActive ? "orange" : "green"}
-                  onPress={() => toggleUserStatus(item._id).then(loadUsers)}
-                />
-                <Button
-                  title="Delete"
-                  color="red"
-                  onPress={() => handleDelete(item._id)}
-                />
-              </View>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                onPress={() =>
+                  setExpandedUserId((prev) => (prev === item._id ? null : item._id))
+                }
+              >
+                <Text className="mb-2 font-semibold text-[#111827]">{item.name}</Text>
+                <Text className="mb-1 text-[13px] text-[#4b5563]">{item.email}</Text>
+                {activeTab === "faculty" ? (
+                  <View className="mb-2 gap-1">
+                    <Text className="text-[12px] text-[#374151]">School: {item.school || "-"}</Text>
+                    <Text className="text-[12px] text-[#374151]">Department: {item.department || "-"}</Text>
+                    <Text className="text-[12px] text-[#374151]">Title: {item.title || "-"}</Text>
+                  </View>
+                ) : (
+                  <View className="mb-2 gap-1">
+                    <Text className="text-[12px] text-[#374151]">Program: {item.program || "-"}</Text>
+                    <Text className="text-[12px] text-[#374151]">Year: {item.yearLevel || "-"}</Text>
+                    <Text className="text-[12px] text-[#374151]">Student ID: {item.studentId || "-"}</Text>
+                  </View>
+                )}
+                <Text className="mb-2 text-[12px] font-medium text-[#2563eb]">
+                  {expandedUserId === item._id ? "Hide actions" : "Show actions"}
+                </Text>
+              </TouchableOpacity>
+
+              {expandedUserId === item._id ? (
+                <View className="gap-[6px]">
+                  <Button
+                    title={item.isActive ? "Disable" : "Enable"}
+                    color={item.isActive ? "orange" : "green"}
+                    onPress={() => toggleUserStatus(item._id).then(loadUsers)}
+                  />
+                  <Button
+                    title="Delete"
+                    color="red"
+                    onPress={() => handleDelete(item._id)}
+                  />
+                </View>
+              ) : null}
             </View>
           )}
         />

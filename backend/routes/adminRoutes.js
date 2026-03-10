@@ -14,8 +14,26 @@ router.post(
   role("admin"),
   async (req, res) => {
     try {
-      const { name, email, password, role: targetRole } = req.body;
+      const {
+        name,
+        email,
+        password,
+        role: targetRole,
+        school,
+        department,
+        title,
+      } = req.body;
       const safeRole = targetRole === "student" ? "student" : "faculty";
+
+      if (!name || !email || !password) {
+        return res.status(400).json({ message: "Name, email and password are required" });
+      }
+
+      if (safeRole === "faculty" && (!school || !department || !title)) {
+        return res
+          .status(400)
+          .json({ message: "School, department and title are required for faculty" });
+      }
 
       const exists = await User.findOne({ email });
       if (exists)
@@ -28,6 +46,9 @@ router.post(
         email,
         password: hashed,
         role: safeRole,
+        school: safeRole === "faculty" ? String(school).trim() : null,
+        department: safeRole === "faculty" ? String(department).trim() : null,
+        title: safeRole === "faculty" ? String(title).trim() : null,
       });
 
       const roleLabel = safeRole === "student" ? "Student" : "Faculty";
@@ -39,6 +60,9 @@ router.post(
           name: createdUser.name,
           email: createdUser.email,
           role: createdUser.role,
+          school: createdUser.school,
+          department: createdUser.department,
+          title: createdUser.title,
         },
       });
     } catch (err) {

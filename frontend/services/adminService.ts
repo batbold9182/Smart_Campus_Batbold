@@ -7,13 +7,19 @@ export const createFaculty = async (
   name: string,
   email: string,
   password: string,
-  role: "faculty" | "student" = "faculty"
+  role: "faculty" | "student" = "faculty",
+  profile?: {
+    school?: string;
+    department?: string;
+    title?: string;
+  }
 ) => {
   const res = await api.post("/api/admin/create-faculty", {
     name,
     email,
     password,
     role,
+    ...(profile || {}),
   });
   return res.data;
 };

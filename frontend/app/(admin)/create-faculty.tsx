@@ -8,6 +8,9 @@ export default function CreateFacultyScreen() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [school, setSchool] = useState("");
+  const [department, setDepartment] = useState("");
+  const [facultyTitle, setFacultyTitle] = useState("");
   const [message, setMessage] = useState("");
   const router = useRouter();
 
@@ -17,16 +20,27 @@ export default function CreateFacultyScreen() {
       return;
     }
 
+    if (selectedRole === "faculty" && (!school.trim() || !department.trim() || !facultyTitle.trim())) {
+      setMessage("❌ School, department and title are required for faculty");
+      return;
+    }
+
     try {
-      await createFaculty(name.trim(), email.trim(), password, selectedRole);
+      await createFaculty(name.trim(), email.trim(), password, selectedRole, {
+        school: selectedRole === "faculty" ? school.trim() : undefined,
+        department: selectedRole === "faculty" ? department.trim() : undefined,
+        title: selectedRole === "faculty" ? facultyTitle.trim() : undefined,
+      });
       setMessage(`✅ ${selectedRole === "student" ? "Student" : "Faculty"} created`);
       setName("");
       setEmail("");
       setPassword("");
+      setSchool("");
+      setDepartment("");
+      setFacultyTitle("");
     } catch (err: any) {
-      setMessage(
-        `❌ Failed to create ${selectedRole === "student" ? "student" : "faculty"}`
-      );
+      const serverMessage = err?.response?.data?.message;
+      setMessage(serverMessage ? `❌ ${serverMessage}` : `❌ Failed to create ${selectedRole === "student" ? "student" : "faculty"}`);
       console.log(err.response?.data || err.message);
     }
   };
@@ -46,7 +60,10 @@ export default function CreateFacultyScreen() {
                 ? "border-[#2563eb] bg-[#dbeafe]"
                 : "border-[#d1d5db] bg-white"
             }`}
-            onPress={() => setSelectedRole("faculty")}
+            onPress={() => {
+              setSelectedRole("faculty");
+              setMessage("");
+            }}
           >
             <Text className="font-semibold text-[#111827]">Faculty</Text>
           </TouchableOpacity>
@@ -56,7 +73,10 @@ export default function CreateFacultyScreen() {
                 ? "border-[#2563eb] bg-[#dbeafe]"
                 : "border-[#d1d5db] bg-white"
             }`}
-            onPress={() => setSelectedRole("student")}
+            onPress={() => {
+              setSelectedRole("student");
+              setMessage("");
+            }}
           >
             <Text className="font-semibold text-[#111827]">Student</Text>
           </TouchableOpacity>
@@ -64,6 +84,28 @@ export default function CreateFacultyScreen() {
 
         <TextInput placeholder="Name" value={name} onChangeText={setName} className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3" />
         <TextInput placeholder="Email" value={email} onChangeText={setEmail} className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3" />
+        {selectedRole === "faculty" ? (
+          <>
+            <TextInput
+              placeholder="School / Faculty (e.g. Engineering)"
+              value={school}
+              onChangeText={setSchool}
+              className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3"
+            />
+            <TextInput
+              placeholder="Department (e.g. Computer Science)"
+              value={department}
+              onChangeText={setDepartment}
+              className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3"
+            />
+            <TextInput
+              placeholder="Title (e.g. Instructor)"
+              value={facultyTitle}
+              onChangeText={setFacultyTitle}
+              className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3"
+            />
+          </>
+        ) : null}
         <TextInput placeholder="Password" value={password} onChangeText={setPassword} secureTextEntry className="mb-4 rounded-lg border border-[#d1d5db] bg-white px-3 py-3" />
 
         <View className="mb-2">
