@@ -6,12 +6,14 @@ export const unenrollStudent = async (enrollmentId: string) => {
 export const createFaculty = async (
   name: string,
   email: string,
-  password: string
+  password: string,
+  role: "faculty" | "student" = "faculty"
 ) => {
   const res = await api.post("/api/admin/create-faculty", {
     name,
     email,
     password,
+    role,
   });
   return res.data;
 };

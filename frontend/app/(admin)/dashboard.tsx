@@ -1,4 +1,4 @@
-import { View, Text, Pressable, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, useWindowDimensions} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useEffect, useState } from "react";
@@ -10,7 +10,10 @@ import { formatTime, formatDate } from "../../services/clockService";
 import api from "../../config/clientAPI";
 
 export default function AdminDashboard() {
+  const { width } = useWindowDimensions();
   const { loading, user: authUser } = useAuthGuard();
+    const headerLogoSize = width >= 1024 ? 30 : width >= 768 ? 34 : 38;
+
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const [count , setCount] = useState(0); 
@@ -105,30 +108,40 @@ useEffect(() => {
   return (
     <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
-      <View className="mb-4 flex-row items-start justify-between">
-        <View className="flex-1 pr-2">
-          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Dashboard</Text>
-          <Text className="mt-1 text-[#666]">Welcome, {user?.name}</Text>
-        </View>
+        <View className="mb-4 flex-row items-center justify-between">
+  
+  <View className="flex-row items-center">
+    <Image
+      source={require("../../assets/images/Logo_VIZJA.png")}
+      className="mr-2"
+      style={{ width: headerLogoSize, height: headerLogoSize }}
+      resizeMode="contain"
+    />
+    <View>
+      <Text className="text-[20px] font-bold text-[#111827]">Admin Panel</Text>
+      <Text className="text-[#666] text-[12px]">Welcome, {user?.name}</Text>
+    </View>
+  </View>
 
-        <View className="flex-row items-center">
-          <View className="mr-3 items-end">
-            <Text className="text-[18px] font-bold text-[#111827]">{formatTime(time)}</Text>
-            <Text className="text-[12px] text-[#666]">{formatDate(time)}</Text>
+  <View className="flex-row items-center">
+    <View className="mr-3 items-end">
+      <Text className="text-[16px] font-bold text-[#111827]">{formatTime(time)}</Text>
+      <Text className="text-[11px] text-[#666]">{formatDate(time)}</Text>
+    </View>
+
+    <TouchableOpacity onPress={() => router.push("/(admin)/notifications")}>
+      <View className="relative">
+        <Text className="text-[24px]">🔔</Text>
+        {count > 0 && (
+          <View className="absolute -right-[6px] -top-1 rounded-full bg-red-500 px-[6px]">
+            <Text className="text-[11px] font-bold text-white">{count}</Text>
           </View>
-
-          <TouchableOpacity onPress={() => router.push("/(admin)/notifications")}>
-            <View className="relative">
-              <Text className="text-[26px]">🔔</Text>
-              {count > 0 && (
-                <View className="absolute -right-[6px] -top-1 rounded-full bg-red-500 px-[6px]">
-                  <Text className="text-[12px] font-bold text-white">{count}</Text>
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
-        </View>
+        )}
       </View>
+    </TouchableOpacity>
+  </View>
+
+</View>
 
       <View className="mb-4 flex-row justify-between gap-2">
         <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
@@ -152,9 +165,6 @@ useEffect(() => {
           <View className="items-center gap-2 py-[10px]">
             <Text className="text-[28px]">🗓️</Text>
             <Text className="text-[#888]">No classes scheduled today</Text>
-            <TouchableOpacity className="rounded-lg bg-blue-500 px-[14px] py-2" onPress={() => router.push("/(admin)/create-schedule")}>
-              <Text className="font-semibold text-white">Create Schedule</Text>
-            </TouchableOpacity>
           </View>
         ) : (
           todaySchedule.map((item, index) => {
@@ -203,7 +213,7 @@ useEffect(() => {
 
         <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-faculty")}>
           <Text className="mb-2 text-[30px]">👨‍🏫</Text>
-          <Text className="font-semibold">Create Faculty</Text>
+          <Text className="font-semibold">Create User</Text>
         </Pressable>
 
         <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/users")}>

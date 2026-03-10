@@ -10,6 +10,7 @@ import {
   Platform,
   Image,
   ScrollView,
+  useWindowDimensions,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { login } from "../../services/authService";
@@ -18,7 +19,10 @@ import { setToken } from "../../services/tokenStorage";
 
 
 export default function LoginScreen() {
+  const { width } = useWindowDimensions();
   const [email, setEmail] = useState("");
+    const logoSize = Math.max(68, Math.min(96, Math.round(width * 0.12)));
+
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -96,7 +100,7 @@ export default function LoginScreen() {
           <View style={styles.card}>
             <Image
               source={require("../../assets/images/Logo_VIZJA.png")}
-              style={styles.logo}
+              style={[styles.logo, { width: logoSize, height: logoSize }]}
               resizeMode="contain"
             />
             <Text style={styles.brand}>Vizja Smart Campus</Text>
@@ -168,8 +172,6 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   logo:{
-    width: 120,
-    height: 120,
     alignSelf: "center",
     marginBottom: 8,
   },
