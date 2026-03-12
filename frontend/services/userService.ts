@@ -5,3 +5,8 @@ export const getProfile = async () => {
   return response.data;
 };
 
+export const updateMyProfilePicture = async (profile: string) => {
+  const response = await api.patch("/api/protected/profile/picture", { profile });
+  return response.data;
+};
+

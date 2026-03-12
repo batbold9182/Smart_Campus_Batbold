@@ -7,6 +7,7 @@ const UserSchema = new mongoose.Schema(
     password: String,
     profile: {
       type: String,
+      required: true,
       default: "defaultProfile.png",
       trim: true,
     },

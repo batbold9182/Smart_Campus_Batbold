@@ -12,6 +12,10 @@ export const createFaculty = async (
     school?: string;
     department?: string;
     title?: string;
+    profile?: string;
+    studentId?: string;
+    program?: string;
+    yearLevel?: number;
   }
 ) => {
   const res = await api.post("/api/admin/create-faculty", {
@@ -39,4 +43,9 @@ export const deleteUser = async (id: string) => {
 export const toggleUserStatus = async (id: string) => {
     const res = await api.patch(`/api/admin/users/${id}/toggle`);
     return res.data;
+};
+
+export const getAcademicOptions = async () => {
+  const res = await api.get("/api/admin/academic-options");
+  return res.data;
 };

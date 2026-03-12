@@ -4,8 +4,23 @@ const User = require("../models/user");
 const Course = require("../models/course");
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
+const academicHierarchy = require("../config/academicHierarchy");
 
 const router = express.Router();
+
+const isValidAcademicSelection = (school, department, program) => {
+  if (!school || !department) return false;
+  const departments = academicHierarchy[school];
+  if (!departments) return false;
+  const programs = departments[department];
+  if (!programs) return false;
+  if (!program) return true;
+  return programs.includes(program);
+};
+
+router.get("/academic-options", auth, role("admin"), async (req, res) => {
+  return res.json(academicHierarchy);
+});
 
 // ✅ Admin creates faculty or student
 router.post(
@@ -22,8 +37,16 @@ router.post(
         school,
         department,
         title,
+        studentId,
+        program,
+        yearLevel,
+        profile,
       } = req.body;
       const safeRole = targetRole === "student" ? "student" : "faculty";
+      const resolvedProfile =
+        typeof profile === "string" && profile.trim().length > 0
+          ? profile.trim()
+          : "defaultProfile.png";
 
       if (!name || !email || !password) {
         return res.status(400).json({ message: "Name, email and password are required" });
@@ -33,6 +56,20 @@ router.post(
         return res
           .status(400)
           .json({ message: "School, department and title are required for faculty" });
+      }
+
+      if (safeRole === "faculty" && !isValidAcademicSelection(school, department)) {
+        return res.status(400).json({ message: "Invalid school or department selection" });
+      }
+
+      if (safeRole === "student" && (!school || !department || !program || !studentId || !yearLevel)) {
+        return res
+          .status(400)
+          .json({ message: "School, department, program, student ID and year level are required for student" });
+      }
+
+      if (safeRole === "student" && !isValidAcademicSelection(school, department, program)) {
+        return res.status(400).json({ message: "Invalid school, department or program selection" });
       }
 
       const exists = await User.findOne({ email });
@@ -46,9 +83,13 @@ router.post(
         email,
         password: hashed,
         role: safeRole,
-        school: safeRole === "faculty" ? String(school).trim() : null,
-        department: safeRole === "faculty" ? String(department).trim() : null,
+        profile: resolvedProfile,
+        school: safeRole === "faculty" || safeRole === "student" ? String(school).trim() : null,
+        department: safeRole === "faculty" || safeRole === "student" ? String(department).trim() : null,
         title: safeRole === "faculty" ? String(title).trim() : null,
+        studentId: safeRole === "student" ? String(studentId).trim() : null,
+        program: safeRole === "student" ? String(program).trim() : null,
+        yearLevel: safeRole === "student" ? Number(yearLevel) : null,
       });
 
       const roleLabel = safeRole === "student" ? "Student" : "Faculty";
@@ -60,9 +101,13 @@ router.post(
           name: createdUser.name,
           email: createdUser.email,
           role: createdUser.role,
+          profile: createdUser.profile,
           school: createdUser.school,
           department: createdUser.department,
           title: createdUser.title,
+          studentId: createdUser.studentId,
+          program: createdUser.program,
+          yearLevel: createdUser.yearLevel,
         },
       });
     } catch (err) {
