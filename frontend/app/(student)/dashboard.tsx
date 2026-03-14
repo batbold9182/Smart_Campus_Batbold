@@ -64,7 +64,7 @@ export default function StudentDashboard() {
 
   const handleLogout = async () => {
     await logout();
-    router.replace("/login");
+    router.replace("/(auth)/login");
   };
 
   useEffect(() => {
@@ -72,7 +72,7 @@ export default function StudentDashboard() {
       const profile = await getProfile();
 
       if (profile.role !== "student") {
-        router.replace("/profile");
+        router.replace("/(auth)/login");
         return;
       }
 

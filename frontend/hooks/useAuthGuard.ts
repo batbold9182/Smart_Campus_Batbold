@@ -21,7 +21,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
 
         if (!token) {
           setLoading(false);
-          router.replace("/login");
+          router.replace("/(auth)/login");
           return;
         }
 
@@ -31,14 +31,14 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
         if (decoded.exp * 1000 < Date.now()) {
           await clearToken();
           setLoading(false);
-          router.replace("/login");
+          router.replace("/(auth)/login");
           return;
         }
 
         // role mismatch
         if (requiredRole && decoded.role !== requiredRole) {
           setLoading(false);
-          router.replace("/login");
+          router.replace("/(auth)/login");
           return;
         }
 
@@ -48,7 +48,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
         await clearToken();
         console.error("Auth guard error:", err);
         setLoading(false);
-        router.replace("/login");
+        router.replace("/(auth)/login");
       }
     };
 

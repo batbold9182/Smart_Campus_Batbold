@@ -41,7 +41,7 @@ export default function FacultyDashboard() {
       const profile = await getProfile();
 
       if (profile.role !== "faculty") {
-        router.replace("/profile");
+        router.replace("/(auth)/login");
         return;
       }
 
@@ -55,7 +55,7 @@ export default function FacultyDashboard() {
 
   const handleLogout = async () => {
     await logout();
-    router.replace("/login");
+    router.replace("/(auth)/login");
   }
 
   if (loading) {

@@ -72,11 +72,11 @@ useEffect(() => {
 
   const handleLogout = async () => {
     await logout();
-    router.replace("/login");
+    router.replace("/(auth)/login");
   }
   useEffect(() => {
     if (!loading && !authUser) {
-      router.replace("/login");
+      router.replace("/(auth)/login");
     }
   }, [authUser, loading, router]);
 
@@ -85,7 +85,7 @@ useEffect(() => {
       const profile = await getProfile();
 
       if (profile.role !== "admin") {
-        router.replace("/profile");
+        router.replace("/(auth)/login");
         return;
       }
 
