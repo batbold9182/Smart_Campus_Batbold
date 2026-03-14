@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import { updateMyProfilePicture, type AppUserProfile } from "../services/userService";
+import { theme } from "../styles/theme";
 
 const isRenderableImageUri = (value: string) => {
   const uri = value.trim().toLowerCase();
@@ -222,7 +223,7 @@ const styles = StyleSheet.create({
   card: {
     padding: 20,
     borderRadius: 8,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: theme.colors.appBg,
     marginTop: 20,
   },
   title: {
@@ -240,54 +241,54 @@ const styles = StyleSheet.create({
   helperText: {
     marginBottom: 10,
     textAlign: "center",
-    color: "#4b5563",
+    color: theme.colors.muted,
     fontSize: 12,
   },
   fieldText: {
-    color: "#111827",
+    color: theme.colors.text,
     marginBottom: 2,
   },
   sectionWrap: {
     marginTop: 10,
     paddingTop: 8,
     borderTopWidth: 1,
-    borderTopColor: "#e5e7eb",
+    borderTopColor: theme.colors.border,
   },
   sectionTitle: {
     fontWeight: "700",
     marginBottom: 4,
-    color: "#1f2937",
+    color: theme.colors.text,
   },
   actionsBox: {
     marginTop: 8,
   },
   button: {
     marginTop: 8,
-    backgroundColor: "#2563eb",
+    backgroundColor: theme.colors.primary,
     borderRadius: 8,
     alignItems: "center",
     paddingVertical: 10,
   },
   buttonText: {
-    color: "#fff",
+    color: theme.colors.surface,
     fontWeight: "600",
   },
   message: {
     marginTop: 8,
-    color: "#374151",
+    color: theme.colors.muted,
     textAlign: "center",
   },
   secondaryButton: {
     marginTop: 8,
     borderWidth: 1,
-    borderColor: "#d1d5db",
+    borderColor: theme.colors.border,
     borderRadius: 8,
     alignItems: "center",
     paddingVertical: 10,
-    backgroundColor: "#fff",
+    backgroundColor: theme.colors.surface,
   },
   secondaryButtonText: {
-    color: "#111827",
+    color: theme.colors.text,
     fontWeight: "600",
   },
 });

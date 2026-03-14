@@ -17,6 +17,7 @@ import {
 } from "../../services/courseService";
 import { getUsers } from "../../services/adminService";
 import { adminStyles } from "../../styles/adminStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Faculty = {
   _id: string;
@@ -144,7 +145,8 @@ export default function AdminCreateCourse() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
+    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
       <View className={adminStyles.card}>
         <Text className="mb-3 text-[22px] font-bold text-[#111827]">Create Course</Text>
 
@@ -235,5 +237,6 @@ export default function AdminCreateCourse() {
         <Button title="Back to dashboard" onPress={() => router.push("../dashboard")} />
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }

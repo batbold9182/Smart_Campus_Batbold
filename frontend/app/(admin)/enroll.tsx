@@ -11,6 +11,7 @@ import { Picker } from "@react-native-picker/picker";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { adminStyles } from "../../styles/adminStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AdminEnrollScreen() {
   const router = useRouter();
@@ -142,8 +143,8 @@ export default function AdminEnrollScreen() {
 
   if (initialLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
-        <Text className="mb-4 text-2xl font-bold text-[#111827]">🎓 Enroll Student</Text>
+      <View className="flex-1 items-center justify-center bg-app-bg p-5">
+        <Text className="mb-4 text-2xl font-bold text-app-text">🎓 Enroll Student</Text>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -151,8 +152,8 @@ export default function AdminEnrollScreen() {
 
   if (loadError) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
-        <Text className="mb-4 text-2xl font-bold text-[#111827]">🎓 Enroll Student</Text>
+      <View className="flex-1 items-center justify-center bg-app-bg p-5">
+        <Text className="mb-4 text-2xl font-bold text-app-text">🎓 Enroll Student</Text>
         <Text className="mb-3 text-[#c62828]">{loadError}</Text>
         <Button title="Retry" onPress={loadData} />
       </View>
@@ -160,15 +161,17 @@ export default function AdminEnrollScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
-      <View className={adminStyles.card}>
-      <Text className="mb-5 text-2xl font-bold text-[#111827]">🎓 Enroll Student</Text>
+    
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6">
+        <View className={adminStyles.card}>
+        <Text className="mb-5 text-2xl font-bold text-app-text">🎓 Enroll Student</Text>
 
       {!!enrollError && <Text className="mb-3 text-[#c62828]">{enrollError}</Text>}
       {!!enrollSuccess && <Text className="mb-3 text-[#2e7d32]">{enrollSuccess}</Text>}
 
-      <Text className="mb-2 text-[16px] text-[#111827]">Select Student</Text>
-      <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
+      <Text className="mb-2 text-[16px] text-app-text">Select Student</Text>
+      <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
         <Picker
           selectedValue={studentId}
           onValueChange={(value) => setStudentId(value)}
@@ -185,8 +188,8 @@ export default function AdminEnrollScreen() {
         </Picker>
       </View>
 
-      <Text className="mb-2 text-[16px] text-[#111827]">Select Course</Text>
-      <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
+      <Text className="mb-2 text-[16px] text-app-text">Select Course</Text>
+      <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
         <Picker
           selectedValue={courseId}
           onValueChange={(value) => setCourseId(value)}
@@ -224,9 +227,9 @@ export default function AdminEnrollScreen() {
 
       {showEnrollments && (
         <>
-          <Text className="mb-2 mt-6 text-[20px] font-bold text-[#111827]">Enrollments List</Text>
-          <Text className="mb-2 text-[16px] text-[#111827]">View by Course</Text>
-          <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
+          <Text className="mb-2 mt-6 text-[20px] font-bold text-app-text">Enrollments List</Text>
+          <Text className="mb-2 text-[16px] text-app-text">View by Course</Text>
+          <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
             <Picker
               selectedValue={viewCourseId}
               onValueChange={(value) => setViewCourseId(value)}
@@ -244,10 +247,10 @@ export default function AdminEnrollScreen() {
           </View>
 
           {filteredEnrollments.length === 0 ? (
-            <Text className="mb-3 text-[#666]">No enrollments found</Text>
+            <Text className="mb-3 text-app-muted">No enrollments found</Text>
           ) : (
             filteredEnrollments.map((enrollment) => (
-              <View key={enrollment._id} className="mb-3 gap-2 rounded-lg border border-[#ddd] p-[10px]">
+              <View key={enrollment._id} className="mb-3 gap-2 rounded-lg border border-app-border p-[10px]">
                 <Text className="text-[14px]">
                   {enrollment.student?.name || "Unknown Student"} → {enrollment.course?.title || "Unknown Course"}
                 </Text>
@@ -269,5 +272,6 @@ export default function AdminEnrollScreen() {
          />
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }

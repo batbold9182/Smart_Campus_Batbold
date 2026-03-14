@@ -16,19 +16,19 @@ export default function StudentProfile() {
 
   if (loading || !user) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f5f7fb]">
+      <View className="flex-1 items-center justify-center bg-app-bg">
         <ActivityIndicator size="large" />
-        <Text className="mt-2 text-[#6b7280]">Loading profile...</Text>
+        <Text className="mt-2 text-app-muted">Loading profile...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">My Profile</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">My Profile</Text>
 
-        <View className="rounded-xl bg-white p-4 shadow">
+        <View className="rounded-xl bg-app-surface p-4 shadow">
           <ProfileCard user={user} />
         </View>
 

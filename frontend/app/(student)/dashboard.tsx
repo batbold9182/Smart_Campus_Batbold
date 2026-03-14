@@ -85,7 +85,7 @@ export default function StudentDashboard() {
   }, [authUser, router]);
 
   if (loading) {
-    return <Text className="flex-1 pt-20 text-center text-[18px] text-[#666]">Loading dashboard...</Text>;
+    return <Text className="flex-1 pt-20 text-center text-[18px] text-app-muted">Loading dashboard...</Text>;
   }
 
   if (!authUser || !user) {
@@ -93,18 +93,18 @@ export default function StudentDashboard() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
       <View className="mb-4 flex-row items-start justify-between">
         <View className="flex-1 pr-2">
-          <Text className="text-[22px] font-bold text-[#111827]" numberOfLines={1}>Dashboard</Text>
-          <Text className="mt-1 text-[#666]">Welcome, {user?.name}</Text>
+          <Text className="text-[22px] font-bold text-app-text" numberOfLines={1}>Dashboard</Text>
+          <Text className="mt-1 text-app-muted">Welcome, {user?.name}</Text>
         </View>
 
         <View className="flex-row items-center">
           <View className="mr-3 items-end">
-            <Text className="text-[18px] font-bold text-[#111827]">{formatTime(time)}</Text>
-            <Text className="text-[12px] text-[#666]">{formatDate(time)}</Text>
+            <Text className="text-[18px] font-bold text-app-text">{formatTime(time)}</Text>
+            <Text className="text-[12px] text-app-muted">{formatDate(time)}</Text>
           </View>
 
           <TouchableOpacity onPress={() => router.push("/(student)/notifications")}>
@@ -122,27 +122,27 @@ export default function StudentDashboard() {
       </View>
 
       <View className="mb-4 flex-row justify-between gap-2">
-        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-[#111827]">{todaySchedule.length}</Text>
-          <Text className="mt-1 text-[11px] text-[#6b7280]">Today Classes</Text>
+        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-app-text">{todaySchedule.length}</Text>
+          <Text className="mt-1 text-[11px] text-app-muted">Today Classes</Text>
         </View>
-        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-[#111827]">{count}</Text>
-          <Text className="mt-1 text-[11px] text-[#6b7280]">Unread Alerts</Text>
+        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-app-text">{count}</Text>
+          <Text className="mt-1 text-[11px] text-app-muted">Unread Alerts</Text>
         </View>
-        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-[#111827]">Student</Text>
-          <Text className="mt-1 text-[11px] text-[#6b7280]">Role</Text>
+        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-app-text">Student</Text>
+          <Text className="mt-1 text-[11px] text-app-muted">Role</Text>
         </View>
       </View>
 
-      <View className="mb-[22px] rounded-xl bg-white p-4 shadow">
-        <Text className="mb-[10px] text-[18px] font-bold text-[#111827]">Today&apos;s Schedule</Text>
+      <View className="mb-[22px] rounded-xl bg-app-surface p-4 shadow">
+        <Text className="mb-[10px] text-[18px] font-bold text-app-text">Today&apos;s Schedule</Text>
 
         {todaySchedule.length === 0 ? (
           <View className="items-center gap-2 py-[10px]">
             <Text className="text-[28px]">🗓️</Text>
-            <Text className="text-[#888]">No classes scheduled today</Text>
+            <Text className="text-app-muted">No classes scheduled today</Text>
             <TouchableOpacity className="rounded-lg bg-blue-500 px-[14px] py-2" onPress={() => router.push("/(student)/schedule")}>
               <Text className="font-semibold text-white">Open Full Schedule</Text>
             </TouchableOpacity>
@@ -152,12 +152,12 @@ export default function StudentDashboard() {
             const status = getScheduleStatus(item.startTime, item.endTime);
 
             return (
-              <View key={index} className="mb-3 flex-row items-center border-b border-[#edf0f4] pb-[10px]">
-                <Text className="mr-3 w-[90px] font-bold text-[#111827]">{item.startTime}-{item.endTime}</Text>
+              <View key={index} className="mb-3 flex-row items-center border-b border-app-border pb-[10px]">
+                <Text className="mr-3 w-[90px] font-bold text-app-text">{item.startTime}-{item.endTime}</Text>
                 <View className="flex-1">
-                  <Text className="font-semibold text-[#111827]">{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
+                  <Text className="font-semibold text-app-text">{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
                   <Text className="mt-[2px] text-[12px] text-[#374151]">Prof: {item.faculty?.name || "Unassigned"}</Text>
-                  <Text className="text-[12px] text-[#666]">{item.room}</Text>
+                  <Text className="text-[12px] text-app-muted">{item.room}</Text>
                 </View>
                 <View
                   className={`rounded-full px-[10px] py-1 ${
@@ -174,7 +174,7 @@ export default function StudentDashboard() {
 
       <View className="mt-[2px] flex-row flex-wrap justify-between">
         <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
           style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
           onPress={() => router.push("/(student)/schedule")}
         >
@@ -183,7 +183,7 @@ export default function StudentDashboard() {
         </Pressable>
 
         <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
           style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
           onPress={() => router.push("/(student)/notifications")}
         >
@@ -192,7 +192,7 @@ export default function StudentDashboard() {
         </Pressable>
 
         <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
           style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
           onPress={() => router.push("../profile")}
         >
@@ -201,7 +201,7 @@ export default function StudentDashboard() {
         </Pressable>
 
         <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow"
+          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
           style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
           onPress={() => router.push("/(student)/randomChat")}
         >

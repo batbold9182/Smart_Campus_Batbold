@@ -11,6 +11,7 @@ import {
 import { getUsers, deleteUser, toggleUserStatus } from "../../services/adminService";
 import { useRouter } from "expo-router";
 import { adminStyles } from "../../styles/adminStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AdminUsersScreen() {
   const [users, setUsers] = useState<any[]>([]);
@@ -52,9 +53,10 @@ export default function AdminUsersScreen() {
 );
 
   return (
-    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
-      <View className={adminStyles.card}>
-        <Text className="mb-3 text-[22px] font-bold text-[#111827]">👥 User Management</Text>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6">
+        <View className={adminStyles.card}>
+          <Text className="mb-3 text-[22px] font-bold text-app-text">👥 User Management</Text>
 
         <View className="mb-3 flex-row">
           {["faculty", "student"].map((role) => (
@@ -69,7 +71,7 @@ export default function AdminUsersScreen() {
                 setExpandedUserId(null);
               }}
             >
-              <Text className="font-bold text-[#111827]">
+              <Text className="font-bold text-app-text">
                 {role === "faculty" ? "Faculty" : "Students"}
               </Text>
             </TouchableOpacity>
@@ -100,23 +102,23 @@ export default function AdminUsersScreen() {
           placeholder={`Search ${activeTab}`}
           value={search}
           onChangeText={setSearch}
-          className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3"
+          className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3"
         />
-        {loading && <Text className="mb-2 text-[#6b7280]">Loading users...</Text>}
+        {loading && <Text className="mb-2 text-app-muted">Loading users...</Text>}
 
         <FlatList
           data={filteredUsers}
           keyExtractor={(item) => item._id}
           scrollEnabled={false}
           renderItem={({ item }) => (
-            <View className="mb-[10px] rounded-lg border-b border-[#d1d5db] pb-2">
+            <View className="mb-[10px] rounded-lg border-b border-app-border pb-2">
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
                   setExpandedUserId((prev) => (prev === item._id ? null : item._id))
                 }
               >
-                <Text className="mb-2 font-semibold text-[#111827]">{item.name}</Text>
+                <Text className="mb-2 font-semibold text-app-text">{item.name}</Text>
                 <Text className="mb-1 text-[13px] text-[#4b5563]">{item.email}</Text>
                 {activeTab === "faculty" ? (
                   <View className="mb-2 gap-1">
@@ -157,5 +159,6 @@ export default function AdminUsersScreen() {
         <Button title="Go Back" onPress={() => router.push("../dashboard")} />
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }

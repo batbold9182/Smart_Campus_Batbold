@@ -9,6 +9,7 @@ import {
 import { useRouter } from "expo-router";
 import { unassignSchedule } from "@/services/scheduleService";
 import { adminStyles } from "../../styles/adminStyles";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AssignScheduleScreen() {
   const [students, setStudents] = useState<any[]>([]);
@@ -80,7 +81,7 @@ export default function AssignScheduleScreen() {
   };
 
   return (
-    <View className={adminStyles.screen}>
+    <SafeAreaView className={adminStyles.screen} edges={["top"]}>
       <View className={adminStyles.card}>
         <Text className="mb-3 text-[22px] font-bold text-[#111827]">🧑‍🎓 Assign Schedule</Text>
 
@@ -126,6 +127,6 @@ export default function AssignScheduleScreen() {
           />
         </View>
       </View>
-    </View>
+    </SafeAreaView>
   );
 }

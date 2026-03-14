@@ -98,7 +98,7 @@ useEffect(() => {
   }, [authUser, router]);
 
   if (loading) {
-    return <Text className="flex-1 pt-20 text-center text-[18px] text-[#666]">Loading admin panel...</Text>;
+    return <Text className="flex-1 pt-20 text-center text-[18px] text-app-muted">Loading admin panel...</Text>;
   }
 
   if (!authUser || !user) {
@@ -106,7 +106,7 @@ useEffect(() => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
         <View className="mb-4 flex-row items-center justify-between">
   
@@ -118,15 +118,15 @@ useEffect(() => {
       resizeMode="contain"
     />
     <View>
-      <Text className="text-[20px] font-bold text-[#111827]">Admin Panel</Text>
-      <Text className="text-[#666] text-[12px]">Welcome, {user?.name}</Text>
+      <Text className="text-[20px] font-bold text-app-text">Admin Panel</Text>
+      <Text className="text-app-muted text-[12px]">Welcome, {user?.name}</Text>
     </View>
   </View>
 
   <View className="flex-row items-center">
     <View className="mr-3 items-end">
-      <Text className="text-[16px] font-bold text-[#111827]">{formatTime(time)}</Text>
-      <Text className="text-[11px] text-[#666]">{formatDate(time)}</Text>
+      <Text className="text-[16px] font-bold text-app-text">{formatTime(time)}</Text>
+      <Text className="text-[11px] text-app-muted">{formatDate(time)}</Text>
     </View>
 
     <TouchableOpacity onPress={() => router.push("/(admin)/notifications")}>
@@ -144,39 +144,39 @@ useEffect(() => {
 </View>
 
       <View className="mb-4 flex-row justify-between gap-2">
-        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-[#111827]">{todaySchedule.length}</Text>
-          <Text className="mt-1 text-[11px] text-[#6b7280]">Today Classes</Text>
+        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-app-text">{todaySchedule.length}</Text>
+          <Text className="mt-1 text-[11px] text-app-muted">Today Classes</Text>
         </View>
-        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-[#111827]">{count}</Text>
-          <Text className="mt-1 text-[11px] text-[#6b7280]">Unread Alerts</Text>
+        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-app-text">{count}</Text>
+          <Text className="mt-1 text-[11px] text-app-muted">Unread Alerts</Text>
         </View>
-        <View className="flex-1 items-center rounded-xl bg-white py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-[#111827]">Admin</Text>
-          <Text className="mt-1 text-[11px] text-[#6b7280]">Role</Text>
+        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
+          <Text className="text-[16px] font-bold text-app-text">Admin</Text>
+          <Text className="mt-1 text-[11px] text-app-muted">Role</Text>
         </View>
       </View>
 
-      <View className="mb-[22px] rounded-xl bg-white p-4 shadow">
-        <Text className="mb-[10px] text-[18px] font-bold text-[#111827]">📅 Todays Schedule</Text>
+      <View className="mb-[22px] rounded-xl bg-app-surface p-4 shadow">
+        <Text className="mb-[10px] text-[18px] font-bold text-app-text">📅 Todays Schedule</Text>
 
         {todaySchedule.length === 0 ? (
           <View className="items-center gap-2 py-[10px]">
             <Text className="text-[28px]">🗓️</Text>
-            <Text className="text-[#888]">No classes scheduled today</Text>
+            <Text className="text-app-muted">No classes scheduled today</Text>
           </View>
         ) : (
           todaySchedule.map((item, index) => {
             const status = getScheduleStatus(item.startTime, item.endTime);
 
             return (
-              <View key={index} className="mb-3 flex-row items-center border-b border-[#edf0f4] pb-[10px]">
-                <Text className="mr-3 w-[90px] font-bold text-[#111827]">{item.startTime}-{item.endTime}</Text>
+              <View key={index} className="mb-3 flex-row items-center border-b border-app-border pb-[10px]">
+                <Text className="mr-3 w-[90px] font-bold text-app-text">{item.startTime}-{item.endTime}</Text>
                 <View className="flex-1">
-                  <Text className="font-semibold text-[#111827]">{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
+                  <Text className="font-semibold text-app-text">{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
                   <Text className="mt-[2px] text-[12px] text-[#374151]">Prof: {item.faculty?.name || "Unassigned"}</Text>
-                  <Text className="text-[12px] text-[#666]">{item.room}</Text>
+                  <Text className="text-[12px] text-app-muted">{item.room}</Text>
                 </View>
                 <View
                   className={`rounded-full px-[10px] py-1 ${
@@ -196,37 +196,37 @@ useEffect(() => {
       </View>
 
       <View className="mt-[2px] flex-row flex-wrap justify-between">
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-course")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-course")}>
           <Text className="mb-2 text-[30px]">📚</Text>
           <Text className="font-semibold">Manage Courses</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-schedule")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-schedule")}>
           <Text className="mb-2 text-[30px]">➕</Text>
           <Text className="font-semibold">Create Schedule</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/assignSchedule")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/assignSchedule")}>
           <Text className="mb-2 text-[30px]">📅</Text>
           <Text className="font-semibold">Assign Schedule</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../create-user")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../create-user")}>
           <Text className="mb-2 text-[30px]">👨‍🏫</Text>
           <Text className="font-semibold">Create User</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/users")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/users")}>
           <Text className="mb-2 text-[30px]">👤</Text>
           <Text className="font-semibold">Users List</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/enroll")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/enroll")}>
           <Text className="mb-2 text-[30px]">🎓</Text>
           <Text className="font-semibold">Enroll Students</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../profile")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../profile")}>
           <Text className="mb-2 text-[30px]">👤</Text>
           <Text className="font-semibold">Profile</Text>
         </Pressable>

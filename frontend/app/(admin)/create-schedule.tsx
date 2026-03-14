@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -22,23 +22,23 @@ export default function CreateScheduleScreen() {
   const [loadingDeleteId, setLoadingDeleteId] = useState<string | null>(null);
   const router = useRouter();
 
-  useEffect(() => {
-    loadAll();
-  }, []);
-
-  const loadAll = async () => {
-    await Promise.all([loadCourses(), loadSchedules()]);
-  };
-
-  const loadCourses = async () => {
+  const loadCourses = useCallback(async () => {
     const data = await getCourses();
     setCourses(data);
-  };
+  }, []);
 
-  const loadSchedules = async () => {
+  const loadSchedules = useCallback(async () => {
     const data = await getAdminSchedules();
     setSchedules(Array.isArray(data) ? data : []);
-  };
+  }, []);
+
+  const loadAll = useCallback(async () => {
+    await Promise.all([loadCourses(), loadSchedules()]);
+  }, [loadCourses, loadSchedules]);
+
+  useEffect(() => {
+    loadAll();
+  }, [loadAll]);
 
   const handleCreate = async () => {
     if (!course || !day || !startTime || !endTime || !room) {
@@ -86,13 +86,13 @@ export default function CreateScheduleScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       <ScrollView contentContainerClassName="p-5 pb-6">
-        <View className="rounded-xl bg-white p-4 shadow">
-          <Text className="mb-3 text-[22px] font-bold text-[#111827]">📅 Create Schedule</Text>
+        <View className="rounded-xl bg-app-surface p-4 shadow">
+          <Text className="mb-3 text-[22px] font-bold text-app-text">📅 Create Schedule</Text>
 
         <Text className="mb-1 font-medium text-[#374151]">Course</Text>
-        <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
+        <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
           <Picker selectedValue={course} onValueChange={setCourse}>
             <Picker.Item label="Select course" value="" />
             {courses.map((c) => (
@@ -101,25 +101,25 @@ export default function CreateScheduleScreen() {
           </Picker>
         </View>
 
-        <TextInput placeholder="Day (e.g. Monday)" value={day} onChangeText={setDay} className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3" />
-        <TextInput placeholder="Start Time (09:00)" value={startTime} onChangeText={setStartTime} className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3" />
-        <TextInput placeholder="End Time (10:30)" value={endTime} onChangeText={setEndTime} className="mb-3 rounded-lg border border-[#d1d5db] bg-white px-3 py-3" />
-        <TextInput placeholder="Room" value={room} onChangeText={setRoom} className="mb-4 rounded-lg border border-[#d1d5db] bg-white px-3 py-3" />
+        <TextInput placeholder="Day (e.g. Monday)" value={day} onChangeText={setDay} className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
+        <TextInput placeholder="Start Time (09:00)" value={startTime} onChangeText={setStartTime} className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
+        <TextInput placeholder="End Time (10:30)" value={endTime} onChangeText={setEndTime} className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
+        <TextInput placeholder="Room" value={room} onChangeText={setRoom} className="mb-4 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
 
         <View className="mb-2">
           <Button title="Create Schedule" onPress={handleCreate} />
         </View>
 
-        <Text className="mb-2 mt-5 text-[16px] font-semibold text-[#111827]">Existing Schedules</Text>
+        <Text className="mb-2 mt-5 text-[16px] font-semibold text-app-text">Existing Schedules</Text>
         {schedules.length === 0 ? (
-          <Text className="mb-3 text-[#6b7280]">No schedules found</Text>
+          <Text className="mb-3 text-app-muted">No schedules found</Text>
         ) : (
           schedules.map((item) => (
-            <View key={item._id} className="mb-2 rounded-lg border border-[#d1d5db] p-3">
-              <Text className="font-semibold text-[#111827]">
+            <View key={item._id} className="mb-2 rounded-lg border border-app-border p-3">
+              <Text className="font-semibold text-app-text">
                 {item.course?.title || item.course?.name || "Course"}
               </Text>
-              <Text className="mb-2 text-[#6b7280]">{item.day} • {item.startTime}-{item.endTime} • Room {item.room}</Text>
+              <Text className="mb-2 text-app-muted">{item.day} • {item.startTime}-{item.endTime} • Room {item.room}</Text>
               <Button
                 title={loadingDeleteId === item._id ? "Deleting..." : "Delete"}
                 color="red"

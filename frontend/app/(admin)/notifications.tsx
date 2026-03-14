@@ -118,8 +118,8 @@ export default function NotificationsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
-        <Text className="mb-3 text-2xl font-bold text-[#111827]">Notifications</Text>
+      <View className="flex-1 items-center justify-center bg-app-bg p-5">
+        <Text className="mb-3 text-2xl font-bold text-app-text">Notifications</Text>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -127,8 +127,8 @@ export default function NotificationsScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
-        <Text className="mb-3 text-2xl font-bold text-[#111827]">Notifications</Text>
+      <View className="flex-1 items-center justify-center bg-app-bg p-5">
+        <Text className="mb-3 text-2xl font-bold text-app-text">Notifications</Text>
         <Text className="mb-[14px] text-[#c62828]">{error}</Text>
         <Button title="Retry" onPress={loadNotifications} />
       </View>
@@ -136,31 +136,31 @@ export default function NotificationsScreen() {
   }
 
   return (
-    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
+    <ScrollView className="flex-1 bg-app-bg" contentContainerClassName="p-5 pb-6">
       <View className={adminStyles.card}>
-        <Text className="mb-5 text-2xl font-bold text-[#111827]">Notifications</Text>
+        <Text className="mb-5 text-2xl font-bold text-app-text">Notifications</Text>
 
-        <View className="mb-[14px] rounded-lg border border-[#ddd] bg-[#fafafa] p-3">
-          <Text className="mb-[10px] text-[16px] font-bold text-[#111827]">Send Notification</Text>
+        <View className="mb-[14px] rounded-lg border border-app-border bg-app-bg p-3">
+          <Text className="mb-[10px] text-[16px] font-bold text-app-text">Send Notification</Text>
 
           <TextInput
             value={title}
             onChangeText={setTitle}
             placeholder="Title"
-            className="mb-[10px] rounded-md border border-[#ddd] bg-white px-[10px] py-2"
+            className="mb-[10px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
           />
 
           <TextInput
             value={message}
             onChangeText={setMessage}
             placeholder="Message"
-            className="mb-[10px] min-h-[80px] rounded-md border border-[#ddd] bg-white px-[10px] py-2"
+            className="mb-[10px] min-h-[80px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
             multiline
             textAlignVertical="top"
           />
 
-          <Text className="mb-[6px] text-[14px] text-[#333]">Audience</Text>
-          <View className="mb-[10px] rounded-md border border-[#ddd] bg-white">
+          <Text className="mb-[6px] text-[14px] text-app-text">Audience</Text>
+          <View className="mb-[10px] rounded-md border border-app-border bg-app-surface">
             <Picker
               selectedValue={audience}
               onValueChange={(value) => setAudience(value)}
@@ -182,15 +182,15 @@ export default function NotificationsScreen() {
           data={notifications}
           keyExtractor={(item) => item._id}
           scrollEnabled={false}
-          ListEmptyComponent={<Text className="mt-5 text-center text-[#666]">No notifications found</Text>}
+          ListEmptyComponent={<Text className="mt-5 text-center text-app-muted">No notifications found</Text>}
           renderItem={({ item }) => (
             <TouchableOpacity
               onPress={() => markAsRead(item._id)}
-              className={`mb-[10px] rounded-lg border border-[#ddd] p-3 ${item.isRead ? "bg-[#f5f5f5]" : "bg-[#e3f2fd]"}`}
+              className={`mb-[10px] rounded-lg border border-app-border p-3 ${item.isRead ? "bg-app-bg" : "bg-[#e3f2fd]"}`}
             >
-              <Text className="mb-[6px] text-[16px] font-bold text-[#111827]">{item.title}</Text>
-              <Text className="mb-2 text-[14px] text-[#333]">{item.message}</Text>
-              <Text className="text-[12px] text-[#666]">{item.isRead ? "Read" : "Tap to mark as read"}</Text>
+              <Text className="mb-[6px] text-[16px] font-bold text-app-text">{item.title}</Text>
+              <Text className="mb-2 text-[14px] text-app-text">{item.message}</Text>
+              <Text className="text-[12px] text-app-muted">{item.isRead ? "Read" : "Tap to mark as read"}</Text>
             </TouchableOpacity>
           )}
         />

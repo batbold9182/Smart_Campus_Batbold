@@ -16,6 +16,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { login } from "../../services/authService";
 import { router } from "expo-router";
 import { setToken } from "../../services/tokenStorage";
+import { theme } from "../../styles/theme";
 
 
 export default function LoginScreen() {
@@ -177,7 +178,7 @@ const styles = StyleSheet.create({
   },
   safe: {
     flex: 1,
-    backgroundColor: "#eef4ff",
+    backgroundColor: theme.colors.appBg,
   },
   container: {
     flex: 1,
@@ -209,7 +210,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#d9e8ff",
   },
   card: {
-    backgroundColor: "#ffffff",
+    backgroundColor: theme.colors.surface,
     borderRadius: 18,
     padding: 20,
     boxShadow: "0px 8px 14px rgba(0, 0, 0, 0.08)",
@@ -218,27 +219,27 @@ const styles = StyleSheet.create({
   brand: {
     fontSize: 14,
     fontWeight: "700",
-    color: "#2563eb",
+    color: theme.colors.primary,
     marginBottom: 6,
     textAlign: "center",
   },
   title: {
     fontSize: 28,
     fontWeight: "700",
-    color: "#0f172a",
+    color: theme.colors.text,
     textAlign: "center",
   },
   subtitle: {
     marginTop: 4,
     marginBottom: 18,
-    color: "#475569",
+    color: theme.colors.muted,
     textAlign: "center",
   },
   input: {
     borderWidth: 1,
-    borderColor: "#dbe3f3",
-    backgroundColor: "#f8fbff",
-    color: "#0f172a",
+    borderColor: theme.colors.border,
+    backgroundColor: theme.colors.surface,
+    color: theme.colors.text,
     paddingHorizontal: 14,
     paddingVertical: 12,
     marginBottom: 12,
@@ -246,7 +247,7 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     marginTop: 6,
-    backgroundColor: "#2563eb",
+    backgroundColor: theme.colors.primary,
     borderRadius: 10,
     alignItems: "center",
     justifyContent: "center",
@@ -256,17 +257,17 @@ const styles = StyleSheet.create({
     opacity: 0.7,
   },
   loginButtonText: {
-    color: "#ffffff",
+    color: theme.colors.surface,
     fontSize: 16,
     fontWeight: "700",
   },
   message: {
     marginTop: 14,
     textAlign: "center",
-    color: "#b91c1c",
+    color: theme.colors.danger,
   },
   fieldError: {
-    color: "#B00020",
+    color: theme.colors.fieldError,
     marginTop: -6,
     marginBottom: 10,
   },
