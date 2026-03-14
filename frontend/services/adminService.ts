@@ -3,7 +3,7 @@ export const unenrollStudent = async (enrollmentId: string) => {
   const res = await api.delete(`/api/admin/enrollments/${enrollmentId}`);
   return res.data;
 }
-export const createFaculty = async (
+export const createUser = async (
   name: string,
   email: string,
   password: string,

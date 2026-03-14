@@ -3,6 +3,25 @@ const router = express.Router();
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
 const User = require("../models/user");
+const { cloudinary, hasCloudinaryConfig } = require("../config/cloudinary");
+
+const isBlockedLocalScheme = (value) => {
+  const v = value.toLowerCase();
+  return (
+    v.startsWith("file://") ||
+    v.startsWith("blob:") ||
+    v.startsWith("ph://") ||
+    v.startsWith("content://") ||
+    v.startsWith("assets-library://")
+  );
+};
+
+const isHttpUrl = (value) => {
+  const v = value.toLowerCase();
+  return v.startsWith("http://") || v.startsWith("https://");
+};
+
+const isDataImage = (value) => value.toLowerCase().startsWith("data:image/");
 
 router.get("/profile", auth, async (req, res) => {
   try {
@@ -27,12 +46,46 @@ router.patch("/profile/picture", auth, async (req, res) => {
       return res.status(400).json({ message: "Profile picture value is required" });
     }
 
+    const nextProfile = profile.trim();
+
+    if (isBlockedLocalScheme(nextProfile)) {
+      return res.status(400).json({
+        message: "Local device image paths are not supported. Upload and save a public URL instead.",
+      });
+    }
+
     const user = await User.findById(req.user.id);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    user.profile = profile.trim();
+    let resolvedProfile = nextProfile;
+
+    if (nextProfile !== "defaultProfile.png" && isDataImage(nextProfile)) {
+      if (hasCloudinaryConfig()) {
+        const uploadResult = await cloudinary.uploader.upload(nextProfile, {
+          folder: "smart-campus/profiles",
+          resource_type: "image",
+        });
+
+        resolvedProfile = uploadResult.secure_url;
+      } else {
+        // Fallback for local development when cloud storage is not configured.
+        resolvedProfile = nextProfile;
+      }
+    }
+
+    if (
+      resolvedProfile !== "defaultProfile.png" &&
+      !isHttpUrl(resolvedProfile) &&
+      !isDataImage(resolvedProfile)
+    ) {
+      return res.status(400).json({
+        message: "Profile picture must be a public image URL, a data image, or default profile.",
+      });
+    }
+
+    user.profile = resolvedProfile;
     await user.save();
 
     return res.json({

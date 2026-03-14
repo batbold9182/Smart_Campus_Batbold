@@ -9,6 +9,7 @@ import {
 import { createSchedule, deleteSchedule, getAdminSchedules, getCourses } from "../../services/scheduleService";
 import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateScheduleScreen() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -85,9 +86,10 @@ export default function CreateScheduleScreen() {
   };
 
   return (
-    <ScrollView className="flex-1 bg-[#f5f7fb]" contentContainerClassName="p-5 pb-6">
-      <View className="rounded-xl bg-white p-4 shadow">
-        <Text className="mb-3 text-[22px] font-bold text-[#111827]">📅 Create Schedule</Text>
+    <SafeAreaView className="flex-1 bg-[#f5f7fb]">
+      <ScrollView contentContainerClassName="p-5 pb-6">
+        <View className="rounded-xl bg-white p-4 shadow">
+          <Text className="mb-3 text-[22px] font-bold text-[#111827]">📅 Create Schedule</Text>
 
         <Text className="mb-1 font-medium text-[#374151]">Course</Text>
         <View className="mb-3 rounded-lg border border-[#d1d5db] bg-white">
@@ -131,5 +133,6 @@ export default function CreateScheduleScreen() {
         <Button title="Back to dashboard" onPress={() => router.push("../dashboard")} />
       </View>
     </ScrollView>
+    </SafeAreaView>
   );
 }

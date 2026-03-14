@@ -1,9 +1,52 @@
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
-import { updateMyProfilePicture } from "../services/userService";
+import { updateMyProfilePicture, type AppUserProfile } from "../services/userService";
 
-export default function ProfileCard({ user }: { user: any }) {
+const isRenderableImageUri = (value: string) => {
+  const uri = value.trim().toLowerCase();
+  if (!uri) return false;
+
+  // blob URLs are not stable across app/device contexts.
+  if (uri.startsWith("blob:")) return false;
+
+  if (
+    uri.startsWith("https://") ||
+    uri.startsWith("http://") ||
+    uri.startsWith("data:image/")
+  ) {
+    return true;
+  }
+
+  if (Platform.OS === "web") {
+    return false;
+  }
+
+  return (
+    uri.startsWith("file://") ||
+    uri.startsWith("ph://") ||
+    uri.startsWith("content://") ||
+    uri.startsWith("assets-library://")
+  );
+};
+
+const buildPersistedImageValue = (asset: ImagePicker.ImagePickerAsset) => {
+  if (asset?.base64 && asset?.mimeType) {
+    return `data:${asset.mimeType};base64,${asset.base64}`;
+  }
+
+  if (asset?.base64) {
+    return `data:image/jpeg;base64,${asset.base64}`;
+  }
+
+  return "";
+};
+
+type ProfileCardProps = {
+  user: AppUserProfile;
+};
+
+export default function ProfileCard({ user }: ProfileCardProps) {
   const [profileValue, setProfileValue] = useState(user?.profile || "defaultProfile.png");
   const [saving, setSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -16,14 +59,26 @@ export default function ProfileCard({ user }: { user: any }) {
   const hasCustomProfile =
     typeof profileValue === "string" &&
     profileValue.trim().length > 0 &&
-    profileValue !== "defaultProfile.png";
+    profileValue !== "defaultProfile.png" &&
+    isRenderableImageUri(profileValue);
 
   const handleSaveProfilePicture = async (nextProfileValue: string) => {
     if (!nextProfileValue.trim()) return;
+
+    if (!isRenderableImageUri(nextProfileValue) && nextProfileValue !== "defaultProfile.png") {
+      setStatusMessage("Selected image format is not supported on this device.");
+      return;
+    }
+
     try {
       setSaving(true);
       const res = await updateMyProfilePicture(nextProfileValue.trim());
-      setProfileValue(res?.profile || nextProfileValue.trim());
+      const savedProfile = String(res?.profile || nextProfileValue.trim());
+      setProfileValue(
+        savedProfile === "defaultProfile.png" || isRenderableImageUri(savedProfile)
+          ? savedProfile
+          : "defaultProfile.png"
+      );
       setStatusMessage("Profile picture updated");
       setShowPickerActions(false);
     } catch (err: any) {
@@ -45,11 +100,18 @@ export default function ProfileCard({ user }: { user: any }) {
         mediaTypes: ["images"],
         allowsEditing: true,
         quality: 0.7,
+        base64: true,
       });
 
-      if (result.canceled || !result.assets?.[0]?.uri) return;
-      const selectedUri = result.assets[0].uri;
-      await handleSaveProfilePicture(selectedUri);
+      if (result.canceled || !result.assets?.[0]) return;
+      const selectedValue = buildPersistedImageValue(result.assets[0]);
+
+      if (!selectedValue) {
+        setStatusMessage("Could not process selected image. Please try another image.");
+        return;
+      }
+
+      await handleSaveProfilePicture(selectedValue);
     } catch {
       setStatusMessage("Failed to choose image from gallery");
     }
@@ -71,11 +133,18 @@ export default function ProfileCard({ user }: { user: any }) {
       const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         quality: 0.7,
+        base64: true,
       });
 
-      if (result.canceled || !result.assets?.[0]?.uri) return;
-      const capturedUri = result.assets[0].uri;
-      await handleSaveProfilePicture(capturedUri);
+      if (result.canceled || !result.assets?.[0]) return;
+      const capturedValue = buildPersistedImageValue(result.assets[0]);
+
+      if (!capturedValue) {
+        setStatusMessage("Could not process captured image. Please try again.");
+        return;
+      }
+
+      await handleSaveProfilePicture(capturedValue);
     } catch {
       setStatusMessage("Failed to capture image from camera");
     }

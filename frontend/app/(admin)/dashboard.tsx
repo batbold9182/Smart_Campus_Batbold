@@ -211,7 +211,7 @@ useEffect(() => {
           <Text className="font-semibold">Assign Schedule</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-faculty")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../create-user")}>
           <Text className="mb-2 text-[30px]">👨‍🏫</Text>
           <Text className="font-semibold">Create User</Text>
         </Pressable>
@@ -226,7 +226,7 @@ useEffect(() => {
           <Text className="font-semibold">Enroll Students</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/profile")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-white p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../profile")}>
           <Text className="mb-2 text-[30px]">👤</Text>
           <Text className="font-semibold">Profile</Text>
         </Pressable>
