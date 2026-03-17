@@ -4,7 +4,7 @@ export const rootStyles = {
   title: "text-[22px] font-bold text-app-text",
   subtitle: "text-[16px] font-semibold text-app-text",
   muted: "text-app-muted",
-  input: "rounded-lg border border-app-border bg-app-surface px-3 py-3",
+  input: "rounded-lg border border-[#9ca3af] bg-white px-3 py-3 text-[16px] text-app-text placeholder:text-[#6b7280]",
   pickerWrap: "mb-3 rounded-lg border border-app-border bg-app-surface",
   rowBetween: "flex-row items-center justify-between",
   buttonPrimary: "items-center rounded-lg bg-blue-500 p-[14px]",

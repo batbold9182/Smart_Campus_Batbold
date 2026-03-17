@@ -33,6 +33,7 @@ const initialSelectState: SelectState = {
 };
 
 export default function CreateUserScreen() {
+  const inputClassName = "mb-3 rounded-xl border border-[#9ca3af] bg-white px-3 py-3 text-[16px] text-app-text";
   const [selectedRole, setSelectedRole] = useState<"faculty" | "student">("faculty");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -230,17 +231,19 @@ export default function CreateUserScreen() {
 
             <TextInput
               placeholder="Full Name"
+              placeholderTextColor="#6b7280"
               value={name}
               onChangeText={setName}
-              className="mb-3 rounded-xl border border-[#d1d5db] bg-white px-3 py-3"
+              className={inputClassName}
             />
             <TextInput
               placeholder="Email"
+              placeholderTextColor="#6b7280"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
               autoCapitalize="none"
-              className="mb-3 rounded-xl border border-[#d1d5db] bg-white px-3 py-3"
+              className={inputClassName}
             />
 
             <SelectField
@@ -273,9 +276,10 @@ export default function CreateUserScreen() {
             {selectedRole === "faculty" ? (
               <TextInput
                 placeholder="Title (e.g. Instructor)"
+                placeholderTextColor="#6b7280"
                 value={facultyTitle}
                 onChangeText={setFacultyTitle}
-                className="mb-3 rounded-xl border border-[#d1d5db] bg-white px-3 py-3"
+                className={inputClassName}
               />
             ) : (
               <>
@@ -290,26 +294,29 @@ export default function CreateUserScreen() {
                 />
                 <TextInput
                   placeholder="Year Level (e.g. 2)"
+                  placeholderTextColor="#6b7280"
                   value={yearLevel}
                   onChangeText={setYearLevel}
                   keyboardType="number-pad"
-                  className="mb-3 rounded-xl border border-[#d1d5db] bg-white px-3 py-3"
+                  className={inputClassName}
                 />
                 <TextInput
                   placeholder="Student ID"
+                  placeholderTextColor="#6b7280"
                   value={studentId}
                   onChangeText={setStudentId}
-                  className="mb-3 rounded-xl border border-[#d1d5db] bg-white px-3 py-3"
+                  className={inputClassName}
                 />
               </>
             )}
 
             <TextInput
               placeholder="Password"
+              placeholderTextColor="#6b7280"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
-              className="mb-4 rounded-xl border border-[#d1d5db] bg-white px-3 py-3"
+              className={`${inputClassName} mb-4`}
             />
 
             {message ? (

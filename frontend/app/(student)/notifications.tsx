@@ -1,5 +1,4 @@
 import { useEffect, useState } from "react";
-import { View, Text } from "react-native";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
