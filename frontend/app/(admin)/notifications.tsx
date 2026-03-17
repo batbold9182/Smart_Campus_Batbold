@@ -2,24 +2,16 @@ import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  FlatList,
   TouchableOpacity,
   ActivityIndicator,
-  Button,
   TextInput,
   Alert,
-  ScrollView,
 } from "react-native";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { Picker } from "@react-native-picker/picker";
 import { adminStyles } from "../../styles/adminStyles";
-type NotificationItem = {
-  _id: string;
-  title: string;
-  message: string;
-  isRead: boolean;
-};
+import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
 
 export default function NotificationsScreen() {
   const NOTIFICATIONS_LIMIT = 20;
@@ -66,7 +58,7 @@ export default function NotificationsScreen() {
   };
 
   useEffect(() => {
-    loadNotifications();
+    loadNotifications(1);
   }, []);
 
   const markAsRead = async (id: string) => {
@@ -135,8 +127,8 @@ export default function NotificationsScreen() {
 
   if (loading) {
     return (
-      <View className="flex-1 items-center justify-center bg-app-bg p-5">
-        <Text className="mb-3 text-2xl font-bold text-app-text">Notifications</Text>
+      <View className={adminStyles.loadingScreen}>
+        <Text className={`mb-3 ${adminStyles.title}`}>Notifications</Text>
         <ActivityIndicator size="large" />
       </View>
     );
@@ -144,91 +136,79 @@ export default function NotificationsScreen() {
 
   if (error) {
     return (
-      <View className="flex-1 items-center justify-center bg-app-bg p-5">
-        <Text className="mb-3 text-2xl font-bold text-app-text">Notifications</Text>
-        <Text className="mb-[14px] text-[#c62828]">{error}</Text>
-        <Button title="Retry" onPress={() => loadNotifications(1)} />
+      <View className={adminStyles.loadingScreen}>
+        <Text className={`mb-3 ${adminStyles.title}`}>Notifications</Text>
+        <Text className={adminStyles.errorText}>{error}</Text>
+        <TouchableOpacity className={adminStyles.paginationButtonEnabled} onPress={() => loadNotifications(1)}>
+          <Text className={adminStyles.buttonPrimaryText}>Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
 
-  return (
-    <ScrollView className="flex-1 bg-app-bg" contentContainerClassName="p-5 pb-6">
-      <View className={adminStyles.card}>
-        <Text className="mb-5 text-2xl font-bold text-app-text">Notifications</Text>
+  const sendForm = (
+    <View className={adminStyles.card}>
+      <Text className="mb-5 text-2xl font-bold text-app-text">Notifications</Text>
 
-        <View className="mb-[14px] rounded-lg border border-app-border bg-app-bg p-3">
-          <Text className="mb-[10px] text-[16px] font-bold text-app-text">Send Notification</Text>
+      <View className="mb-[14px] rounded-lg border border-app-border bg-app-bg p-3">
+        <Text className="mb-[10px] text-[16px] font-bold text-app-text">Send Notification</Text>
 
-          <TextInput
-            value={title}
-            onChangeText={setTitle}
-            placeholder="Title"
-            className="mb-[10px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
-          />
-
-          <TextInput
-            value={message}
-            onChangeText={setMessage}
-            placeholder="Message"
-            className="mb-[10px] min-h-[80px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
-            multiline
-            textAlignVertical="top"
-          />
-
-          <Text className="mb-[6px] text-[14px] text-app-text">Audience</Text>
-          <View className="mb-[10px] rounded-md border border-app-border bg-app-surface">
-            <Picker
-              selectedValue={audience}
-              onValueChange={(value) => setAudience(value)}
-            >
-              <Picker.Item label="Students" value="students" />
-              <Picker.Item label="Faculty" value="faculty" />
-              <Picker.Item label="Students + Faculty" value="all" />
-            </Picker>
-          </View>
-
-          {sending ? (
-            <ActivityIndicator size="small" />
-          ) : (
-            <Button title="Send Notification" onPress={handleSendNotification} />
-          )}
-        </View>
-
-        <FlatList
-          data={notifications}
-          keyExtractor={(item) => item._id}
-          scrollEnabled={false}
-          ListEmptyComponent={<Text className="mt-5 text-center text-app-muted">No notifications found</Text>}
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              onPress={() => markAsRead(item._id)}
-              className={`mb-[10px] rounded-lg border border-app-border p-3 ${item.isRead ? "bg-app-bg" : "bg-[#e3f2fd]"}`}
-            >
-              <Text className="mb-[6px] text-[16px] font-bold text-app-text">{item.title}</Text>
-              <Text className="mb-2 text-[14px] text-app-text">{item.message}</Text>
-              <Text className="text-[12px] text-app-muted">{item.isRead ? "Read" : "Tap to mark as read"}</Text>
-            </TouchableOpacity>
-          )}
+        <TextInput
+          value={title}
+          onChangeText={setTitle}
+          placeholder="Title"
+          className="mb-[10px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
         />
 
-        <View className="mb-3 mt-2 flex-row items-center justify-between">
-          <Button
-            title="Previous"
-            onPress={() => loadNotifications(page - 1)}
-            disabled={loading || page <= 1}
-          />
-          <Text className="text-app-text">Page {page} / {totalPages}</Text>
-          <Button
-            title="Next"
-            onPress={() => loadNotifications(page + 1)}
-            disabled={loading || page >= totalPages}
-          />
+        <TextInput
+          value={message}
+          onChangeText={setMessage}
+          placeholder="Message"
+          className="mb-[10px] min-h-[80px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
+          multiline
+          textAlignVertical="top"
+        />
+
+        <Text className="mb-[6px] text-[14px] text-app-text">Audience</Text>
+        <View className="mb-[10px] rounded-md border border-app-border bg-app-surface">
+          <Picker
+            selectedValue={audience}
+            onValueChange={(value) => setAudience(value)}
+          >
+            <Picker.Item label="Students" value="students" />
+            <Picker.Item label="Faculty" value="faculty" />
+            <Picker.Item label="Students + Faculty" value="all" />
+          </Picker>
         </View>
 
-        <Button title ="back to dashboard" onPress={() => router.push("../dashboard")} />
+        {sending ? (
+          <ActivityIndicator size="small" />
+        ) : (
+          <TouchableOpacity className={adminStyles.buttonPrimary} onPress={handleSendNotification}>
+            <Text className={adminStyles.buttonPrimaryText}>Send Notification</Text>
+          </TouchableOpacity>
+        )}
       </View>
-    </ScrollView>
+    </View>
+  );
+
+  return (
+    <NotificationFeed
+      title="Notifications"
+      notifications={notifications}
+      loading={loading}
+      error={error}
+      page={page}
+      totalPages={totalPages}
+      styles={adminStyles}
+      onRetry={() => loadNotifications(1)}
+      onMarkAsRead={markAsRead}
+      onPrevious={() => loadNotifications(page - 1)}
+      onNext={() => loadNotifications(page + 1)}
+      onBack={() => router.push("../dashboard")}
+      backLabel="Back to Dashboard"
+      topContent={sendForm}
+    />
   );
 }
 

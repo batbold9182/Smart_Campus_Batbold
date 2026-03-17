@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, Button } from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import { View, Text, TouchableOpacity, ScrollView, Modal, Pressable } from "react-native";
 import {
   assignSchedule,
   getStudents,
@@ -16,8 +15,35 @@ export default function AssignScheduleScreen() {
   const [schedules, setSchedules] = useState<any[]>([]);
   const [studentId, setStudentId] = useState("");
   const [scheduleId, setScheduleId] = useState("");
+  const [activeSelector, setActiveSelector] = useState<"student" | "schedule" | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+
+  const selectedStudentLabel =
+    students.find((s) => s._id === studentId)?.name || "Select student";
+
+  const selectedScheduleLabel =
+    schedules.find((sc) => sc._id === scheduleId)
+      ? `${schedules.find((sc) => sc._id === scheduleId)?.course?.title || schedules.find((sc) => sc._id === scheduleId)?.course?.name || "Course"} - ${schedules.find((sc) => sc._id === scheduleId)?.day} ${schedules.find((sc) => sc._id === scheduleId)?.startTime}`
+      : "Select schedule";
+
+  const selectorTitle = activeSelector === "student" ? "Select Student" : "Select Schedule";
+  const selectorOptions =
+    activeSelector === "student"
+      ? students.map((s) => ({ label: s.name, value: s._id }))
+      : schedules.map((sc) => ({
+          label: `${sc.course?.title || sc.course?.name || "Course"} - ${sc.day} ${sc.startTime}`,
+          value: sc._id,
+        }));
+
+  const handleSelectOption = (value: string) => {
+    if (activeSelector === "student") {
+      setStudentId(value);
+    } else if (activeSelector === "schedule") {
+      setScheduleId(value);
+    }
+    setActiveSelector(null);
+  };
 
   useEffect(() => {
     loadData();
@@ -82,51 +108,99 @@ export default function AssignScheduleScreen() {
 
   return (
     <SafeAreaView className={adminStyles.screen} edges={["top"]}>
-      <View className={adminStyles.card}>
-        <Text className="mb-3 text-[22px] font-bold text-[#111827]">🧑‍🎓 Assign Schedule</Text>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6" showsVerticalScrollIndicator={false}>
+        <View className={adminStyles.card}>
+          <Text className="text-[24px] font-bold text-app-text">Assign Schedule</Text>
+          <Text className="mb-4 mt-1 text-[13px] text-app-muted">
+            Link a student to a class schedule or remove an existing assignment.
+          </Text>
 
-        <Text className="mb-1 font-medium text-[#374151]">Student</Text>
-        <View className={adminStyles.pickerWrap}>
-          <Picker selectedValue={studentId} onValueChange={setStudentId}>
-            <Picker.Item label="Select student" value="" />
-            {students.map((s) => (
-              <Picker.Item key={s._id} label={s.name} value={s._id} />
-            ))}
-          </Picker>
-        </View>
+          <Text className="mb-1 text-[13px] font-semibold text-[#374151]">Student</Text>
+          <TouchableOpacity
+            className="mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border border-app-border bg-app-surface px-3"
+            onPress={() => setActiveSelector("student")}
+          >
+            <Text className={studentId ? "text-app-text" : "text-app-muted"}>{selectedStudentLabel}</Text>
+            <Text className="text-[18px] text-app-muted">▾</Text>
+          </TouchableOpacity>
 
-        <Text className="mb-1 font-medium text-[#374151]">Schedule</Text>
-        <View className={adminStyles.pickerWrap}>
-          <Picker selectedValue={scheduleId} onValueChange={setScheduleId}>
-            <Picker.Item label="Select schedule" value="" />
-            {schedules.map((sc) => (
-              <Picker.Item
-                key={sc._id}
-                label={`${sc.course?.title || sc.course?.name || "Course"} - ${sc.day} ${sc.startTime}`}
-                value={sc._id}
-              />
-            ))}
-          </Picker>
-        </View>
+          <Text className="mb-1 text-[13px] font-semibold text-[#374151]">Schedule</Text>
+          <TouchableOpacity
+            className="mb-4 min-h-[50px] flex-row items-center justify-between rounded-xl border border-app-border bg-app-surface px-3"
+            onPress={() => setActiveSelector("schedule")}
+          >
+            <Text className={scheduleId ? "text-app-text" : "text-app-muted"}>{selectedScheduleLabel}</Text>
+            <Text className="text-[18px] text-app-muted">▾</Text>
+          </TouchableOpacity>
 
-        <View className="gap-2">
-          <Button
-            title={loading ? "Please wait..." : "Assign Schedule"}
-            onPress={handleAssign}
-            disabled={loading}
-          />
-          <Button
-            title="Unassign Schedule"
-            color="red"
-            onPress={handleUnassign}
-            disabled={loading}
-          />
-          <Button
-            title="Back to dashboard"
-            onPress={() => router.push("/(admin)/dashboard")}
-          />
+          <View className="gap-2">
+            <TouchableOpacity
+              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-[#93c5fd]" : "bg-blue-500"}`}
+              onPress={handleAssign}
+              disabled={loading}
+            >
+              <Text className="font-semibold text-white">{loading ? "Please wait..." : "Assign Schedule"}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-[#fca5a5]" : "bg-red-500"}`}
+              onPress={handleUnassign}
+              disabled={loading}
+            >
+              <Text className="font-semibold text-white">Unassign Schedule</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
+              onPress={() => router.push("/(admin)/dashboard")}
+            >
+              <Text className="font-semibold text-app-text">Back to Dashboard</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+        <View className="mt-3 rounded-xl bg-app-surface p-4 shadow-sm">
+          <Text className="text-[16px] font-semibold text-app-text">Quick Tips</Text>
+          <Text className="mt-2 text-[13px] text-app-muted">1. Select a student first, then select a schedule slot.</Text>
+          <Text className="mt-1 text-[13px] text-app-muted">2. Use unassign when students switch classes.</Text>
+        </View>
+      </ScrollView>
+
+      <Modal transparent visible={activeSelector !== null} animationType="fade" onRequestClose={() => setActiveSelector(null)}>
+        <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setActiveSelector(null)}>
+          <Pressable className="max-h-[70%] w-full rounded-2xl bg-white p-4" onPress={() => {}}>
+            <View className="mb-2 flex-row items-center justify-between">
+              <Text className="text-[17px] font-bold text-[#0f172a]">{selectorTitle}</Text>
+              <TouchableOpacity onPress={() => setActiveSelector(null)}>
+                <Text className="text-[14px] font-semibold text-[#2563eb]">Done</Text>
+              </TouchableOpacity>
+            </View>
+            <ScrollView showsVerticalScrollIndicator={false}>
+              {selectorOptions.length === 0 ? (
+                <Text className="py-3 text-[#64748b]">No options available.</Text>
+              ) : (
+                selectorOptions.map((option) => {
+                  const active =
+                    (activeSelector === "student" && studentId === option.value) ||
+                    (activeSelector === "schedule" && scheduleId === option.value);
+                  return (
+                    <TouchableOpacity
+                      key={option.value}
+                      className={`mb-2 rounded-lg border px-3 py-3 ${
+                        active ? "border-[#2563eb] bg-[#eff6ff]" : "border-[#e5e7eb] bg-white"
+                      }`}
+                      onPress={() => handleSelectOption(option.value)}
+                    >
+                      <Text className={`font-medium ${active ? "text-[#1d4ed8]" : "text-[#111827]"}`}>
+                        {option.label}
+                      </Text>
+                    </TouchableOpacity>
+                  );
+                })
+              )}
+            </ScrollView>
+          </Pressable>
+        </Pressable>
+      </Modal>
     </SafeAreaView>
   );
 }

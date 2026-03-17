@@ -3,7 +3,7 @@ import {
   View,
   Text,
   TextInput,
-  Button,
+  TouchableOpacity,
   ScrollView,
 } from "react-native";
 import { createSchedule, deleteSchedule, getAdminSchedules, getCourses } from "../../services/scheduleService";
@@ -20,6 +20,7 @@ export default function CreateScheduleScreen() {
   const [endTime, setEndTime] = useState("");
   const [room, setRoom] = useState("");
   const [loadingDeleteId, setLoadingDeleteId] = useState<string | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
 
   const loadCourses = useCallback(async () => {
@@ -54,22 +55,27 @@ export default function CreateScheduleScreen() {
       return;
     }
 
-    await createSchedule({
-      courseId: course,
-      facultyId,
-      day,
-      startTime,
-      endTime,
-      room,
-    });
+    try {
+      setIsCreating(true);
+      await createSchedule({
+        courseId: course,
+        facultyId,
+        day,
+        startTime,
+        endTime,
+        room,
+      });
 
-    alert("Schedule created");
-    setCourse("");
-    setDay("");
-    setStartTime("");
-    setEndTime("");
-    setRoom("");
-    await loadSchedules();
+      alert("Schedule created");
+      setCourse("");
+      setDay("");
+      setStartTime("");
+      setEndTime("");
+      setRoom("");
+      await loadSchedules();
+    } finally {
+      setIsCreating(false);
+    }
   };
 
   const handleDelete = async (scheduleId: string) => {
@@ -89,49 +95,69 @@ export default function CreateScheduleScreen() {
     <SafeAreaView className="flex-1 bg-app-bg">
       <ScrollView contentContainerClassName="p-5 pb-6">
         <View className="rounded-xl bg-app-surface p-4 shadow">
-          <Text className="mb-3 text-[22px] font-bold text-app-text">📅 Create Schedule</Text>
+          <Text className="text-[24px] font-bold text-app-text">Create Schedule</Text>
+          <Text className="mb-4 mt-1 text-[13px] text-app-muted">
+            Build class slots with time and room details.
+          </Text>
 
-        <Text className="mb-1 font-medium text-[#374151]">Course</Text>
-        <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
-          <Picker selectedValue={course} onValueChange={setCourse}>
-            <Picker.Item label="Select course" value="" />
-            {courses.map((c) => (
-              <Picker.Item key={c._id} label={c.title} value={c._id} />
-            ))}
-          </Picker>
+          <Text className="mb-1 text-[13px] font-semibold text-[#374151]">Course</Text>
+          <View className="mb-3 rounded-xl border border-app-border bg-app-surface">
+            <Picker selectedValue={course} onValueChange={setCourse}>
+              <Picker.Item label="Select course" value="" />
+              {courses.map((c) => (
+                <Picker.Item key={c._id} label={c.title} value={c._id} />
+              ))}
+            </Picker>
+          </View>
+
+          <TextInput placeholder="Day (e.g. Monday)" value={day} onChangeText={setDay} className="mb-3 rounded-xl border border-app-border bg-app-surface px-3 py-3" />
+          <TextInput placeholder="Start Time (09:00)" value={startTime} onChangeText={setStartTime} className="mb-3 rounded-xl border border-app-border bg-app-surface px-3 py-3" />
+          <TextInput placeholder="End Time (10:30)" value={endTime} onChangeText={setEndTime} className="mb-3 rounded-xl border border-app-border bg-app-surface px-3 py-3" />
+          <TextInput placeholder="Room" value={room} onChangeText={setRoom} className="mb-4 rounded-xl border border-app-border bg-app-surface px-3 py-3" />
+
+          <TouchableOpacity
+            className={`mb-2 items-center rounded-xl px-4 py-3 ${isCreating ? "bg-[#93c5fd]" : "bg-blue-500"}`}
+            onPress={handleCreate}
+            disabled={isCreating}
+          >
+            <Text className="font-semibold text-white">{isCreating ? "Creating..." : "Create Schedule"}</Text>
+          </TouchableOpacity>
+
+          <Text className="mb-2 mt-5 text-[16px] font-semibold text-app-text">Existing Schedules</Text>
+          {schedules.length === 0 ? (
+            <Text className="mb-3 text-app-muted">No schedules found</Text>
+          ) : (
+            schedules.map((item) => (
+              <View key={item._id} className="mb-2 rounded-xl border border-app-border bg-white p-3">
+                <Text className="font-semibold text-app-text">
+                  {item.course?.title || item.course?.name || "Course"}
+                </Text>
+                <Text className="mb-2 text-app-muted">{item.day} • {item.startTime}-{item.endTime} • Room {item.room}</Text>
+                <TouchableOpacity
+                  className={`items-center rounded-lg px-3 py-2 ${loadingDeleteId === item._id ? "bg-[#fca5a5]" : "bg-red-500"}`}
+                  disabled={loadingDeleteId === item._id}
+                  onPress={() => handleDelete(item._id)}
+                >
+                  <Text className="font-semibold text-white">{loadingDeleteId === item._id ? "Deleting..." : "Delete"}</Text>
+                </TouchableOpacity>
+              </View>
+            ))
+          )}
+
+          <TouchableOpacity
+            className="mt-2 items-center rounded-xl border border-app-border bg-white px-4 py-3"
+            onPress={() => router.push("../dashboard")}
+          >
+            <Text className="font-semibold text-app-text">Back to Dashboard</Text>
+          </TouchableOpacity>
         </View>
 
-        <TextInput placeholder="Day (e.g. Monday)" value={day} onChangeText={setDay} className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
-        <TextInput placeholder="Start Time (09:00)" value={startTime} onChangeText={setStartTime} className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
-        <TextInput placeholder="End Time (10:30)" value={endTime} onChangeText={setEndTime} className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
-        <TextInput placeholder="Room" value={room} onChangeText={setRoom} className="mb-4 rounded-lg border border-app-border bg-app-surface px-3 py-3" />
-
-        <View className="mb-2">
-          <Button title="Create Schedule" onPress={handleCreate} />
+        <View className="mt-3 rounded-xl bg-app-surface p-4 shadow-sm">
+          <Text className="text-[16px] font-semibold text-app-text">Hint</Text>
+          <Text className="mt-2 text-[13px] text-app-muted">
+            Create schedules only after courses are assigned to faculty.
+          </Text>
         </View>
-
-        <Text className="mb-2 mt-5 text-[16px] font-semibold text-app-text">Existing Schedules</Text>
-        {schedules.length === 0 ? (
-          <Text className="mb-3 text-app-muted">No schedules found</Text>
-        ) : (
-          schedules.map((item) => (
-            <View key={item._id} className="mb-2 rounded-lg border border-app-border p-3">
-              <Text className="font-semibold text-app-text">
-                {item.course?.title || item.course?.name || "Course"}
-              </Text>
-              <Text className="mb-2 text-app-muted">{item.day} • {item.startTime}-{item.endTime} • Room {item.room}</Text>
-              <Button
-                title={loadingDeleteId === item._id ? "Deleting..." : "Delete"}
-                color="red"
-                disabled={loadingDeleteId === item._id}
-                onPress={() => handleDelete(item._id)}
-              />
-            </View>
-          ))
-        )}
-
-        <Button title="Back to dashboard" onPress={() => router.push("../dashboard")} />
-      </View>
     </ScrollView>
     </SafeAreaView>
   );

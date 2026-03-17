@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
-  Button,
   Alert,
   ActivityIndicator,
-  ScrollView
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  Pressable,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { adminStyles } from "../../styles/adminStyles";
@@ -25,17 +26,14 @@ export default function AdminEnrollScreen() {
   const [courseId, setCourseId] = useState("");
   const [viewCourseId, setViewCourseId] = useState("");
   const [showEnrollments, setShowEnrollments] = useState(false);
+  const [activeSelector, setActiveSelector] = useState<"student" | "course" | "filterCourse" | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
   const [enrollError, setEnrollError] = useState("");
   const [enrollSuccess, setEnrollSuccess] = useState("");
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadEnrollments = async (page = 1) => {
+  const loadEnrollments = useCallback(async (page = 1) => {
     const enrollmentsRes = await api.get("/api/admin/enrollments", {
       params: { page, limit: ENROLLMENTS_LIMIT },
     });
@@ -52,9 +50,9 @@ export default function AdminEnrollScreen() {
     setEnrollments(items);
     setEnrollmentsPage(page);
     setEnrollmentsTotalPages(totalPages);
-  };
+  }, []);
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       setInitialLoading(true);
       setLoadError("");
@@ -79,7 +77,11 @@ export default function AdminEnrollScreen() {
     } finally {
       setInitialLoading(false);
     }
-  };
+  }, [loadEnrollments]);
+
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
 
   const handleEnroll = async () => {
     setEnrollError("");
@@ -161,6 +163,59 @@ export default function AdminEnrollScreen() {
     ? enrollments.filter((enrollment) => enrollment.course?._id === viewCourseId)
     : enrollments;
 
+  const selectedStudent = students.find((s) => s._id === studentId);
+  const selectedCourse = courses.find((c) => c._id === courseId);
+  const selectedFilterCourse = courses.find((c) => c._id === viewCourseId);
+
+  const selectedStudentLabel = selectedStudent
+    ? `${selectedStudent.name} (${selectedStudent.email})`
+    : "Choose student";
+
+  const selectedCourseLabel = selectedCourse
+    ? `${selectedCourse.title} (${selectedCourse.code})`
+    : "Choose course";
+
+  const selectedFilterCourseLabel = selectedFilterCourse
+    ? `${selectedFilterCourse.title} (${selectedFilterCourse.code})`
+    : "All Courses";
+
+  const selectorTitle =
+    activeSelector === "student"
+      ? "Select Student"
+      : activeSelector === "course"
+      ? "Select Course"
+      : "Filter by Course";
+
+  const selectorOptions =
+    activeSelector === "student"
+      ? students.map((s) => ({
+          label: `${s.name} (${s.email})`,
+          value: s._id,
+        }))
+      : activeSelector === "course"
+      ? courses.map((c) => ({
+          label: `${c.title} (${c.code})`,
+          value: c._id,
+        }))
+      : [
+          { label: "All Courses", value: "" },
+          ...courses.map((c) => ({
+            label: `${c.title} (${c.code})`,
+            value: c._id,
+          })),
+        ];
+
+  const handleSelectorPick = (value: string) => {
+    if (activeSelector === "student") {
+      setStudentId(value);
+    } else if (activeSelector === "course") {
+      setCourseId(value);
+    } else if (activeSelector === "filterCourse") {
+      setViewCourseId(value);
+    }
+    setActiveSelector(null);
+  };
+
   if (initialLoading) {
     return (
       <View className="flex-1 items-center justify-center bg-app-bg p-5">
@@ -173,9 +228,11 @@ export default function AdminEnrollScreen() {
   if (loadError) {
     return (
       <View className="flex-1 items-center justify-center bg-app-bg p-5">
-        <Text className="mb-4 text-2xl font-bold text-app-text">🎓 Enroll Student</Text>
+        <Text className="mb-4 text-2xl font-bold text-app-text">Enroll Student</Text>
         <Text className="mb-3 text-[#c62828]">{loadError}</Text>
-        <Button title="Retry" onPress={loadData} />
+        <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2" onPress={loadData}>
+          <Text className="font-semibold text-white">Retry</Text>
+        </TouchableOpacity>
       </View>
     );
   }
@@ -185,127 +242,163 @@ export default function AdminEnrollScreen() {
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6">
         <View className={adminStyles.card}>
-        <Text className="mb-5 text-2xl font-bold text-app-text">🎓 Enroll Student</Text>
+        <Text className="text-[24px] font-bold text-app-text">Enroll Student</Text>
+        <Text className="mb-5 mt-1 text-[13px] text-app-muted">
+          Assign students to courses and manage active enrollments.
+        </Text>
 
       {!!enrollError && <Text className="mb-3 text-[#c62828]">{enrollError}</Text>}
       {!!enrollSuccess && <Text className="mb-3 text-[#2e7d32]">{enrollSuccess}</Text>}
 
-      <Text className="mb-2 text-[16px] text-app-text">Select Student</Text>
-      <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
-        <Picker
-          selectedValue={studentId}
-          onValueChange={(value) => setStudentId(value)}
-          enabled={!loading && students.length > 0}
-        >
-          <Picker.Item label="-- Choose Student --" value="" />
-          {students.map((s) => (
-            <Picker.Item
-              key={s._id}
-              label={`${s.name} (${s.email})`}
-              value={s._id}
-            />
-          ))}
-        </Picker>
-      </View>
+      <Text className="mb-2 text-[14px] font-semibold text-app-text">Select Student</Text>
+      <TouchableOpacity
+        className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
+          !loading && students.length > 0 ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f3f4f6]"
+        }`}
+        onPress={() => setActiveSelector("student")}
+        disabled={loading || students.length === 0}
+      >
+        <Text className={studentId ? "text-app-text" : "text-app-muted"}>{selectedStudentLabel}</Text>
+        <Text className="text-[18px] text-app-muted">▾</Text>
+      </TouchableOpacity>
 
-      <Text className="mb-2 text-[16px] text-app-text">Select Course</Text>
-      <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
-        <Picker
-          selectedValue={courseId}
-          onValueChange={(value) => setCourseId(value)}
-          enabled={!loading && courses.length > 0}
-        >
-          <Picker.Item label="-- Choose Course --" value="" />
-          {courses.map((c) => (
-            <Picker.Item
-              key={c._id}
-              label={`${c.title} (${c.code})`}
-              value={c._id}
-            />
-          ))}
-        </Picker>
-      </View>
+      <Text className="mb-2 text-[14px] font-semibold text-app-text">Select Course</Text>
+      <TouchableOpacity
+        className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
+          !loading && courses.length > 0 ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f3f4f6]"
+        }`}
+        onPress={() => setActiveSelector("course")}
+        disabled={loading || courses.length === 0}
+      >
+        <Text className={courseId ? "text-app-text" : "text-app-muted"}>{selectedCourseLabel}</Text>
+        <Text className="text-[18px] text-app-muted">▾</Text>
+      </TouchableOpacity>
 
       {loading ? (
         <ActivityIndicator size="large" />
       ) : (
         <>
-          <Button
-            title="Enroll Student"
+          <TouchableOpacity
+            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-[#93c5fd]" : "bg-blue-500"}`}
             onPress={handleEnroll}
             disabled={students.length === 0 || courses.length === 0}
-          />
+          >
+            <Text className="font-semibold text-white">Enroll Student</Text>
+          </TouchableOpacity>
           <View className="h-[10px]" />
-          <Button
-            title={showEnrollments ? "Hide Enrollments List" : "Show Enrollments List"}
+          <TouchableOpacity
+            className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
             onPress={() => {
               setShowEnrollments((prev) => !prev);
             }}
-          />
+          >
+            <Text className="font-semibold text-app-text">
+              {showEnrollments ? "Hide Enrollments List" : "Show Enrollments List"}
+            </Text>
+          </TouchableOpacity>
         </>
       )}
 
       {showEnrollments && (
         <>
           <Text className="mb-2 mt-6 text-[20px] font-bold text-app-text">Enrollments List</Text>
-          <Text className="mb-2 text-[16px] text-app-text">View by Course</Text>
-          <View className="mb-3 rounded-lg border border-app-border bg-app-surface">
-            <Picker
-              selectedValue={viewCourseId}
-              onValueChange={(value) => setViewCourseId(value)}
-              enabled={courses.length > 0}
-            >
-              <Picker.Item label="-- All Courses --" value="" />
-              {courses.map((course) => (
-                <Picker.Item
-                  key={course._id}
-                  label={`${course.title} (${course.code})`}
-                  value={course._id}
-                />
-              ))}
-            </Picker>
-          </View>
+          <Text className="mb-2 text-[14px] font-semibold text-app-text">View by Course</Text>
+          <TouchableOpacity
+            className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
+              courses.length > 0 ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f3f4f6]"
+            }`}
+            onPress={() => setActiveSelector("filterCourse")}
+            disabled={courses.length === 0}
+          >
+            <Text className={viewCourseId ? "text-app-text" : "text-app-muted"}>{selectedFilterCourseLabel}</Text>
+            <Text className="text-[18px] text-app-muted">▾</Text>
+          </TouchableOpacity>
 
           {filteredEnrollments.length === 0 ? (
             <Text className="mb-3 text-app-muted">No enrollments found</Text>
           ) : (
             filteredEnrollments.map((enrollment) => (
-              <View key={enrollment._id} className="mb-3 gap-2 rounded-lg border border-app-border p-[10px]">
+              <View key={enrollment._id} className="mb-3 gap-2 rounded-xl border border-app-border bg-white p-[10px]">
                 <Text className="text-[14px]">
                   {enrollment.student?.name || "Unknown Student"} → {enrollment.course?.title || "Unknown Course"}
                 </Text>
-                <Button
-                  title="Unenroll"
-                  color="#c62828"
+                <TouchableOpacity
+                  className="items-center rounded-lg bg-red-500 px-3 py-2"
                   onPress={() => handleUnenroll(enrollment._id)}
                   disabled={loading}
-                />
+                >
+                  <Text className="font-semibold text-white">Unenroll</Text>
+                </TouchableOpacity>
               </View>
             ))
           )}
 
           <View className="mb-3 mt-2 flex-row items-center justify-between">
-            <Button
-              title="Previous"
+            <TouchableOpacity
+              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage <= 1 ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
               onPress={() => loadEnrollments(enrollmentsPage - 1)}
               disabled={loading || enrollmentsPage <= 1}
-            />
-            <Text className="text-app-text">Page {enrollmentsPage} / {enrollmentsTotalPages}</Text>
-            <Button
-              title="Next"
+            >
+              <Text className="font-semibold text-white">Previous</Text>
+            </TouchableOpacity>
+            <Text className="text-[13px] text-app-text">Page {enrollmentsPage} / {enrollmentsTotalPages}</Text>
+            <TouchableOpacity
+              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage >= enrollmentsTotalPages ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
               onPress={() => loadEnrollments(enrollmentsPage + 1)}
               disabled={loading || enrollmentsPage >= enrollmentsTotalPages}
-            />
+            >
+              <Text className="font-semibold text-white">Next</Text>
+            </TouchableOpacity>
           </View>
         </>
       )}
 
-      <Button
-         title  = "Back to Dashboard"
+      <TouchableOpacity
+         className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
          onPress={() => router.push("../dashboard")}
-         />
+      >
+        <Text className="font-semibold text-app-text">Back to Dashboard</Text>
+      </TouchableOpacity>
       </View>
     </ScrollView>
+
+    <Modal transparent visible={activeSelector !== null} animationType="fade" onRequestClose={() => setActiveSelector(null)}>
+      <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setActiveSelector(null)}>
+        <Pressable className="max-h-[70%] w-full rounded-2xl bg-white p-4" onPress={() => {}}>
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-[17px] font-bold text-[#0f172a]">{selectorTitle}</Text>
+            <TouchableOpacity onPress={() => setActiveSelector(null)}>
+              <Text className="text-[14px] font-semibold text-[#2563eb]">Done</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {selectorOptions.length === 0 ? (
+              <Text className="py-3 text-[#64748b]">No options available.</Text>
+            ) : (
+              selectorOptions.map((option) => {
+                const active =
+                  (activeSelector === "student" && studentId === option.value) ||
+                  (activeSelector === "course" && courseId === option.value) ||
+                  (activeSelector === "filterCourse" && viewCourseId === option.value);
+                return (
+                  <TouchableOpacity
+                    key={`${option.value || "all"}-${option.label}`}
+                    className={`mb-2 rounded-lg border px-3 py-3 ${
+                      active ? "border-[#2563eb] bg-[#eff6ff]" : "border-[#e5e7eb] bg-white"
+                    }`}
+                    onPress={() => handleSelectorPick(option.value)}
+                  >
+                    <Text className={`font-medium ${active ? "text-[#1d4ed8]" : "text-[#111827]"}`}>
+                      {option.label}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </Pressable>
+      </Pressable>
+    </Modal>
     </SafeAreaView>
   );
 }
