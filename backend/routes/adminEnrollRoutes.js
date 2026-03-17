@@ -66,12 +66,38 @@ router.get(
   authorizeRoles("admin"),
   async (req, res) => {
     try {
-      const enrollments = await Enrollment.find()
-        .populate("student", "name email")
-        .populate("course", "title code")
-        .sort({ createdAt: -1 });
+      const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
+      if (!hasPagination) {
+        const enrollments = await Enrollment.find()
+          .populate("student", "name email")
+          .populate("course", "title code")
+          .sort({ createdAt: -1 });
+        return res.json(enrollments);
+      }
 
-      res.json(enrollments);
+      const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+      const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+      const skip = (page - 1) * limit;
+
+      const [enrollments, total] = await Promise.all([
+        Enrollment.find()
+          .populate("student", "name email")
+          .populate("course", "title code")
+          .sort({ createdAt: -1 })
+          .skip(skip)
+          .limit(limit),
+        Enrollment.countDocuments(),
+      ]);
+
+      res.json({
+        items: enrollments,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
     } catch (err) {
       res.status(500).json({ message: err.message });
     }

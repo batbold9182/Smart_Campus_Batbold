@@ -16,7 +16,10 @@ export const getStudents = async () => {
   return res.data;
 };
 
-export const getSchedules = async () => {
-  const res = await api.get("/api/admin/schedules");
-  return res.data;
+export const getSchedules = async (page = 1, limit = 100) => {
+  const res = await api.get("/api/admin/schedules", {
+    params: { page, limit },
+  });
+
+  return Array.isArray(res.data) ? res.data : (res.data?.items || []);
 };

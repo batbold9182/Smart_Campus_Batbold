@@ -19,11 +19,32 @@ router.get("/unread-count", auth, async (req, res) => {
 // Get logged-in user's notifications
 router.get("/", auth, async (req, res) => {
   try {
-    const notifications = await Notification.find({
-      recipient: req.user.id
-    }).sort({ createdAt: -1 });
+    const filter = { recipient: req.user.id };
+    const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
 
-    res.json(notifications);
+    if (!hasPagination) {
+      const notifications = await Notification.find(filter).sort({ createdAt: -1 });
+      return res.json(notifications);
+    }
+
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+    const skip = (page - 1) * limit;
+
+    const [notifications, total] = await Promise.all([
+      Notification.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Notification.countDocuments(filter),
+    ]);
+
+    res.json({
+      items: notifications,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

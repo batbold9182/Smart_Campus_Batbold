@@ -34,8 +34,12 @@ export default function AdminDashboard() {
 
   const loadTodaySchedule = async () => {
     try {
-      const res = await api.get("/api/admin/schedules");
-      const allSchedules = Array.isArray(res.data) ? res.data : [];
+      const res = await api.get("/api/admin/schedules", {
+        params: { page: 1, limit: 100 },
+      });
+      const allSchedules: any[] = Array.isArray(res.data)
+        ? res.data
+        : (res.data?.items || []);
       const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
       const filtered = allSchedules.filter((item) => item?.day === today);
       setTodaySchedule(filtered);

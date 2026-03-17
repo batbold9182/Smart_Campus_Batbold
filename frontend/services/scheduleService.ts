@@ -24,14 +24,20 @@ export const createSchedule = async (data: {
   return res.data;
 };
 
-export const getCourses = async () => {
-  const res = await api.get("/api/courses");
-  return res.data;
+export const getCourses = async (page = 1, limit = 100) => {
+  const res = await api.get("/api/courses", {
+    params: { page, limit },
+  });
+
+  return Array.isArray(res.data) ? res.data : (res.data?.items || []);
 };
 
-export const getAdminSchedules = async () => {
-  const res = await api.get("/api/admin/schedules");
-  return res.data;
+export const getAdminSchedules = async (page = 1, limit = 100) => {
+  const res = await api.get("/api/admin/schedules", {
+    params: { page, limit },
+  });
+
+  return Array.isArray(res.data) ? res.data : (res.data?.items || []);
 };
 
 export const deleteSchedule = async (scheduleId: string) => {

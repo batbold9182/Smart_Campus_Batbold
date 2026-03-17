@@ -14,10 +14,13 @@ import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function AdminEnrollScreen() {
+  const ENROLLMENTS_LIMIT = 20;
   const router = useRouter();
   const [students, setStudents] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [enrollments, setEnrollments] = useState<any[]>([]);
+  const [enrollmentsPage, setEnrollmentsPage] = useState(1);
+  const [enrollmentsTotalPages, setEnrollmentsTotalPages] = useState(1);
   const [studentId, setStudentId] = useState("");
   const [courseId, setCourseId] = useState("");
   const [viewCourseId, setViewCourseId] = useState("");
@@ -32,6 +35,25 @@ export default function AdminEnrollScreen() {
     loadData();
   }, []);
 
+  const loadEnrollments = async (page = 1) => {
+    const enrollmentsRes = await api.get("/api/admin/enrollments", {
+      params: { page, limit: ENROLLMENTS_LIMIT },
+    });
+
+    if (Array.isArray(enrollmentsRes.data)) {
+      setEnrollments(enrollmentsRes.data);
+      setEnrollmentsPage(1);
+      setEnrollmentsTotalPages(1);
+      return;
+    }
+
+    const items = enrollmentsRes.data?.items || [];
+    const totalPages = Math.max(Number(enrollmentsRes.data?.pagination?.totalPages) || 1, 1);
+    setEnrollments(items);
+    setEnrollmentsPage(page);
+    setEnrollmentsTotalPages(totalPages);
+  };
+
   const loadData = async () => {
     try {
       setInitialLoading(true);
@@ -39,11 +61,10 @@ export default function AdminEnrollScreen() {
 
       const studentsRes = await api.get("/api/admin/students");
       const coursesRes = await api.get("/api/admin/courses");
-      const enrollmentsRes = await api.get("/api/admin/enrollments");
 
       setStudents(studentsRes.data || []);
       setCourses(coursesRes.data || []);
-      setEnrollments(enrollmentsRes.data || []);
+      await loadEnrollments(1);
     } catch (err: any) {
       console.error("Data loading error:", err);
 
@@ -82,8 +103,7 @@ export default function AdminEnrollScreen() {
       Alert.alert("Success", "Student enrolled successfully");
       console.log("Enrollment successful for studentId:", studentId, "courseId:", courseId);
 
-      const enrollmentsRes = await api.get("/api/admin/enrollments");
-      setEnrollments(enrollmentsRes.data || []);
+      await loadEnrollments(1);
 
       setStudentId("");
       setCourseId("");
@@ -122,7 +142,7 @@ export default function AdminEnrollScreen() {
       setLoading(true);
       await api.delete(`/api/admin/enrollments/${enrollmentId}`);
 
-      setEnrollments((prev) => prev.filter((enrollment) => enrollment._id !== enrollmentId));
+      await loadEnrollments(enrollmentsPage);
       setEnrollSuccess("Student unenrolled successfully");
     } catch (err: any) {
       const backendMessage = err.response?.data?.message || "";
@@ -263,6 +283,20 @@ export default function AdminEnrollScreen() {
               </View>
             ))
           )}
+
+          <View className="mb-3 mt-2 flex-row items-center justify-between">
+            <Button
+              title="Previous"
+              onPress={() => loadEnrollments(enrollmentsPage - 1)}
+              disabled={loading || enrollmentsPage <= 1}
+            />
+            <Text className="text-app-text">Page {enrollmentsPage} / {enrollmentsTotalPages}</Text>
+            <Button
+              title="Next"
+              onPress={() => loadEnrollments(enrollmentsPage + 1)}
+              disabled={loading || enrollmentsPage >= enrollmentsTotalPages}
+            />
+          </View>
         </>
       )}
 

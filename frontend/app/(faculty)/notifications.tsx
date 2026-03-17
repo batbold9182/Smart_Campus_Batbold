@@ -18,18 +18,35 @@ type NotificationItem = {
 };
 
 export default function NotificationsScreen() {
+  const NOTIFICATIONS_LIMIT = 20;
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
   
-  const loadNotifications = async () => {
+  const loadNotifications = async (nextPage = 1) => {
     try {
       setLoading(true);
       setError("");
 
-      const res = await api.get("/api/notifications");
-      setNotifications(res.data || []);
+      const res = await api.get("/api/notifications", {
+        params: { page: nextPage, limit: NOTIFICATIONS_LIMIT },
+      });
+
+      if (Array.isArray(res.data)) {
+        setNotifications(res.data);
+        setPage(1);
+        setTotalPages(1);
+        return;
+      }
+
+      const items = res.data?.items || [];
+      const pages = Math.max(Number(res.data?.pagination?.totalPages) || 1, 1);
+      setNotifications(items);
+      setPage(nextPage);
+      setTotalPages(pages);
     } catch (err: any) {
       const message = err.response?.data?.message || "Failed to load notifications";
       setError(message);
@@ -39,12 +56,12 @@ export default function NotificationsScreen() {
   };
 
   useEffect(() => {
-    loadNotifications();
+    loadNotifications(1);
   }, []);
 
   useFocusEffect(
     useCallback(() => {
-      loadNotifications();
+      loadNotifications(1);
     }, [])
   );
 
@@ -73,7 +90,7 @@ export default function NotificationsScreen() {
       <View className="flex-1 items-center justify-center bg-[#f5f7fb] p-5">
         <Text className="mb-3 text-2xl font-bold text-[#111827]">Notifications</Text>
         <Text className="mb-[14px] text-[#c62828]">{error}</Text>
-        <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2" onPress={loadNotifications}>
+        <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2" onPress={() => loadNotifications(1)}>
           <Text className="font-semibold text-white">Retry</Text>
         </TouchableOpacity>
       </View>
@@ -100,6 +117,24 @@ export default function NotificationsScreen() {
             </TouchableOpacity>
           )}
         />
+
+        <View className="mb-2 mt-1 flex-row items-center justify-between">
+          <TouchableOpacity
+            className={`rounded-lg px-4 py-2 ${page <= 1 || loading ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
+            onPress={() => loadNotifications(page - 1)}
+            disabled={loading || page <= 1}
+          >
+            <Text className="font-semibold text-white">Previous</Text>
+          </TouchableOpacity>
+          <Text className="text-[14px] text-[#374151]">Page {page} / {totalPages}</Text>
+          <TouchableOpacity
+            className={`rounded-lg px-4 py-2 ${page >= totalPages || loading ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
+            onPress={() => loadNotifications(page + 1)}
+            disabled={loading || page >= totalPages}
+          >
+            <Text className="font-semibold text-white">Next</Text>
+          </TouchableOpacity>
+        </View>
 
         <TouchableOpacity
           className="mt-3 items-center rounded-lg bg-blue-500 p-[14px]"

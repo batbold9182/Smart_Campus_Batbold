@@ -16,9 +16,12 @@ export const getMyCourses = async () => {
   return res.data;
 };
 
-export const getAllCourses = async () => {
-  const res = await api.get("/api/courses");
-  return res.data;
+export const getAllCourses = async (page = 1, limit = 50) => {
+  const res = await api.get("/api/courses", {
+    params: { page, limit },
+  });
+
+  return Array.isArray(res.data) ? res.data : (res.data?.items || []);
 };
 
 export const assignCourse = async (courseId: string, facultyId: string) => {

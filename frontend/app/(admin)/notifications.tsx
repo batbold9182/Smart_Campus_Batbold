@@ -22,7 +22,10 @@ type NotificationItem = {
 };
 
 export default function NotificationsScreen() {
+  const NOTIFICATIONS_LIMIT = 20;
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [title, setTitle] = useState("");
@@ -33,13 +36,27 @@ export default function NotificationsScreen() {
   
 
   
-  const loadNotifications = async () => {
+  const loadNotifications = async (nextPage = 1) => {
     try {
       setLoading(true);
       setError("");
 
-      const res = await api.get("/api/notifications");
-      setNotifications(res.data || []);
+      const res = await api.get("/api/notifications", {
+        params: { page: nextPage, limit: NOTIFICATIONS_LIMIT },
+      });
+
+      if (Array.isArray(res.data)) {
+        setNotifications(res.data);
+        setPage(1);
+        setTotalPages(1);
+        return;
+      }
+
+      const items = res.data?.items || [];
+      const pages = Math.max(Number(res.data?.pagination?.totalPages) || 1, 1);
+      setNotifications(items);
+      setPage(nextPage);
+      setTotalPages(pages);
     } catch (err: any) {
       const message = err.response?.data?.message || "Failed to load notifications";
       setError(message);
@@ -130,7 +147,7 @@ export default function NotificationsScreen() {
       <View className="flex-1 items-center justify-center bg-app-bg p-5">
         <Text className="mb-3 text-2xl font-bold text-app-text">Notifications</Text>
         <Text className="mb-[14px] text-[#c62828]">{error}</Text>
-        <Button title="Retry" onPress={loadNotifications} />
+        <Button title="Retry" onPress={() => loadNotifications(1)} />
       </View>
     );
   }
@@ -194,6 +211,21 @@ export default function NotificationsScreen() {
             </TouchableOpacity>
           )}
         />
+
+        <View className="mb-3 mt-2 flex-row items-center justify-between">
+          <Button
+            title="Previous"
+            onPress={() => loadNotifications(page - 1)}
+            disabled={loading || page <= 1}
+          />
+          <Text className="text-app-text">Page {page} / {totalPages}</Text>
+          <Button
+            title="Next"
+            onPress={() => loadNotifications(page + 1)}
+            disabled={loading || page >= totalPages}
+          />
+        </View>
+
         <Button title ="back to dashboard" onPress={() => router.push("../dashboard")} />
       </View>
     </ScrollView>

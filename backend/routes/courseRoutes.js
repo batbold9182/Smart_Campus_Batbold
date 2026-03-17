@@ -99,8 +99,30 @@ router.get("/", auth, async (req, res) => {
       return res.status(403).json({ message: "Access denied" });
     }
 
-    const courses = await Course.find().populate("faculty", "name email");
-    res.json(courses);
+    const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
+    if (!hasPagination) {
+      const courses = await Course.find().populate("faculty", "name email");
+      return res.json(courses);
+    }
+
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+    const skip = (page - 1) * limit;
+
+    const [courses, total] = await Promise.all([
+      Course.find().populate("faculty", "name email").skip(skip).limit(limit),
+      Course.countDocuments(),
+    ]);
+
+    res.json({
+      items: courses,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+      },
+    });
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
