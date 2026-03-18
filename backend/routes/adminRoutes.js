@@ -37,6 +37,7 @@ router.post(
         school,
         department,
         title,
+        employeeId,
         studentId,
         program,
         yearLevel,
@@ -52,10 +53,10 @@ router.post(
         return res.status(400).json({ message: "Name, email and password are required" });
       }
 
-      if (safeRole === "faculty" && (!school || !department || !title)) {
+      if (safeRole === "faculty" && (!school || !department || !title || !employeeId)) {
         return res
           .status(400)
-          .json({ message: "School, department and title are required for faculty" });
+          .json({ message: "School, department, title and employee ID are required for faculty" });
       }
 
       if (safeRole === "faculty" && !isValidAcademicSelection(school, department)) {
@@ -87,6 +88,7 @@ router.post(
         school: safeRole === "faculty" || safeRole === "student" ? String(school).trim() : null,
         department: safeRole === "faculty" || safeRole === "student" ? String(department).trim() : null,
         title: safeRole === "faculty" ? String(title).trim() : null,
+        employeeId: safeRole === "faculty" ? String(employeeId).trim() : null,
         studentId: safeRole === "student" ? String(studentId).trim() : null,
         program: safeRole === "student" ? String(program).trim() : null,
         yearLevel: safeRole === "student" ? Number(yearLevel) : null,
@@ -105,6 +107,7 @@ router.post(
           school: createdUser.school,
           department: createdUser.department,
           title: createdUser.title,
+          employeeId: createdUser.employeeId,
           studentId: createdUser.studentId,
           program: createdUser.program,
           yearLevel: createdUser.yearLevel,
@@ -169,6 +172,62 @@ router.delete("/users/:id", auth, async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// ✅ Update user information (admin only)
+router.patch("/users/:id", auth, async (req, res) => {
+  try {
+    if (req.user.role !== "admin") {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const { name, email, school, department, title, employeeId, studentId, program, yearLevel } = req.body;
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    // Check if email is being changed and already exists
+    if (email && email !== user.email) {
+      const emailExists = await User.findOne({ email });
+      if (emailExists) return res.status(400).json({ message: "Email already in use" });
+      user.email = email;
+    }
+
+    // Update basic fields
+    if (name) user.name = name;
+    
+    // Update academic fields
+    if (school !== undefined) user.school = school || null;
+    if (department !== undefined) user.department = department || null;
+
+    // Update faculty-specific fields
+    if (user.role === "faculty" && title !== undefined) {
+      user.title = title || null;
+    }
+    if (user.role === "faculty" && employeeId !== undefined) {
+      user.employeeId = employeeId || null;
+    }
+
+    // Update student-specific fields
+    if (user.role === "student") {
+      if (studentId !== undefined) user.studentId = studentId || null;
+      if (program !== undefined) {
+        // Validate program if changing school/department
+        const validateSchool = school || user.school;
+        const validateDept = department || user.department;
+        if (validateSchool && validateDept && program && !isValidAcademicSelection(validateSchool, validateDept, program)) {
+          return res.status(400).json({ message: "Invalid program for selected school/department" });
+        }
+        user.program = program || null;
+      }
+      if (yearLevel !== undefined) user.yearLevel = yearLevel || null;
+    }
+
+    await user.save();
+    res.json({ message: "User updated successfully", user });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
 //Disable / Enable user (admin only)
 
 router.patch("/users/:id/toggle", auth, async (req, res) => {

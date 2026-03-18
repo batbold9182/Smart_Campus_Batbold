@@ -12,6 +12,7 @@ export const createUser = async (
     school?: string;
     department?: string;
     title?: string;
+    employeeId?: string;
     profile?: string;
     studentId?: string;
     program?: string;
@@ -47,5 +48,10 @@ export const toggleUserStatus = async (id: string) => {
 
 export const getAcademicOptions = async () => {
   const res = await api.get("/api/admin/academic-options");
+  return res.data;
+};
+
+export const updateUser = async (id: string, updates: any) => {
+  const res = await api.patch(`/api/admin/users/${id}`, updates);
   return res.data;
 };

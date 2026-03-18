@@ -41,6 +41,7 @@ export default function CreateUserScreen() {
   const [school, setSchool] = useState("");
   const [department, setDepartment] = useState("");
   const [facultyTitle, setFacultyTitle] = useState("");
+  const [employeeId, setEmployeeId] = useState("");
   const [studentId, setStudentId] = useState("");
   const [program, setProgram] = useState("");
   const [yearLevel, setYearLevel] = useState("");
@@ -79,8 +80,8 @@ export default function CreateUserScreen() {
       return;
     }
 
-    if (selectedRole === "faculty" && (!school.trim() || !department.trim() || !facultyTitle.trim())) {
-      setMessage("❌ School, department and title are required for faculty");
+    if (selectedRole === "faculty" && (!school.trim() || !department.trim() || !facultyTitle.trim() || !employeeId.trim())) {
+      setMessage("❌ School, department, title and employee ID are required for faculty");
       return;
     }
 
@@ -102,6 +103,7 @@ export default function CreateUserScreen() {
         school: school.trim() || undefined,
         department: department.trim() || undefined,
         title: selectedRole === "faculty" ? facultyTitle.trim() : undefined,
+        employeeId: selectedRole === "faculty" ? employeeId.trim() : undefined,
         studentId: selectedRole === "student" ? studentId.trim() : undefined,
         program: selectedRole === "student" ? program.trim() : undefined,
         yearLevel: selectedRole === "student" ? parsedYear : undefined,
@@ -113,6 +115,7 @@ export default function CreateUserScreen() {
       setSchool("");
       setDepartment("");
       setFacultyTitle("");
+      setEmployeeId("");
       setStudentId("");
       setProgram("");
       setYearLevel("");
@@ -274,13 +277,22 @@ export default function CreateUserScreen() {
             />
 
             {selectedRole === "faculty" ? (
-              <TextInput
-                placeholder="Title (e.g. Instructor)"
-                placeholderTextColor="#6b7280"
-                value={facultyTitle}
-                onChangeText={setFacultyTitle}
-                className={inputClassName}
-              />
+              <>
+                <TextInput
+                  placeholder="Title (e.g. Instructor)"
+                  placeholderTextColor="#6b7280"
+                  value={facultyTitle}
+                  onChangeText={setFacultyTitle}
+                  className={inputClassName}
+                />
+                <TextInput
+                  placeholder="Employee ID"
+                  placeholderTextColor="#6b7280"
+                  value={employeeId}
+                  onChangeText={setEmployeeId}
+                  className={inputClassName}
+                />
+              </>
             ) : (
               <>
                 <SelectField

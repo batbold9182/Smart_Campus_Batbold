@@ -36,7 +36,6 @@ app.use("/api/notifications", notificationRoutes);
 app.use("/api/admin", scheduleRoutes);
 
 app.use("/api/schedule", studentScheduleRoutes);
-app.use("/api/schedules", studentScheduleRoutes);
 
 app.use("/api/admin", adminStudentScheduleRoutes);
 
