@@ -14,7 +14,7 @@ import { adminStyles } from "../../styles/adminStyles";
 import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
 
 export default function NotificationsScreen() {
-  const NOTIFICATIONS_LIMIT = 20;
+  const NOTIFICATIONS_LIMIT = 5;
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);

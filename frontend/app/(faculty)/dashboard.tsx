@@ -1,4 +1,4 @@
-import { View, Text, ScrollView, Pressable, TouchableOpacity } from "react-native";
+import { View, Text, ScrollView, Pressable, TouchableOpacity, Image, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import {logout} from "../../services/authService";
@@ -9,8 +9,10 @@ import useAuthGuard from "../../hooks/useAuthGuard";
 import { formatTime, formatDate } from "../../services/clockService";
 
 export default function FacultyDashboard() {
+  const { width } = useWindowDimensions();
   const { loading, user: authUser } = useAuthGuard();
   const router = useRouter();
+  const headerLogoSize = width >= 1024 ? 30 : width >= 768 ? 34 : 38;
   const [count, setCount] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [time, setTime] = useState(new Date());
@@ -69,10 +71,18 @@ export default function FacultyDashboard() {
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
-      <View className="mb-4 flex-row items-start justify-between">
-        <View className="flex-1 pr-2">
-          <Text className="text-[22px] font-bold text-app-text" numberOfLines={1}>Dashboard</Text>
-          <Text className="mt-1 text-app-muted">Welcome, {user?.name}</Text>
+      <View className="mb-4 flex-row items-center justify-between">
+        <View className="flex-1 flex-row items-center pr-2">
+          <Image
+            source={require("../../assets/images/Logo_VIZJA.png")}
+            className="mr-2"
+            style={{ width: headerLogoSize, height: headerLogoSize }}
+            resizeMode="contain"
+          />
+          <View className="flex-1">
+            <Text className="text-[22px] font-bold text-app-text" numberOfLines={1}>Dashboard</Text>
+            <Text className="mt-1 text-app-muted">Welcome, {user?.name}</Text>
+          </View>
         </View>
 
         <View className="flex-row items-center">
