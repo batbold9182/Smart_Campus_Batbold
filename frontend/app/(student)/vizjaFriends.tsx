@@ -60,7 +60,7 @@ const buddySections: {
   },
 ];
 
-export default function RandomChat() {
+export default function VizjaFriends() {
   const router = useRouter();
   const socketRef = useRef<Socket | null>(null);
   const scrollRef = useRef<ScrollView | null>(null);

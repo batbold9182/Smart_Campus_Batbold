@@ -213,7 +213,7 @@ export default function StudentDashboard() {
         <Pressable
           className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
           style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/(student)/randomChat")}
+          onPress={() => router.push("/(student)/vizjaFriends")}
         >         
           <Text className="mb-2 text-[30px]">👥❤️</Text>
           <Text className="font-semibold">Vizja friends</Text>
