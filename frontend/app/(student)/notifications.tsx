@@ -6,7 +6,7 @@ import { studentStyles } from "../../styles/studentStyles";
 import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
 
 export default function NotificationsScreen() {
-  const NOTIFICATIONS_LIMIT = 5;
+  const NOTIFICATIONS_LIMIT = 6;
   const [notifications, setNotifications] = useState<NotificationItem[]>([]);
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
