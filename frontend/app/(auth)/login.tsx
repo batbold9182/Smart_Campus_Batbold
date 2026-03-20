@@ -152,6 +152,14 @@ export default function LoginScreen() {
             {passwordError ? <Text style={styles.fieldError}>{passwordError}</Text> : null}
 
             <TouchableOpacity
+              style={styles.forgotButton}
+              onPress={() => router.push("/(auth)/forgot-password")}
+              disabled={isLoading}
+            >
+              <Text style={styles.forgotButtonText}>Forgot password?</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
               style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
               onPress={handleLogin}
               disabled={isLoading}
@@ -164,6 +172,14 @@ export default function LoginScreen() {
             </TouchableOpacity>
 
             {message ? <Text style={styles.message}>{message}</Text> : null}
+
+            <TouchableOpacity
+              style={styles.registerButton}
+              onPress={() => router.push("/(auth)/register")}
+              disabled={isLoading}
+            >
+              <Text style={styles.registerButtonText}>Don&apos;t have an account? Register</Text>
+            </TouchableOpacity>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -270,5 +286,21 @@ const styles = StyleSheet.create({
     color: theme.colors.fieldError,
     marginTop: -6,
     marginBottom: 10,
+  },
+  forgotButton: {
+    alignSelf: "flex-end",
+    marginBottom: 8,
+  },
+  forgotButtonText: {
+    color: theme.colors.primary,
+    fontWeight: "600",
+  },
+  registerButton: {
+    marginTop: 12,
+    alignItems: "center",
+  },
+  registerButtonText: {
+    color: theme.colors.primary,
+    fontWeight: "600",
   },
 });

@@ -21,6 +21,11 @@ const LIBRARY_CATEGORIES = [
   { label: "Physics", value: "physics" },
   { label: "Psychology", value: "psychology" },
   { label: "Business", value: "business" },
+    { label: "Biology", value: "biology" },
+    { label: "History", value: "history" },
+    { label: "Literature", value: "literature" },
+    { label: "Art", value: "art" },
+    { label: "Music", value: "music" },
 ];
 
 

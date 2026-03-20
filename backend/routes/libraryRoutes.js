@@ -11,6 +11,11 @@ const CATEGORY_LABEL_MAP = {
   physics: "physics",
   psychology: "psychology",
   business: "business",
+  biology: "biology",
+  history: "history",
+  literature: "literature",
+  art: "art",
+  music: "music",
 };
 
 const toNumberOr = (value, fallback) => {
