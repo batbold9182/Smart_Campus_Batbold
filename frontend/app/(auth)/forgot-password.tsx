@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
@@ -12,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { forgotPassword } from "../../services/authService";
-import { theme } from "../../styles/theme";
+import { rootStyles } from "../../styles/rootStyles";
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
@@ -45,14 +44,14 @@ export default function ForgotPasswordScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.card}>
-          <Text style={styles.title}>Forgot Password</Text>
-          <Text style={styles.subtitle}>Enter your account email to generate a reset token.</Text>
+    <SafeAreaView className="flex-1 bg-app-bg">
+      <ScrollView contentContainerClassName="flex-grow justify-center p-5" keyboardShouldPersistTaps="handled">
+        <View className="bg-app-surface rounded-2xl p-5 elevation-3">
+          <Text className="text-[24px] font-bold text-app-text mb-[6px]">Forgot Password</Text>
+          <Text className="text-app-muted mb-4">Enter your account email to generate a reset token.</Text>
 
           <TextInput
-            style={styles.input}
+            className={rootStyles.input + " mb-3"}
             placeholder="Email"
             placeholderTextColor="#6b7280"
             autoCapitalize="none"
@@ -62,127 +61,33 @@ export default function ForgotPasswordScreen() {
           />
 
           <TouchableOpacity
-            style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+            className={`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center${loading ? " opacity-75" : ""}`}
             onPress={handleRequestReset}
             disabled={loading}
           >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Send Reset Token</Text>}
+            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-[15px] font-bold">Send Reset Token</Text>}
           </TouchableOpacity>
 
-          {message ? <Text style={styles.message}>{message}</Text> : null}
+          {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
           {devToken ? (
-            <View style={styles.devCard}>
-              <Text style={styles.devTitle}>Development Token</Text>
-              <Text selectable style={styles.devToken}>{devToken}</Text>
+            <View className="mt-[14px] border border-app-border rounded-[10px] p-3 bg-[#f8fafc]">
+              <Text className="font-bold text-app-text mb-[6px]">Development Token</Text>
+              <Text selectable className="text-[#374151] mb-[10px]">{devToken}</Text>
               <TouchableOpacity
-                style={styles.secondaryButton}
+                className="items-center justify-center rounded-lg border border-blue-600 py-[10px]"
                 onPress={() => router.push({ pathname: "/(auth)/reset-password", params: { token: devToken } })}
               >
-                <Text style={styles.secondaryButtonText}>Continue to Reset Password</Text>
+                <Text className="text-blue-600 font-bold">Continue to Reset Password</Text>
               </TouchableOpacity>
             </View>
           ) : null}
 
-          <TouchableOpacity style={styles.secondaryLink} onPress={() => router.replace("/(auth)/login")}>
-            <Text style={styles.secondaryLinkText}>Back to Login</Text>
+          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/(auth)/login")}>
+            <Text className="text-blue-600 font-semibold">Back to Login</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: theme.colors.appBg,
-  },
-  container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 16,
-    padding: 20,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: theme.colors.text,
-    marginBottom: 6,
-  },
-  subtitle: {
-    color: theme.colors.muted,
-    marginBottom: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    color: theme.colors.text,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 12,
-  },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 10,
-    minHeight: 48,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButtonDisabled: {
-    opacity: 0.75,
-  },
-  primaryButtonText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  message: {
-    marginTop: 12,
-    color: theme.colors.muted,
-  },
-  devCard: {
-    marginTop: 14,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 10,
-    padding: 12,
-    backgroundColor: "#f8fafc",
-  },
-  devTitle: {
-    fontWeight: "700",
-    color: theme.colors.text,
-    marginBottom: 6,
-  },
-  devToken: {
-    color: "#374151",
-    marginBottom: 10,
-  },
-  secondaryButton: {
-    alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: theme.colors.primary,
-    paddingVertical: 10,
-  },
-  secondaryButtonText: {
-    color: theme.colors.primary,
-    fontWeight: "700",
-  },
-  secondaryLink: {
-    marginTop: 14,
-    alignItems: "center",
-  },
-  secondaryLinkText: {
-    color: theme.colors.primary,
-    fontWeight: "600",
-  },
-});

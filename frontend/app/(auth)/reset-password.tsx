@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
@@ -12,7 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { resetPassword } from "../../services/authService";
-import { theme } from "../../styles/theme";
+import { rootStyles } from "../../styles/rootStyles";
 
 export default function ResetPasswordScreen() {
   const params = useLocalSearchParams<{ token?: string }>();
@@ -56,14 +55,14 @@ export default function ResetPasswordScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
-      <ScrollView contentContainerStyle={styles.container} keyboardShouldPersistTaps="handled">
-        <View style={styles.card}>
-          <Text style={styles.title}>Reset Password</Text>
-          <Text style={styles.subtitle}>Enter your reset token and set a new password.</Text>
+    <SafeAreaView className="flex-1 bg-app-bg">
+      <ScrollView contentContainerClassName="flex-grow justify-center p-5" keyboardShouldPersistTaps="handled">
+        <View className="bg-app-surface rounded-2xl p-5 elevation-3">
+          <Text className="text-[24px] font-bold text-app-text mb-[6px]">Reset Password</Text>
+          <Text className="text-app-muted mb-4">Enter your reset token and set a new password.</Text>
 
           <TextInput
-            style={styles.input}
+            className={rootStyles.input + " mb-3"}
             placeholder="Reset token"
             placeholderTextColor="#6b7280"
             autoCapitalize="none"
@@ -72,7 +71,7 @@ export default function ResetPasswordScreen() {
           />
 
           <TextInput
-            style={styles.input}
+            className={rootStyles.input + " mb-3"}
             placeholder="New password"
             placeholderTextColor="#6b7280"
             secureTextEntry
@@ -81,7 +80,7 @@ export default function ResetPasswordScreen() {
           />
 
           <TextInput
-            style={styles.input}
+            className={rootStyles.input + " mb-3"}
             placeholder="Confirm new password"
             placeholderTextColor="#6b7280"
             secureTextEntry
@@ -90,85 +89,20 @@ export default function ResetPasswordScreen() {
           />
 
           <TouchableOpacity
-            style={[styles.primaryButton, loading && styles.primaryButtonDisabled]}
+            className={`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center${loading ? " opacity-75" : ""}`}
             onPress={handleReset}
             disabled={loading}
           >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.primaryButtonText}>Reset Password</Text>}
+            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-[15px] font-bold">Reset Password</Text>}
           </TouchableOpacity>
 
-          {message ? <Text style={styles.message}>{message}</Text> : null}
+          {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
-          <TouchableOpacity style={styles.secondaryLink} onPress={() => router.replace("/(auth)/login")}>
-            <Text style={styles.secondaryLinkText}>Back to Login</Text>
+          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/(auth)/login")}>
+            <Text className="text-blue-600 font-semibold">Back to Login</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: theme.colors.appBg,
-  },
-  container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 16,
-    padding: 20,
-    elevation: 3,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "700",
-    color: theme.colors.text,
-    marginBottom: 6,
-  },
-  subtitle: {
-    color: theme.colors.muted,
-    marginBottom: 16,
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    color: theme.colors.text,
-    borderRadius: 10,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 12,
-  },
-  primaryButton: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: 10,
-    minHeight: 48,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  primaryButtonDisabled: {
-    opacity: 0.75,
-  },
-  primaryButtonText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "700",
-  },
-  message: {
-    marginTop: 12,
-    color: theme.colors.muted,
-  },
-  secondaryLink: {
-    marginTop: 14,
-    alignItems: "center",
-  },
-  secondaryLinkText: {
-    color: theme.colors.primary,
-    fontWeight: "600",
-  },
-});

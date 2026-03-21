@@ -3,7 +3,6 @@ import {
   View,
   Text,
   TextInput,
-  StyleSheet,
   TouchableOpacity,
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -16,7 +15,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { login } from "../../services/authService";
 import { router } from "expo-router";
 import { setToken } from "../../services/tokenStorage";
-import { theme } from "../../styles/theme";
+import { rootStyles } from "../../styles/rootStyles";
 
 
 export default function LoginScreen() {
@@ -85,28 +84,28 @@ export default function LoginScreen() {
 
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView className="flex-1 bg-app-bg">
       <KeyboardAvoidingView
-        style={styles.container}
+        className="flex-1 px-5 relative overflow-hidden"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View style={styles.backgroundShapeTop} />
-        <View style={styles.backgroundShapeBottom} />
+        <View className="absolute top-[-120px] right-[-100px] w-[260px] h-[260px] rounded-full bg-[#c7dcff]" />
+        <View className="absolute bottom-[-130px] left-[-120px] w-[280px] h-[280px] rounded-full bg-[#d9e8ff]" />
 
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerClassName="flex-grow justify-center py-6"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.card}>
+          <View className="bg-app-surface rounded-[18px] p-5 shadow-card elevation-4">
             <Image
               source={require("../../assets/images/Logo_VIZJA.png")}
-              style={[styles.logo, { width: logoSize, height: logoSize }]}
+              style={{ width: logoSize, height: logoSize, alignSelf: "center", marginBottom: 8 }}
               resizeMode="contain"
             />
-            <Text style={styles.brand}>Vizja Smart Campus</Text>
-            <Text style={styles.title}>Welcome Back</Text>
-            <Text style={styles.subtitle}>Sign in to continue to your dashboard</Text>
+            <Text className="text-[14px] font-bold text-blue-600 mb-[6px] text-center">Vizja Smart Campus</Text>
+            <Text className="text-[28px] font-bold text-app-text text-center">Welcome Back</Text>
+            <Text className="mt-1 mb-[18px] text-app-muted text-center">Sign in to continue to your dashboard</Text>
 
             <TextInput
               placeholder="Email"
@@ -121,14 +120,14 @@ export default function LoginScreen() {
                   setMessage("");
                 }
               }}
-              style={styles.input}
+              className={rootStyles.input + " mb-3"}
               autoCapitalize="none"
               keyboardType="email-address"
               autoCorrect={false}
               textContentType="emailAddress"
               autoComplete="email"
             />
-            {emailError ? <Text style={styles.fieldError}>{emailError}</Text> : null}
+            {emailError ? <Text className="text-[#B00020] -mt-1.5 mb-[10px]">{emailError}</Text> : null}
 
             <TextInput
               placeholder="Password"
@@ -144,41 +143,41 @@ export default function LoginScreen() {
                 }
               }}
               secureTextEntry
-              style={styles.input}
+              className={rootStyles.input + " mb-3"}
               autoCorrect={false}
               textContentType="password"
               autoComplete="password"
             />
-            {passwordError ? <Text style={styles.fieldError}>{passwordError}</Text> : null}
+            {passwordError ? <Text className="text-[#B00020] -mt-1.5 mb-[10px]">{passwordError}</Text> : null}
 
             <TouchableOpacity
-              style={styles.forgotButton}
+              className="self-end mb-2"
               onPress={() => router.push("/(auth)/forgot-password")}
               disabled={isLoading}
             >
-              <Text style={styles.forgotButtonText}>Forgot password?</Text>
+              <Text className="text-blue-600 font-semibold">Forgot password?</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[styles.loginButton, isLoading && styles.loginButtonDisabled]}
+              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
               onPress={handleLogin}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.loginButtonText}>Login</Text>
+                <Text className="text-white text-[16px] font-bold">Login</Text>
               )}
             </TouchableOpacity>
 
-            {message ? <Text style={styles.message}>{message}</Text> : null}
+            {message ? <Text className="mt-[14px] text-center text-[#b91c1c]">{message}</Text> : null}
 
             <TouchableOpacity
-              style={styles.registerButton}
+              className="mt-3 items-center"
               onPress={() => router.push("/(auth)/register")}
               disabled={isLoading}
             >
-              <Text style={styles.registerButtonText}>Don&apos;t have an account? Register</Text>
+              <Text className="text-blue-600 font-semibold">Don&apos;t have an account? Register</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -187,120 +186,3 @@ export default function LoginScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  logo:{
-    alignSelf: "center",
-    marginBottom: 8,
-  },
-  safe: {
-    flex: 1,
-    backgroundColor: theme.colors.appBg,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    position: "relative",
-    overflow: "hidden",
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingVertical: 24,
-  },
-  backgroundShapeTop: {
-    position: "absolute",
-    top: -120,
-    right: -100,
-    width: 260,
-    height: 260,
-    borderRadius: 130,
-    backgroundColor: "#c7dcff",
-  },
-  backgroundShapeBottom: {
-    position: "absolute",
-    bottom: -130,
-    left: -120,
-    width: 280,
-    height: 280,
-    borderRadius: 140,
-    backgroundColor: "#d9e8ff",
-  },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 18,
-    padding: 20,
-    boxShadow: "0px 8px 14px rgba(0, 0, 0, 0.08)",
-    elevation: 4,
-  },
-  brand: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: theme.colors.primary,
-    marginBottom: 6,
-    textAlign: "center",
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: theme.colors.text,
-    textAlign: "center",
-  },
-  subtitle: {
-    marginTop: 4,
-    marginBottom: 18,
-    color: theme.colors.muted,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    color: theme.colors.text,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 12,
-    borderRadius: 10,
-  },
-  loginButton: {
-    marginTop: 6,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 48,
-  },
-  loginButtonDisabled: {
-    opacity: 0.7,
-  },
-  loginButtonText: {
-    color: theme.colors.surface,
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  message: {
-    marginTop: 14,
-    textAlign: "center",
-    color: theme.colors.danger,
-  },
-  fieldError: {
-    color: theme.colors.fieldError,
-    marginTop: -6,
-    marginBottom: 10,
-  },
-  forgotButton: {
-    alignSelf: "flex-end",
-    marginBottom: 8,
-  },
-  forgotButtonText: {
-    color: theme.colors.primary,
-    fontWeight: "600",
-  },
-  registerButton: {
-    marginTop: 12,
-    alignItems: "center",
-  },
-  registerButtonText: {
-    color: theme.colors.primary,
-    fontWeight: "600",
-  },
-});

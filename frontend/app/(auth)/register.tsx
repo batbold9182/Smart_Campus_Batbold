@@ -5,7 +5,6 @@ import {
   Platform,
   SafeAreaView,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
@@ -13,7 +12,7 @@ import {
 } from "react-native";
 import { router } from "expo-router";
 import { register } from "../../services/authService";
-import { theme } from "../../styles/theme";
+import { rootStyles } from "../../styles/rootStyles";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -67,19 +66,19 @@ export default function RegisterScreen() {
   };
 
   return (
-    <SafeAreaView style={styles.safe}>
+    <SafeAreaView className="flex-1 bg-app-bg">
       <KeyboardAvoidingView
-        style={styles.container}
+        className="flex-1 px-5"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
+          contentContainerClassName="flex-grow justify-center py-6"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View style={styles.card}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Register to access Vizja Smart Campus</Text>
+          <View className="bg-app-surface rounded-[18px] p-5 elevation-4">
+            <Text className="text-[28px] font-bold text-app-text text-center">Create Account</Text>
+            <Text className="mt-1 mb-[18px] text-app-muted text-center">Register to access Vizja Smart Campus</Text>
 
             <TextInput
               placeholder="Full name"
@@ -91,7 +90,7 @@ export default function RegisterScreen() {
                   setMessage("");
                 }
               }}
-              style={styles.input}
+              className={rootStyles.input + " mb-3"}
               autoCapitalize="words"
               autoCorrect={false}
             />
@@ -106,7 +105,7 @@ export default function RegisterScreen() {
                   setMessage("");
                 }
               }}
-              style={styles.input}
+              className={rootStyles.input + " mb-3"}
               autoCapitalize="none"
               keyboardType="email-address"
               autoCorrect={false}
@@ -123,7 +122,7 @@ export default function RegisterScreen() {
                 }
               }}
               secureTextEntry
-              style={styles.input}
+              className={rootStyles.input + " mb-3"}
               autoCorrect={false}
             />
 
@@ -138,30 +137,30 @@ export default function RegisterScreen() {
                 }
               }}
               secureTextEntry
-              style={styles.input}
+              className={rootStyles.input + " mb-3"}
               autoCorrect={false}
             />
 
             <TouchableOpacity
-              style={[styles.primaryButton, isLoading && styles.primaryButtonDisabled]}
+              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
               onPress={handleRegister}
               disabled={isLoading}
             >
               {isLoading ? (
                 <ActivityIndicator color="#ffffff" />
               ) : (
-                <Text style={styles.primaryButtonText}>Register</Text>
+                <Text className="text-white text-[16px] font-bold">Register</Text>
               )}
             </TouchableOpacity>
 
-            {message ? <Text style={styles.message}>{message}</Text> : null}
+            {message ? <Text className="mt-[14px] text-center text-[#b91c1c]">{message}</Text> : null}
 
             <TouchableOpacity
-              style={styles.secondaryButton}
+              className="mt-[10px] items-center justify-center min-h-[42px]"
               onPress={() => router.replace("/(auth)/login")}
               disabled={isLoading}
             >
-              <Text style={styles.secondaryButtonText}>Back to Login</Text>
+              <Text className="text-blue-600 text-[14px] font-semibold">Back to Login</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -170,78 +169,4 @@ export default function RegisterScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  safe: {
-    flex: 1,
-    backgroundColor: theme.colors.appBg,
-  },
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-  },
-  scrollContent: {
-    flexGrow: 1,
-    justifyContent: "center",
-    paddingVertical: 24,
-  },
-  card: {
-    backgroundColor: theme.colors.surface,
-    borderRadius: 18,
-    padding: 20,
-    elevation: 4,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "700",
-    color: theme.colors.text,
-    textAlign: "center",
-  },
-  subtitle: {
-    marginTop: 4,
-    marginBottom: 18,
-    color: theme.colors.muted,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    backgroundColor: theme.colors.surface,
-    color: theme.colors.text,
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-    marginBottom: 12,
-    borderRadius: 10,
-  },
-  primaryButton: {
-    marginTop: 6,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 48,
-  },
-  primaryButtonDisabled: {
-    opacity: 0.7,
-  },
-  primaryButtonText: {
-    color: theme.colors.surface,
-    fontSize: 16,
-    fontWeight: "700",
-  },
-  secondaryButton: {
-    marginTop: 10,
-    alignItems: "center",
-    justifyContent: "center",
-    minHeight: 42,
-  },
-  secondaryButtonText: {
-    color: theme.colors.primary,
-    fontSize: 14,
-    fontWeight: "600",
-  },
-  message: {
-    marginTop: 14,
-    textAlign: "center",
-    color: theme.colors.danger,
-  },
-});
+
