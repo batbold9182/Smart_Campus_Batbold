@@ -4,6 +4,8 @@ const authorizeRoles = require("../middleware/roleMiddleware");
 const Course = require("../models/course");
 const Enrollment = require("../models/enrollment");
 const Attendance = require("../models/attendance");
+const Schedule = require("../models/schedule");
+const StudentSchedule = require("../models/studentSchedule");
 
 const router = express.Router();
 
@@ -25,14 +27,55 @@ const formatDateKey = (dateValue) => {
   return `${year}-${month}-${day}`;
 };
 
-const formatAttendance = (record) => ({
-  id: String(record._id),
-  status: record.status,
-  remarks: record.remarks || "",
-  date: formatDateKey(record.date),
-  markedAt: record.markedAt,
-  updatedAt: record.updatedAt,
-});
+const formatAttendance = (record) => {
+  if (!record) {
+    return null;
+  }
+
+  return {
+    id: String(record._id),
+    status: record.status,
+    remarks: record.remarks || "",
+    date: formatDateKey(record.date),
+    markedAt: record.markedAt,
+    updatedAt: record.updatedAt,
+  };
+};
+
+const getDayNameFromDate = (dateValue) =>
+  ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][dateValue.getUTCDay()];
+
+const loadStudentSchedulesForDay = async (studentId, dayName) => {
+  const assignedRows = await StudentSchedule.find({ student: studentId }).populate({
+    path: "schedule",
+    match: { day: dayName },
+    populate: [
+      { path: "course", select: "title code credits name" },
+      { path: "faculty", select: "name email" },
+    ],
+  });
+
+  const assignedSchedules = assignedRows.map((row) => row.schedule).filter(Boolean);
+  if (assignedSchedules.length > 0) {
+    return assignedSchedules;
+  }
+
+  const enrollments = await Enrollment.find({ student: studentId }).select("course").lean();
+  const courseIds = enrollments.map((item) => item.course);
+
+  if (courseIds.length === 0) {
+    return [];
+  }
+
+  return Schedule.find({
+    course: { $in: courseIds },
+    day: dayName,
+  })
+    .populate("course", "title code credits name")
+    .populate("faculty", "name email")
+    .sort({ startTime: 1 })
+    .lean();
+};
 
 router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res) => {
   try {
@@ -196,5 +239,157 @@ router.put(
     }
   }
 );
+
+router.get("/student/summary", auth, authorizeRoles("student"), async (req, res) => {
+  try {
+    const enrollments = await Enrollment.find({ student: req.user.id })
+      .populate({
+        path: "course",
+        select: "title code credits faculty",
+        populate: { path: "faculty", select: "name" },
+      })
+      .lean();
+
+    const attendanceRecords = await Attendance.find({ student: req.user.id })
+      .sort({ date: -1, updatedAt: -1 })
+      .lean();
+
+    const totals = {
+      presentCount: 0,
+      absentCount: 0,
+      lateCount: 0,
+      excusedCount: 0,
+    };
+
+    const groupedAttendance = new Map();
+
+    attendanceRecords.forEach((record) => {
+      if (record.status === "present") totals.presentCount += 1;
+      if (record.status === "absent") totals.absentCount += 1;
+      if (record.status === "late") totals.lateCount += 1;
+      if (record.status === "excused") totals.excusedCount += 1;
+
+      const courseKey = String(record.course);
+      const current = groupedAttendance.get(courseKey) || {
+        presentCount: 0,
+        absentCount: 0,
+        lateCount: 0,
+        excusedCount: 0,
+        totalMarked: 0,
+        latestAttendance: null,
+      };
+
+      current.totalMarked += 1;
+      current.latestAttendance = current.latestAttendance || record;
+
+      if (record.status === "present") current.presentCount += 1;
+      if (record.status === "absent") current.absentCount += 1;
+      if (record.status === "late") current.lateCount += 1;
+      if (record.status === "excused") current.excusedCount += 1;
+
+      groupedAttendance.set(courseKey, current);
+    });
+
+    const items = enrollments
+      .filter((enrollment) => enrollment.course)
+      .map((enrollment) => {
+        const course = enrollment.course;
+        const stats = groupedAttendance.get(String(course._id)) || {
+          presentCount: 0,
+          absentCount: 0,
+          lateCount: 0,
+          excusedCount: 0,
+          totalMarked: 0,
+          latestAttendance: null,
+        };
+
+        return {
+          course: {
+            id: String(course._id),
+            title: course.title,
+            code: course.code,
+            credits: course.credits,
+            facultyName: course.faculty?.name || "Unassigned",
+          },
+          summary: {
+            presentCount: stats.presentCount,
+            absentCount: stats.absentCount,
+            lateCount: stats.lateCount,
+            excusedCount: stats.excusedCount,
+            totalMarked: stats.totalMarked,
+          },
+          latestAttendance: stats.latestAttendance ? formatAttendance(stats.latestAttendance) : null,
+        };
+      })
+      .sort((left, right) => left.course.title.localeCompare(right.course.title));
+
+    res.json({
+      items,
+      summary: {
+        courseCount: items.length,
+        totalMarked: attendanceRecords.length,
+        presentCount: totals.presentCount,
+        absentCount: totals.absentCount,
+        lateCount: totals.lateCount,
+        excusedCount: totals.excusedCount,
+      },
+    });
+  } catch (err) {
+    console.error("STUDENT_ATTENDANCE_SUMMARY_ERROR:", err);
+    res.status(500).json({ message: "Failed to load attendance summary" });
+  }
+});
+
+router.get("/student/schedule", auth, authorizeRoles("student"), async (req, res) => {
+  try {
+    const attendanceDate = toStartOfDay(req.query.date);
+    if (!attendanceDate) {
+      return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD." });
+    }
+
+    const dayName = getDayNameFromDate(attendanceDate);
+    const schedules = await loadStudentSchedulesForDay(req.user.id, dayName);
+    const courseIds = schedules.map((item) => item.course?._id).filter(Boolean);
+
+    const attendanceRecords = courseIds.length
+      ? await Attendance.find({
+          student: req.user.id,
+          date: attendanceDate,
+          course: { $in: courseIds },
+        }).lean()
+      : [];
+
+    const attendanceMap = new Map(attendanceRecords.map((record) => [String(record.course), record]));
+
+    const items = schedules.map((schedule) => ({
+      schedule: {
+        id: String(schedule._id),
+        day: schedule.day,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        room: schedule.room,
+      },
+      course: schedule.course
+        ? {
+            id: String(schedule.course._id),
+            title: schedule.course.title || schedule.course.name || "Untitled Course",
+            code: schedule.course.code || "",
+            credits: schedule.course.credits ?? null,
+          }
+        : null,
+      facultyName: schedule.faculty?.name || "Unassigned",
+      attendance: schedule.course ? formatAttendance(attendanceMap.get(String(schedule.course._id))) : null,
+    }));
+
+    res.json({
+      date: formatDateKey(attendanceDate),
+      day: dayName,
+      items,
+    });
+  } catch (err) {
+    console.error("STUDENT_ATTENDANCE_SCHEDULE_ERROR:", err);
+    res.status(500).json({ message: "Failed to load schedule attendance" });
+  }
+});
 
 module.exports = router;

@@ -161,15 +161,6 @@ export default function FacultyDashboard() {
           <Text className="mb-2 text-[30px]">📝</Text>
           <Text className="font-semibold">Attendance Check</Text>
         </Pressable>
-              
-        <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/(faculty)/notifications")}
-        >
-          <Text className="mb-2 text-[30px]">🔔</Text>
-          <Text className="font-semibold">Notifications</Text>
-        </Pressable>
 
         <Pressable
           className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
