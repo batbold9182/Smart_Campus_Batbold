@@ -3,6 +3,7 @@ const Schedule = require("../models/schedule");
 const enrollment = require("../models/enrollment");
 const StudentSchedule = require("../models/studentSchedule");
 const auth = require("../middleware/authMiddleware");
+const authorizeRoles = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 // Get student schedule
@@ -37,6 +38,20 @@ router.get("/student", auth, async (req, res) => {
     })
       .populate("course", "title code name")
       .populate("faculty", "name email");
+
+    res.json(schedules);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// Get faculty schedule
+router.get("/faculty", auth, authorizeRoles("faculty"), async (req, res) => {
+  try {
+    const schedules = await Schedule.find({ faculty: req.user.id })
+      .populate("course", "title code name")
+      .sort({ day: 1, startTime: 1 })
+      .lean();
 
     res.json(schedules);
   } catch (err) {

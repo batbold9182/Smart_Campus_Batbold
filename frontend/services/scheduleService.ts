@@ -1,5 +1,19 @@
 import api from "../config/clientAPI";
 
+export type FacultyScheduleItem = {
+  _id: string;
+  day: string;
+  startTime: string;
+  endTime: string;
+  room: string;
+  course: {
+    _id: string;
+    title?: string;
+    code?: string;
+    name?: string;
+  } | null;
+};
+
 export const unassignSchedule = async (studentId: string, scheduleId: string) => {
   const res = await api.delete("/api/admin/schedule/unassign", {
     data: { studentId, scheduleId },
@@ -11,6 +25,11 @@ export const getStudentSchedule = async () => {
   const res = await api.get("/api/schedule/student");
   return res.data;
 }
+
+export const getFacultySchedule = async () => {
+  const res = await api.get<FacultyScheduleItem[]>("/api/schedule/faculty");
+  return Array.isArray(res.data) ? res.data : [];
+};
 
 export const createSchedule = async (data: {
   courseId: string;
