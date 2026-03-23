@@ -27,6 +27,7 @@ export default function AdminEnrollScreen() {
   const [viewCourseId, setViewCourseId] = useState("");
   const [showEnrollments, setShowEnrollments] = useState(false);
   const [activeSelector, setActiveSelector] = useState<"student" | "course" | "filterCourse" | null>(null);
+  const [lastSelector, setLastSelector] = useState<"student" | "course" | "filterCourse" | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -82,6 +83,12 @@ export default function AdminEnrollScreen() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  useEffect(() => {
+    if (activeSelector !== null) {
+      setLastSelector(activeSelector);
+    }
+  }, [activeSelector]);
 
   const handleEnroll = async () => {
     setEnrollError("");
@@ -179,31 +186,55 @@ export default function AdminEnrollScreen() {
     ? `${selectedFilterCourse.title} (${selectedFilterCourse.code})`
     : "All Courses";
 
+  const selectorType = activeSelector ?? lastSelector;
+
   const selectorTitle =
-    activeSelector === "student"
+    selectorType === "student"
       ? "Select Student"
-      : activeSelector === "course"
+      : selectorType === "course"
       ? "Select Course"
-      : "Filter by Course";
+      : selectorType === "filterCourse"
+      ? "Filter by Course"
+      : "";
 
   const selectorOptions =
-    activeSelector === "student"
+    selectorType === "student"
       ? students.map((s) => ({
           label: `${s.name} (${s.email})`,
           value: s._id,
         }))
-      : activeSelector === "course"
+      : selectorType === "course"
       ? courses.map((c) => ({
           label: `${c.title} (${c.code})`,
           value: c._id,
         }))
-      : [
+      : selectorType === "filterCourse"
+      ? [
           { label: "All Courses", value: "" },
           ...courses.map((c) => ({
             label: `${c.title} (${c.code})`,
             value: c._id,
           })),
-        ];
+        ]
+      : [];
+
+  const emptySelectorMessage =
+    selectorType === "student"
+      ? "No students available."
+      : selectorType === "course"
+      ? "No courses available."
+      : selectorType === "filterCourse"
+      ? "No courses available for filtering."
+      : "No options available.";
+
+  const selectorCloseLabel =
+    selectorType === "student"
+      ? "Close Student List"
+      : selectorType === "course"
+      ? "Close Course List"
+      : selectorType === "filterCourse"
+      ? "Close Course Filter"
+      : "Close";
 
   const handleSelectorPick = (value: string) => {
     if (activeSelector === "student") {
@@ -368,12 +399,12 @@ export default function AdminEnrollScreen() {
           <View className="mb-2 flex-row items-center justify-between">
             <Text className="text-[17px] font-bold text-[#0f172a]">{selectorTitle}</Text>
             <TouchableOpacity onPress={() => setActiveSelector(null)}>
-              <Text className="text-[14px] font-semibold text-[#2563eb]">Done</Text>
+              <Text className="text-[14px] font-semibold text-[#2563eb]">{selectorCloseLabel}</Text>
             </TouchableOpacity>
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>
             {selectorOptions.length === 0 ? (
-              <Text className="py-3 text-[#64748b]">No options available.</Text>
+              <Text className="py-3 text-[#64748b]">{emptySelectorMessage}</Text>
             ) : (
               selectorOptions.map((option) => {
                 const active =

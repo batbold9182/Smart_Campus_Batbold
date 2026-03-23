@@ -16,6 +16,7 @@ export default function AssignScheduleScreen() {
   const [studentId, setStudentId] = useState("");
   const [scheduleId, setScheduleId] = useState("");
   const [activeSelector, setActiveSelector] = useState<"student" | "schedule" | null>(null);
+  const [lastSelector, setLastSelector] = useState<"student" | "schedule" | null>(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
@@ -27,14 +28,37 @@ export default function AssignScheduleScreen() {
       ? `${schedules.find((sc) => sc._id === scheduleId)?.course?.title || schedules.find((sc) => sc._id === scheduleId)?.course?.name || "Course"} - ${schedules.find((sc) => sc._id === scheduleId)?.day} ${schedules.find((sc) => sc._id === scheduleId)?.startTime}`
       : "Select schedule";
 
-  const selectorTitle = activeSelector === "student" ? "Select Student" : "Select Schedule";
+  const selectorType = activeSelector ?? lastSelector;
+
+  const selectorTitle =
+    selectorType === "student"
+      ? "Select Student"
+      : selectorType === "schedule"
+      ? "Select Schedule"
+      : "";
   const selectorOptions =
-    activeSelector === "student"
+    selectorType === "student"
       ? students.map((s) => ({ label: s.name, value: s._id }))
-      : schedules.map((sc) => ({
+      : selectorType === "schedule"
+      ? schedules.map((sc) => ({
           label: `${sc.course?.title || sc.course?.name || "Course"} - ${sc.day} ${sc.startTime}`,
           value: sc._id,
-        }));
+        }))
+      : [];
+
+  const emptySelectorMessage =
+    selectorType === "student"
+      ? "No students available."
+      : selectorType === "schedule"
+      ? "No schedules available."
+      : "No options available.";
+
+  const selectorCloseLabel =
+    selectorType === "student"
+      ? "Close Student List"
+      : selectorType === "schedule"
+      ? "Close Schedule List"
+      : "Close";
 
   const handleSelectOption = (value: string) => {
     if (activeSelector === "student") {
@@ -48,6 +72,12 @@ export default function AssignScheduleScreen() {
   useEffect(() => {
     loadData();
   }, []);
+
+  useEffect(() => {
+    if (activeSelector !== null) {
+      setLastSelector(activeSelector);
+    }
+  }, [activeSelector]);
 
   const loadData = async () => {
     try {
@@ -171,17 +201,17 @@ export default function AssignScheduleScreen() {
             <View className="mb-2 flex-row items-center justify-between">
               <Text className="text-[17px] font-bold text-[#0f172a]">{selectorTitle}</Text>
               <TouchableOpacity onPress={() => setActiveSelector(null)}>
-                <Text className="text-[14px] font-semibold text-[#2563eb]">Done</Text>
+                <Text className="text-[14px] font-semibold text-[#2563eb]">{selectorCloseLabel}</Text>
               </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {selectorOptions.length === 0 ? (
-                <Text className="py-3 text-[#64748b]">No options available.</Text>
+                <Text className="py-3 text-[#64748b]">{emptySelectorMessage}</Text>
               ) : (
                 selectorOptions.map((option) => {
                   const active =
-                    (activeSelector === "student" && studentId === option.value) ||
-                    (activeSelector === "schedule" && scheduleId === option.value);
+                    (selectorType === "student" && studentId === option.value) ||
+                    (selectorType === "schedule" && scheduleId === option.value);
                   return (
                     <TouchableOpacity
                       key={option.value}
