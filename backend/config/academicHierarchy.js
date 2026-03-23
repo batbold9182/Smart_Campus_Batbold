@@ -11,6 +11,11 @@ const ACADEMIC_HIERARCHY = {
     Nursing: ["Clinical Nursing", "Public Health Nursing"],
     Pharmacy: ["Clinical Pharmacy", "Pharmaceutical Sciences"],
   },
+  "Design": {
+    Graphic : ["Branding", "Illustration"],
+    Industrial : ["Product Design", "Automotive Design"],
+    Fashion : ["Apparel Design", "Accessory Design"],
+  },
 };
 
 module.exports = ACADEMIC_HIERARCHY;

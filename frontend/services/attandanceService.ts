@@ -4,6 +4,7 @@ export type AttendanceStatus = "present" | "absent" | "late" | "excused";
 
 export type AttendanceRecord = {
 	id: string;
+	scheduleId: string | null;
 	status: AttendanceStatus;
 	remarks: string;
 	date: string;
@@ -40,6 +41,7 @@ export type FacultyAttendanceCourseDetail = {
 		credits: number;
 	};
 	date: string;
+	scheduleId: string | null;
 	students: FacultyAttendanceStudent[];
 };
 
@@ -102,11 +104,11 @@ export const getFacultyAttendanceCourses = async () => {
 	return response.data.courses;
 };
 
-export const getFacultyCourseAttendance = async (courseId: string, date: string) => {
+export const getFacultyCourseAttendance = async (courseId: string, date: string, scheduleId?: string) => {
 	const response = await api.get<FacultyAttendanceCourseDetail>(
 		`/api/attendance/faculty/courses/${courseId}/students`,
 		{
-			params: { date },
+			params: { date, scheduleId },
 		}
 	);
 	return response.data;
@@ -115,7 +117,7 @@ export const getFacultyCourseAttendance = async (courseId: string, date: string)
 export const saveStudentAttendance = async (
 	courseId: string,
 	studentId: string,
-	payload: { status: AttendanceStatus; date: string; remarks?: string }
+	payload: { status: AttendanceStatus; date: string; remarks?: string; scheduleId?: string }
 ) => {
 	const response = await api.put(`/api/attendance/faculty/courses/${courseId}/students/${studentId}`, payload);
 	return response.data;

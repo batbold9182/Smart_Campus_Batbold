@@ -34,6 +34,7 @@ const formatAttendance = (record) => {
 
   return {
     id: String(record._id),
+    scheduleId: record.schedule ? String(record.schedule) : null,
     status: record.status,
     remarks: record.remarks || "",
     date: formatDateKey(record.date),
@@ -120,6 +121,7 @@ router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res)
 router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"), async (req, res) => {
   try {
     const attendanceDate = toStartOfDay(req.query.date);
+    const scheduleId = typeof req.query.scheduleId === "string" ? req.query.scheduleId.trim() : "";
     if (!attendanceDate) {
       return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD." });
     }
@@ -132,11 +134,31 @@ router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"
       return res.status(404).json({ message: "Course not found" });
     }
 
+    if (scheduleId) {
+      const schedule = await Schedule.findOne({
+        _id: scheduleId,
+        course: course._id,
+        faculty: req.user.id,
+      })
+        .select("_id")
+        .lean();
+
+      if (!schedule) {
+        return res.status(404).json({ message: "Schedule not found" });
+      }
+    }
+
+    const attendanceMatch = {
+      course: course._id,
+      date: attendanceDate,
+      schedule: scheduleId || null,
+    };
+
     const [enrollments, attendanceRecords] = await Promise.all([
       Enrollment.find({ course: course._id })
         .populate("student", "name email program yearLevel studentId")
         .lean(),
-      Attendance.find({ course: course._id, date: attendanceDate }).lean(),
+      Attendance.find(attendanceMatch).lean(),
     ]);
 
     const attendanceMap = new Map(attendanceRecords.map((record) => [String(record.student), record]));
@@ -167,6 +189,7 @@ router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"
         credits: course.credits,
       },
       date: formatDateKey(attendanceDate),
+      scheduleId: scheduleId || null,
       students,
     });
   } catch (err) {
@@ -182,6 +205,7 @@ router.put(
   async (req, res) => {
     try {
       const attendanceDate = toStartOfDay(req.body?.date);
+      const scheduleId = typeof req.body?.scheduleId === "string" ? req.body.scheduleId.trim() : "";
       if (!attendanceDate) {
         return res.status(400).json({ message: "Invalid date format. Use YYYY-MM-DD." });
       }
@@ -201,6 +225,20 @@ router.put(
         return res.status(404).json({ message: "Course not found" });
       }
 
+      if (scheduleId) {
+        const schedule = await Schedule.findOne({
+          _id: scheduleId,
+          course: req.params.courseId,
+          faculty: req.user.id,
+        })
+          .select("_id")
+          .lean();
+
+        if (!schedule) {
+          return res.status(404).json({ message: "Schedule not found" });
+        }
+      }
+
       const enrollment = await Enrollment.findOne({
         course: req.params.courseId,
         student: req.params.studentId,
@@ -215,9 +253,11 @@ router.put(
           course: req.params.courseId,
           student: req.params.studentId,
           date: attendanceDate,
+          schedule: scheduleId || null,
         },
         {
           faculty: req.user.id,
+          schedule: scheduleId || null,
           status,
           remarks,
           markedAt: new Date(),
@@ -350,16 +390,28 @@ router.get("/student/schedule", auth, authorizeRoles("student"), async (req, res
     const dayName = getDayNameFromDate(attendanceDate);
     const schedules = await loadStudentSchedulesForDay(req.user.id, dayName);
     const courseIds = schedules.map((item) => item.course?._id).filter(Boolean);
+    const scheduleIds = schedules.map((item) => item._id).filter(Boolean);
 
-    const attendanceRecords = courseIds.length
+    const attendanceRecords = courseIds.length && scheduleIds.length
       ? await Attendance.find({
           student: req.user.id,
           date: attendanceDate,
           course: { $in: courseIds },
+          $or: [{ schedule: { $in: scheduleIds } }, { schedule: null }],
         }).lean()
       : [];
 
-    const attendanceMap = new Map(attendanceRecords.map((record) => [String(record.course), record]));
+    const attendanceBySchedule = new Map(
+      attendanceRecords
+        .filter((record) => record.schedule)
+        .map((record) => [String(record.schedule), record])
+    );
+
+    const attendanceByCourseFallback = new Map(
+      attendanceRecords
+        .filter((record) => !record.schedule)
+        .map((record) => [String(record.course), record])
+    );
 
     const items = schedules.map((schedule) => ({
       schedule: {
@@ -378,7 +430,12 @@ router.get("/student/schedule", auth, authorizeRoles("student"), async (req, res
           }
         : null,
       facultyName: schedule.faculty?.name || "Unassigned",
-      attendance: schedule.course ? formatAttendance(attendanceMap.get(String(schedule.course._id))) : null,
+      attendance: schedule.course
+        ? formatAttendance(
+            attendanceBySchedule.get(String(schedule._id)) ||
+              attendanceByCourseFallback.get(String(schedule.course._id))
+          )
+        : null,
     }));
 
     res.json({

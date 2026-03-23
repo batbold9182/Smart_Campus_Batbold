@@ -49,6 +49,7 @@ export default function Attendance() {
   const [loading, setLoading] = useState(true);
   const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null);
   const [savingStudentId, setSavingStudentId] = useState<string | null>(null);
+  const [selectedScheduleId, setSelectedScheduleId] = useState<string | null>(null);
   const [draftStatus, setDraftStatus] = useState<Record<string, AttendanceStatus>>({});
   const [draftRemarks, setDraftRemarks] = useState<Record<string, string>>({});
   const [facultySchedules, setFacultySchedules] = useState<FacultyScheduleItem[]>([]);
@@ -63,11 +64,12 @@ export default function Attendance() {
     setFacultySchedules(items);
   };
 
-  const loadCourseDetail = async (courseId: string, date: string) => {
+  const loadCourseDetail = async (courseId: string, date: string, scheduleId?: string) => {
     setLoadingCourseId(courseId);
     try {
-      const detail = await getFacultyCourseAttendance(courseId, date);
+      const detail = await getFacultyCourseAttendance(courseId, date, scheduleId);
       setSelectedCourse(detail);
+      setSelectedScheduleId(detail.scheduleId || null);
       setSelectedDate(detail.date);
       setDraftStatus(
         Object.fromEntries(
@@ -110,8 +112,12 @@ export default function Attendance() {
         status: draftStatus[studentId] || "present",
         date: selectedDate,
         remarks: draftRemarks[studentId] || "",
+        scheduleId: selectedScheduleId || undefined,
       });
-      await Promise.all([loadCourses(), loadCourseDetail(selectedCourse.course.id, selectedDate)]);
+      await Promise.all([
+        loadCourses(),
+        loadCourseDetail(selectedCourse.course.id, selectedDate, selectedScheduleId || undefined),
+      ]);
     } catch (error: any) {
       Alert.alert("Unable to save", error?.response?.data?.message || "Please try again.");
     } finally {
@@ -119,14 +125,14 @@ export default function Attendance() {
     }
   };
 
-  const openCourse = async (courseId: string) => {
+  const openCourse = async (courseId: string, scheduleId?: string) => {
     if (!isValidDateKey(selectedDate)) {
       Alert.alert("Invalid date", "Use YYYY-MM-DD format.");
       return;
     }
 
     try {
-      await loadCourseDetail(courseId, selectedDate);
+      await loadCourseDetail(courseId, selectedDate, scheduleId);
     } catch (error: any) {
       Alert.alert("Unable to load", error?.response?.data?.message || "Please try again.");
     }
@@ -143,7 +149,7 @@ export default function Attendance() {
     }
 
     try {
-      await loadCourseDetail(selectedCourse.course.id, selectedDate);
+      await loadCourseDetail(selectedCourse.course.id, selectedDate, selectedScheduleId || undefined);
     } catch (error: any) {
       Alert.alert("Unable to load", error?.response?.data?.message || "Please try again.");
     }
@@ -192,7 +198,7 @@ export default function Attendance() {
               <TouchableOpacity
                 key={item._id}
                 className="mb-3 rounded-lg border border-[#e5e7eb] px-3 py-3"
-                onPress={() => item.course?._id && openCourse(item.course._id)}
+                onPress={() => item.course?._id && openCourse(item.course._id, item._id)}
                 disabled={!item.course?._id}
               >
                 <Text className="text-[15px] font-semibold text-[#111827]">
@@ -261,6 +267,10 @@ export default function Attendance() {
                   <Text className="font-semibold text-[#2563eb]">Courses</Text>
                 </TouchableOpacity>
               </View>
+
+              {selectedScheduleId ? (
+                <Text className="mt-2 text-[12px] text-[#2563eb]">Session-specific attendance mode</Text>
+              ) : null}
 
               <TouchableOpacity onPress={handleReloadForDate} className="mt-3 self-start rounded-lg bg-[#e5e7eb] px-3 py-2">
                 <Text className="font-semibold text-[#374151]">Reload For Date</Text>
