@@ -254,6 +254,11 @@ export default function StudentDashboard() {
           <Text className="mb-2 text-[30px]">📚</Text>
           <Text className="font-semibold">Online Library</Text>
         </Pressable>
+
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(student)/buildingMap")}>
+          <Text className="mb-2 text-[30px]">🗺️</Text>
+          <Text className="font-semibold">Campus Map</Text>
+        </Pressable>
       </View>
 
       <View className="mt-3">
