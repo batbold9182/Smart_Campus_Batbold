@@ -3,12 +3,13 @@ const User = require("../models/user");
 
 module.exports = async (req, res, next) => {
   const authHeader = req.headers.authorization;
+  const tokenFromQuery = typeof req.query?.token === "string" ? req.query.token.trim() : "";
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+  if ((!authHeader || !authHeader.startsWith("Bearer ")) && !tokenFromQuery) {
     return res.status(401).json({ message: "No token provided" });
   }
 
-  const token = authHeader.split(" ")[1];
+  const token = tokenFromQuery || authHeader.split(" ")[1];
 
   try {
     const decoded = jwt.verify(token, process.env.JWT_SECRET);

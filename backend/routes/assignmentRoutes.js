@@ -119,6 +119,16 @@ const formatDateKey = (dateValue) => {
   return `${year}-${month}-${day}`;
 };
 
+const toSafeFileName = (value) => {
+  const raw = typeof value === "string" && value.trim() ? value.trim() : "assignment-submission";
+  return raw.replace(/[\\/:*?"<>|]/g, "_");
+};
+
+const getFileExtension = (value) => {
+  const match = typeof value === "string" ? value.trim().match(/\.([a-zA-Z0-9]+)$/) : null;
+  return match ? match[1].toLowerCase() : "";
+};
+
 const uploadSubmissionFile = (fileBuffer, fileName, mimeType) =>
   new Promise((resolve, reject) => {
     const stream = cloudinary.uploader.upload_stream(
@@ -326,6 +336,60 @@ router.put(
     }
   }
 );
+
+router.get("/submissions/:submissionId/download", auth, async (req, res) => {
+  try {
+    const submission = await AssignmentSubmission.findById(req.params.submissionId)
+      .select("student faculty fileUrl fileName fileType cloudinaryPublicId")
+      .lean();
+
+    if (!submission || !submission.fileUrl) {
+      return res.status(404).json({ message: "Submission file not found" });
+    }
+
+    const isStudentOwner = req.user.role === "student" && String(submission.student) === req.user.id;
+    const isFacultyOwner = req.user.role === "faculty" && String(submission.faculty) === req.user.id;
+
+    if (!isStudentOwner && !isFacultyOwner) {
+      return res.status(403).json({ message: "Access denied" });
+    }
+
+    const fileName = toSafeFileName(submission.fileName);
+    const fileFormat = getFileExtension(fileName);
+
+    if (submission.cloudinaryPublicId && fileFormat) {
+      const signedDownloadUrl = cloudinary.utils.private_download_url(
+        submission.cloudinaryPublicId,
+        fileFormat,
+        {
+          resource_type: "raw",
+          type: "upload",
+          attachment: true,
+        }
+      );
+
+      return res.redirect(signedDownloadUrl);
+    }
+
+    const response = await fetch(submission.fileUrl);
+
+    if (!response.ok) {
+      return res.status(502).json({ message: "Failed to download submission file" });
+    }
+
+    const arrayBuffer = await response.arrayBuffer();
+    const buffer = Buffer.from(arrayBuffer);
+    const contentType = submission.fileType || response.headers.get("content-type") || "application/octet-stream";
+
+    res.setHeader("Content-Type", contentType);
+    res.setHeader("Content-Length", buffer.length);
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.send(buffer);
+  } catch (err) {
+    console.error("ASSIGNMENT_SUBMISSION_DOWNLOAD_ERROR:", err);
+    res.status(500).json({ message: "Failed to download submission file" });
+  }
+});
 
 router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("faculty"), async (req, res) => {
   try {

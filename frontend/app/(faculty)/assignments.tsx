@@ -3,6 +3,7 @@ import {
   ActivityIndicator,
   Alert,
   Linking,
+  Platform,
   ScrollView,
   Text,
   TextInput,
@@ -14,9 +15,11 @@ import { useRouter } from "expo-router";
 import {
   createCourseAssignment,
   deleteCourseAssignment,
+  downloadAssignmentSubmission,
   getFacultyAssignmentSubmissions,
   getFacultyAssignmentCourses,
   getFacultyCourseAssignments,
+  getAssignmentSubmissionDownloadUrl,
   saveFacultyAssignmentReview,
   type AssignmentRecord,
   type FacultyAssignmentSubmissionDetail,
@@ -260,11 +263,25 @@ export default function Assignments() {
     }
   };
 
-  const openFile = async (url: string) => {
+  const openFile = async (submissionId: string, url: string, fileName?: string | null) => {
     try {
-      await Linking.openURL(url);
+      if (Platform.OS === "web") {
+        const blob = await downloadAssignmentSubmission(submissionId);
+        const objectUrl = URL.createObjectURL(blob);
+        const anchor = document.createElement("a");
+        anchor.href = objectUrl;
+        anchor.download = fileName || "assignment-submission";
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(objectUrl);
+        return;
+      }
+
+      const downloadUrl = await getAssignmentSubmissionDownloadUrl(submissionId);
+      await Linking.openURL(downloadUrl || url);
     } catch {
-      Alert.alert("Unable to open file", "This file link could not be opened on your device.");
+      Alert.alert("Unable to open file", "This file could not be downloaded on your device.");
     }
   };
 
@@ -492,11 +509,11 @@ export default function Assignments() {
 
                               {submission.fileUrl ? (
                                 <TouchableOpacity
-                                  onPress={() => openFile(submission.fileUrl || "")}
+                                  onPress={() => openFile(submission.id, submission.fileUrl || "", submission.fileName)}
                                   className="mt-3 self-start rounded-full bg-[#eff6ff] px-3 py-2"
                                 >
                                   <Text className="text-[12px] font-semibold text-[#2563eb]">
-                                    {submission.fileName || "Open uploaded file"}
+                                    {submission.fileName || "Download uploaded file"}
                                   </Text>
                                 </TouchableOpacity>
                               ) : (

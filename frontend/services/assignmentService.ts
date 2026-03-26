@@ -1,4 +1,5 @@
 import api from "../config/clientAPI";
+import { getToken } from "./tokenStorage";
 
 export type FacultyAssignmentCourse = {
   id: string;
@@ -137,4 +138,18 @@ export const submitStudentAssignment = async (assignmentId: string, payload: For
   const response = await api.post(`/api/assignments/student/assignments/${assignmentId}/submission`, payload);
 
   return response.data;
+};
+
+export const downloadAssignmentSubmission = async (submissionId: string) => {
+  const response = await api.get(`/api/assignments/submissions/${submissionId}/download`, {
+    responseType: "blob",
+  });
+
+  return response.data as Blob;
+};
+
+export const getAssignmentSubmissionDownloadUrl = async (submissionId: string) => {
+  const token = await getToken();
+  const baseUrl = (api.defaults.baseURL || "").replace(/\/$/, "");
+  return `${baseUrl}/api/assignments/submissions/${submissionId}/download?token=${encodeURIComponent(token || "")}`;
 };
