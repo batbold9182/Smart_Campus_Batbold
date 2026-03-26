@@ -1,0 +1,140 @@
+import api from "../config/clientAPI";
+
+export type FacultyAssignmentCourse = {
+  id: string;
+  title: string;
+  code: string;
+  credits: number;
+  enrolledCount: number;
+  assignmentCount: number;
+};
+
+export type AssignmentRecord = {
+  id: string;
+  title: string;
+  description: string;
+  dueDate: string;
+  maxPoints: number;
+  createdAt: string;
+  updatedAt: string;
+  submissionCount?: number;
+  reviewedCount?: number;
+  submission?: AssignmentSubmissionRecord | null;
+};
+
+export type AssignmentSubmissionRecord = {
+  id: string;
+  notes: string;
+  fileUrl: string | null;
+  fileName: string | null;
+  fileType: string | null;
+  fileSize: number | null;
+  submittedAt: string;
+  score: number | null;
+  feedback: string;
+  reviewedAt: string | null;
+  updatedAt: string;
+};
+
+export type FacultyAssignmentSubmissionRecord = AssignmentSubmissionRecord & {
+  student: {
+    id: string;
+    name: string;
+    email: string;
+    program: string | null;
+    yearLevel: number | null;
+    studentId: string | null;
+  };
+};
+
+export type FacultyAssignmentCourseDetail = {
+  course: {
+    id: string;
+    title: string;
+    code: string;
+    credits: number;
+  };
+  assignments: AssignmentRecord[];
+};
+
+export type FacultyAssignmentSubmissionDetail = {
+  assignment: AssignmentRecord;
+  submissions: FacultyAssignmentSubmissionRecord[];
+};
+
+export type StudentAssignmentItem = {
+  course: {
+    id: string;
+    title: string;
+    code: string;
+    credits: number;
+    facultyName: string;
+  };
+  assignments: AssignmentRecord[];
+};
+
+export type StudentAssignmentsResponse = {
+  items: StudentAssignmentItem[];
+  summary: {
+    courseCount: number;
+    assignmentCount: number;
+    upcomingCount: number;
+    dueTodayCount: number;
+    overdueCount: number;
+    submittedCount: number;
+    pendingCount: number;
+  };
+};
+
+export const getFacultyAssignmentCourses = async () => {
+  const response = await api.get<{ courses: FacultyAssignmentCourse[] }>("/api/assignments/faculty/courses");
+  return response.data.courses;
+};
+
+export const getFacultyCourseAssignments = async (courseId: string) => {
+  const response = await api.get<FacultyAssignmentCourseDetail>(`/api/assignments/faculty/courses/${courseId}/assignments`);
+  return response.data;
+};
+
+export const createCourseAssignment = async (
+  courseId: string,
+  payload: { title: string; description?: string; dueDate: string; maxPoints: number }
+) => {
+  const response = await api.post(`/api/assignments/faculty/courses/${courseId}/assignments`, payload);
+  return response.data;
+};
+
+export const deleteCourseAssignment = async (assignmentId: string) => {
+  const response = await api.delete(`/api/assignments/${assignmentId}`);
+  return response.data;
+};
+
+export const getStudentAssignments = async () => {
+  const response = await api.get<StudentAssignmentsResponse>("/api/assignments/student");
+  return response.data;
+};
+
+export const getFacultyAssignmentSubmissions = async (courseId: string, assignmentId: string) => {
+  const response = await api.get<FacultyAssignmentSubmissionDetail>(
+    `/api/assignments/faculty/courses/${courseId}/assignments/${assignmentId}/submissions`
+  );
+  return response.data;
+};
+
+export const saveFacultyAssignmentReview = async (
+  assignmentId: string,
+  submissionId: string,
+  payload: { score?: number | null; feedback?: string }
+) => {
+  const response = await api.put(
+    `/api/assignments/faculty/assignments/${assignmentId}/submissions/${submissionId}/review`,
+    payload
+  );
+  return response.data;
+};
+
+export const submitStudentAssignment = async (assignmentId: string, payload: FormData) => {
+  const response = await api.post(`/api/assignments/student/assignments/${assignmentId}/submission`, payload);
+
+  return response.data;
+};

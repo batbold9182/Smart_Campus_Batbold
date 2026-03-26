@@ -25,6 +25,7 @@ const learningBuddyRoutes = require("./routes/learningBuddRoutes.js");
 const gradeRoutes = require("./routes/gradeRoutes.js");
 const libraryRoutes = require("./routes/libraryRoutes.js");
 const attendanceRoutes = require("./routes/attendanceRoutes.js");
+const assignmentRoutes = require("./routes/assignmentRoutes.js");
 
 
 app.use(cors());
@@ -65,6 +66,8 @@ app.use("/api/grades", gradeRoutes);
 app.use("/api/library", libraryRoutes);
 
 app.use("/api/attendance", attendanceRoutes);
+
+app.use("/api/assignments", assignmentRoutes);
 
 app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");
