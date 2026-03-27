@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+﻿import { useEffect } from "react";
 import { Text } from "react-native";
 import { useRouter } from "expo-router";
 import { jwtDecode } from "jwt-decode";
@@ -17,7 +17,7 @@ export default function Index() {
       const token = await getToken();
 
       if (!token) {
-        router.replace("/(auth)/login");
+        router.replace("/auth/login");
         return;
       }
 
@@ -26,20 +26,20 @@ export default function Index() {
 
         if (decoded.exp * 1000 < Date.now()) {
           await clearToken();
-          router.replace("/(auth)/login");
+          router.replace("/auth/login");
           return;
         }
 
         if (decoded.role === "admin") {
-          router.replace("/(admin)/dashboard");
+          router.replace("/admin/dashboard");
         } else if (decoded.role === "faculty") {
-          router.replace("/(faculty)/dashboard");
+          router.replace("/faculty/dashboard");
         } else {
-          router.replace("/(student)/dashboard");
+          router.replace("/student/dashboard");
         }
       } catch {
         await clearToken();
-        router.replace("/(auth)/login");
+        router.replace("/auth/login");
       }
     };  
 

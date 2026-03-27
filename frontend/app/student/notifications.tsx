@@ -1,9 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
-import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { facultyStyles } from "../../styles/facultyStyles";
+import { studentStyles } from "../../styles/studentStyles";
 import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
 
 export default function NotificationsScreen() {
@@ -14,7 +13,7 @@ export default function NotificationsScreen() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
-  
+
   const loadNotifications = async (nextPage = 1) => {
     try {
       setLoading(true);
@@ -48,12 +47,6 @@ export default function NotificationsScreen() {
     loadNotifications(1);
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      loadNotifications(1);
-    }, [])
-  );
-
   const markAsRead = async (id: string) => {
     try {
       await api.patch(`/api/notifications/${id}/read`);
@@ -74,12 +67,12 @@ export default function NotificationsScreen() {
         error={error}
         page={page}
         totalPages={totalPages}
-        styles={facultyStyles}
+        styles={studentStyles}
         onRetry={() => loadNotifications(1)}
         onMarkAsRead={markAsRead}
         onPrevious={() => loadNotifications(page - 1)}
         onNext={() => loadNotifications(page + 1)}
-        onBack={() => router.push("/(faculty)/dashboard")}
+        onBack={() => router.push("/student/dashboard")}
       />
     </SafeAreaView>
   );

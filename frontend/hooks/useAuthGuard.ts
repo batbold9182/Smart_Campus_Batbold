@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "expo-router";
 import { clearToken, getToken } from "../services/tokenStorage";
@@ -20,8 +20,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
         const token = await getToken();
 
         if (!token) {
-          setLoading(false);
-          router.replace("/(auth)/login");
+          router.replace("/auth/login");
           return;
         }
 
@@ -30,15 +29,13 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
         // token expired
         if (decoded.exp * 1000 < Date.now()) {
           await clearToken();
-          setLoading(false);
-          router.replace("/(auth)/login");
+          router.replace("/auth/login");
           return;
         }
 
         // role mismatch
         if (requiredRole && decoded.role !== requiredRole) {
-          setLoading(false);
-          router.replace("/(auth)/login");
+          router.replace("/auth/login");
           return;
         }
 
@@ -47,8 +44,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
       } catch (err) {
         await clearToken();
         console.error("Auth guard error:", err);
-        setLoading(false);
-        router.replace("/(auth)/login");
+        router.replace("/auth/login");
       }
     };
 

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -47,7 +47,7 @@ export default function RegisterScreen() {
       await register(cleanName, cleanEmail, password);
       setMessage("Account created. You can now log in.");
       setTimeout(() => {
-        router.replace("/(auth)/login");
+        router.replace("/auth/login");
       }, 900);
     } catch (err: any) {
       const status = err?.response?.status;
@@ -157,7 +157,7 @@ export default function RegisterScreen() {
 
             <TouchableOpacity
               className="mt-[10px] items-center justify-center min-h-[42px]"
-              onPress={() => router.replace("/(auth)/login")}
+              onPress={() => router.replace("/auth/login")}
               disabled={isLoading}
             >
               <Text className="text-blue-600 text-[14px] font-semibold">Back to Login</Text>

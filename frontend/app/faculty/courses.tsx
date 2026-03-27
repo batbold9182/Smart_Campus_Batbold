@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { getMyCourses } from "../../services/courseService";
 import { useRouter } from "expo-router";
@@ -45,7 +45,7 @@ export default function FacultyCoursesScreen() {
 
         <TouchableOpacity
           className={`mt-3 ${facultyStyles.buttonPrimary}`}
-          onPress={() => router.push("/(faculty)/dashboard")}
+          onPress={() => router.push("/faculty/dashboard")}
         >
           <Text className={facultyStyles.buttonPrimaryText}>Back to Dashboard</Text>
         </TouchableOpacity>

@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   View,
   Text,
@@ -56,11 +56,11 @@ export default function LoginScreen() {
       await setToken(data.token);
 
       if (data.user.role === "admin") {
-        router.replace("/(admin)/dashboard");
+        router.replace("/admin/dashboard");
       } else if (data.user.role === "faculty") {
-        router.replace("/(faculty)/dashboard");
+        router.replace("/faculty/dashboard");
       } else {
-        router.replace("/(student)/dashboard");
+        router.replace("/student/dashboard");
       }
     } catch (err: any) {
       const status = err?.response?.status;
@@ -152,7 +152,7 @@ export default function LoginScreen() {
 
             <TouchableOpacity
               className="self-end mb-2"
-              onPress={() => router.push("/(auth)/forgot-password")}
+              onPress={() => router.push("/auth/forgot-password")}
               disabled={isLoading}
             >
               <Text className="text-blue-600 font-semibold">Forgot password?</Text>
@@ -174,7 +174,7 @@ export default function LoginScreen() {
 
             <TouchableOpacity
               className="mt-3 items-center"
-              onPress={() => router.push("/(auth)/register")}
+              onPress={() => router.push("/auth/register")}
               disabled={isLoading}
             >
               <Text className="text-blue-600 font-semibold">Don&apos;t have an account? Register</Text>

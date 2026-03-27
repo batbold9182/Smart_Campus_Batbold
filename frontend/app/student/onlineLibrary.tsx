@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   View,
   Text,
@@ -224,7 +224,7 @@ export default function OnlineLibrary() {
 
         <TouchableOpacity
           className="items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/(student)/dashboard")}
+          onPress={() => router.push("/student/dashboard")}
         >
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>

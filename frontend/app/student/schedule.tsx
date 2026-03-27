@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { getStudentSchedule } from "../../services/scheduleService";
 import { useRouter } from "expo-router";
@@ -50,7 +50,7 @@ export default function StudentScheduleScreen() {
 
         <TouchableOpacity
           className="mt-3 items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/(student)/dashboard")}
+          onPress={() => router.push("/student/dashboard")}
         >
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>

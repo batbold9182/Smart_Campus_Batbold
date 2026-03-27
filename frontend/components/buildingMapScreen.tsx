@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+﻿import { useMemo, useState } from "react";
 import { usePathname, useRouter } from "expo-router";
 import { Image, ImageSourcePropType, Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -68,17 +68,17 @@ export default function BuildingMapScreen() {
   );
 
   const handleBackToDashboard = () => {
-    if (pathname.startsWith("/(admin)")) {
-      router.push("/(admin)/dashboard");
+    if (pathname.startsWith("/admin")) {
+      router.push("/admin/dashboard");
       return;
     }
 
-    if (pathname.startsWith("/(faculty)")) {
-      router.push("/(faculty)/dashboard");
+    if (pathname.startsWith("/faculty")) {
+      router.push("/faculty/dashboard");
       return;
     }
 
-    router.push("/(student)/dashboard");
+    router.push("/student/dashboard");
   };
 
   return (

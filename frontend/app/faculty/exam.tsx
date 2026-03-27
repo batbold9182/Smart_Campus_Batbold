@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+﻿import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
@@ -19,7 +19,7 @@ export default function Exam() {
 
         <TouchableOpacity
           className="items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/(faculty)/dashboard")}
+          onPress={() => router.push("/faculty/dashboard")}
         >
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>

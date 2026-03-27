@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+﻿import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -307,7 +307,7 @@ export default function VizjaFriends() {
               className="rounded-full bg-[#e0ecff] px-4 py-2"
               onPress={() => {
                 if (selectedSection === "hub") {
-                  router.push("/(student)/dashboard");
+                  router.push("/student/dashboard");
                   return;
                 }
 
@@ -369,9 +369,9 @@ export default function VizjaFriends() {
                   if (section.key === "lunch") {
                     setSelectedSection("lunch");
                   } else if (section.key === "learning") {
-                    router.push("/(student)/learningBuddy");
+                    router.push("/student/learningBuddy");
                   } else {
-                    router.push("/(student)/partyBuddy");
+                    router.push("/student/partyBuddy");
                   }
                 }}
               >

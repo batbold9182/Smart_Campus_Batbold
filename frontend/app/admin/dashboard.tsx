@@ -1,4 +1,4 @@
-import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, useWindowDimensions} from "react-native";
+﻿import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, useWindowDimensions} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useEffect, useState } from "react";
@@ -76,11 +76,11 @@ useEffect(() => {
 
   const handleLogout = async () => {
     await logout();
-    router.replace("/(auth)/login");
+    router.replace("/auth/login");
   }
   useEffect(() => {
     if (!loading && !authUser) {
-      router.replace("/(auth)/login");
+      router.replace("/auth/login");
     }
   }, [authUser, loading, router]);
 
@@ -89,7 +89,7 @@ useEffect(() => {
       const profile = await getProfile();
 
       if (profile.role !== "admin") {
-        router.replace("/(auth)/login");
+        router.replace("/auth/login");
         return;
       }
 
@@ -133,7 +133,7 @@ useEffect(() => {
       <Text className="text-[11px] text-app-muted">{formatDate(time)}</Text>
     </View>
 
-    <TouchableOpacity onPress={() => router.push("/(admin)/notifications")}>
+    <TouchableOpacity onPress={() => router.push("/admin/notifications")}>
       <View className="relative">
         <Text className="text-[24px]">🔔</Text>
         {count > 0 && (
@@ -200,17 +200,17 @@ useEffect(() => {
       </View>
 
       <View className="mt-[2px] flex-row flex-wrap justify-between">
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-course")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/create-course")}>
           <Text className="mb-2 text-[30px]">📚</Text>
           <Text className="font-semibold">Manage Courses</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/create-schedule")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/create-schedule")}>
           <Text className="mb-2 text-[30px]">➕</Text>
           <Text className="font-semibold">Create Schedule</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/assignSchedule")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/assignSchedule")}>
           <Text className="mb-2 text-[30px]">📅</Text>
           <Text className="font-semibold">Assign Schedule</Text>
         </Pressable>
@@ -220,27 +220,27 @@ useEffect(() => {
           <Text className="font-semibold">Create User</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/users")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/users")}>
           <Text className="mb-2 text-[30px]">👤</Text>
           <Text className="font-semibold">Users List</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/enroll")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/enroll")}>
           <Text className="mb-2 text-[30px]">🎓</Text>
           <Text className="font-semibold">Enroll Students</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../profile")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/profile")}>
           <Text className="mb-2 text-[30px]">👤</Text>
           <Text className="font-semibold">Profile</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/buildingMap")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/buildingMap")}>
           <Text className="mb-2 text-[30px]">🗺️</Text>
           <Text className="font-semibold">Campus Map</Text>
         </Pressable>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/(admin)/chatBot")}>
+        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/chatBot")}>
           <Text className="mb-2 text-[30px]">🤖</Text>
           <Text className="font-semibold">Chat Bot</Text>
         </Pressable>

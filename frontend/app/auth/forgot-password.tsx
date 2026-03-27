@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   View,
   Text,
@@ -76,14 +76,14 @@ export default function ForgotPasswordScreen() {
               <Text selectable className="text-[#374151] mb-[10px]">{devToken}</Text>
               <TouchableOpacity
                 className="items-center justify-center rounded-lg border border-blue-600 py-[10px]"
-                onPress={() => router.push({ pathname: "/(auth)/reset-password", params: { token: devToken } })}
+                onPress={() => router.push({ pathname: "/auth/reset-password", params: { token: devToken } })}
               >
                 <Text className="text-blue-600 font-bold">Continue to Reset Password</Text>
               </TouchableOpacity>
             </View>
           ) : null}
 
-          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/(auth)/login")}>
+          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/auth/login")}>
             <Text className="text-blue-600 font-semibold">Back to Login</Text>
           </TouchableOpacity>
         </View>

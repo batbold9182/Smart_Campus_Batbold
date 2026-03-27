@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -589,7 +589,7 @@ export default function Assignments() {
 
         <TouchableOpacity
           className="items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/(faculty)/dashboard")}
+          onPress={() => router.push("/faculty/dashboard")}
         >
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>

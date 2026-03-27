@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Modal, Pressable } from "react-native";
 import {
   assignSchedule,
@@ -182,7 +182,7 @@ export default function AssignScheduleScreen() {
 
             <TouchableOpacity
               className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
-              onPress={() => router.push("/(admin)/dashboard")}
+              onPress={() => router.push("/admin/dashboard")}
             >
               <Text className="font-semibold text-app-text">Back to Dashboard</Text>
             </TouchableOpacity>

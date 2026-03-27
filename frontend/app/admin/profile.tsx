@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text, TouchableOpacity, ScrollView } from "react-native";
 import { getProfile, type AppUserProfile } from "../../services/userService";
 import ProfileCard from "../../components/profileCard";
@@ -35,7 +35,7 @@ export default function AdminProfile() {
 
         <TouchableOpacity
           className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/(admin)/dashboard")}
+          onPress={() => router.push("/admin/dashboard")}
         >
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>

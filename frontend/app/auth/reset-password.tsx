@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 import {
   View,
   Text,
@@ -45,7 +45,7 @@ export default function ResetPasswordScreen() {
       const response = await resetPassword(cleanToken, newPassword);
       setMessage(response.message);
       setTimeout(() => {
-        router.replace("/(auth)/login");
+        router.replace("/auth/login");
       }, 1200);
     } catch (error: any) {
       setMessage(error?.response?.data?.message || "Failed to reset password");
@@ -98,7 +98,7 @@ export default function ResetPasswordScreen() {
 
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
-          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/(auth)/login")}>
+          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/auth/login")}>
             <Text className="text-blue-600 font-semibold">Back to Login</Text>
           </TouchableOpacity>
         </View>

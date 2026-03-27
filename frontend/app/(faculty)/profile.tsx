@@ -2,20 +2,18 @@ import { useEffect, useState } from "react";
 import { View, ActivityIndicator, Text, TouchableOpacity, ScrollView } from "react-native";
 import { getProfile, type AppUserProfile } from "../../services/userService";
 import ProfileCard from "../../components/profileCard";
-import useAuthGuard from "../../hooks/useAuthGuard";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function FacultyProfile() {
-  const { loading } = useAuthGuard("faculty");
   const [user, setUser] = useState<AppUserProfile | null>(null);
   const router = useRouter();
 
   useEffect(() => {
-    getProfile().then(setUser);
+    getProfile().then(setUser).catch(() => {});
   }, []);
 
-  if (loading || !user) {
+  if (!user) {
     return (
       <View className="flex-1 items-center justify-center bg-app-bg">
         <ActivityIndicator size="large" />
