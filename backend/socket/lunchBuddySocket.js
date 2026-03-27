@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
-const LunchBuddyMessage = require("../models/lunchBuddyMessage");
+const User = require("../models/adminModels/user");
+const LunchBuddyMessage = require("../models/studentModels/lunchBuddyMessage");
 
 const NAMESPACE = "/lunch-buddy";
 const MAX_MESSAGE_LENGTH = 400;

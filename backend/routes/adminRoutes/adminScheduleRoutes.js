@@ -1,8 +1,8 @@
 const express = require("express");
-const Schedule = require("../../models/schedule");
-const Course = require("../../models/course");
-const User = require("../../models/user");
-const StudentSchedule = require("../../models/studentSchedule");
+const Schedule = require("../../models/adminModels/schedule");
+const Course = require("../../models/adminModels/course");
+const User = require("../../models/adminModels/user");
+const StudentSchedule = require("../../models/adminModels/studentSchedule");
 const auth = require("../../middleware/authMiddleware");
 const authorizeRoles = require("../../middleware/roleMiddleware");
 

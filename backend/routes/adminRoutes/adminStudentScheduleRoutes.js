@@ -2,10 +2,10 @@ const express = require("express");
 const auth = require("../../middleware/authMiddleware");
 const authorizeRoles = require("../../middleware/roleMiddleware");
 
-const User = require("../../models/user");
-const Schedule = require("../../models/schedule");
-const StudentSchedule = require("../../models/studentSchedule");
-const Notification = require("../../models/notification");
+const User = require("../../models/adminModels/user");
+const Schedule = require("../../models/adminModels/schedule");
+const StudentSchedule = require("../../models/adminModels/studentSchedule");
+const Notification = require("../../models/adminModels/notification");
 
 const router = express.Router();
 

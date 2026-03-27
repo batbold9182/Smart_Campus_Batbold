@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
-const PartyBuddyMessage = require("../models/partyBuddyMessage");
+const User = require("../models/adminModels/user");
+const PartyBuddyMessage = require("../models/studentModels/partyBuddyMessage");
 
 const NAMESPACE = "/party-buddy";
 const MAX_MESSAGE_LENGTH = 400;

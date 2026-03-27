@@ -2,7 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
+const User = require("../models/adminModels/user");
 
 const router = express.Router();
 const RESET_TOKEN_TTL_MINUTES = 15;

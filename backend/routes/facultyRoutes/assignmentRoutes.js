@@ -2,11 +2,11 @@ const express = require("express");
 const auth = require("../../middleware/authMiddleware");
 const authorizeRoles = require("../../middleware/roleMiddleware");
 const multer = require("multer");
-const Assignment = require("../../models/assignment");
-const AssignmentSubmission = require("../../models/assignmentSubmission");
-const Course = require("../../models/course");
-const Enrollment = require("../../models/enrollment");
-const Notification = require("../../models/notification");
+const Assignment = require("../../models/facultyModels/assignment");
+const AssignmentSubmission = require("../../models/facultyModels/assignmentSubmission");
+const Course = require("../../models/adminModels/course");
+const Enrollment = require("../../models/adminModels/enrollment");
+const Notification = require("../../models/adminModels/notification");
 const { cloudinary, hasCloudinaryConfig } = require("../../config/cloudinary");
 
 const router = express.Router();

@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
 const role = require("../middleware/roleMiddleware");
-const User = require("../models/user");
+const User = require("../models/adminModels/user");
 const { cloudinary, hasCloudinaryConfig } = require("../config/cloudinary");
 
 const isBlockedLocalScheme = (value) => {

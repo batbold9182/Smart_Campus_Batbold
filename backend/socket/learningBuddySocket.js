@@ -1,6 +1,6 @@
 const jwt = require("jsonwebtoken");
-const User = require("../models/user");
-const LearningBuddyMessage = require("../models/learningBuddyMessage");
+const User = require("../models/adminModels/user");
+const LearningBuddyMessage = require("../models/studentModels/learningBuddyMessage");
 
 const NAMESPACE = "/learning-buddy";
 const MAX_MESSAGE_LENGTH = 400;
