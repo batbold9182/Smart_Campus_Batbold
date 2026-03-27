@@ -12,20 +12,20 @@ const app = express();
 const server = http.createServer(app);
 connectDB();
 
-const adminCourseRoutes = require("./routes/adminCourseRoutes");
-const adminEnrollRoutes = require("./routes/adminEnrollRoutes.js");
-const adminNotificationRoutes = require("./routes/adminNotificationRoutes.js");
-const notificationRoutes = require("./routes/notificationRoutes.js");
-const scheduleRoutes = require("./routes/adminScheduleRoutes.js");
-const studentScheduleRoutes = require("./routes/studentScheduleRoutes.js");
-const adminStudentScheduleRoutes = require("./routes/adminStudentScheduleRoutes.js");
-const lunchBuddyRoutes = require("./routes/lunchBuddyRoutes.js");
-const partyBuddyRoutes = require("./routes/partyBuddyRoutes.js");
-const learningBuddyRoutes = require("./routes/learningBuddRoutes.js");
-const gradeRoutes = require("./routes/gradeRoutes.js");
-const libraryRoutes = require("./routes/libraryRoutes.js");
-const attendanceRoutes = require("./routes/attendanceRoutes.js");
-const assignmentRoutes = require("./routes/assignmentRoutes.js");
+const adminCourseRoutes = require("./routes/adminRoutes/adminCourseRoutes");
+const adminEnrollRoutes = require("./routes/adminRoutes/adminEnrollRoutes");
+const adminNotificationRoutes = require("./routes/adminRoutes/adminNotificationRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
+const scheduleRoutes = require("./routes/adminRoutes/adminScheduleRoutes");
+const studentScheduleRoutes = require("./routes/studentRoutes/studentScheduleRoutes");
+const adminStudentScheduleRoutes = require("./routes/adminRoutes/adminStudentScheduleRoutes");
+const lunchBuddyRoutes = require("./routes/studentRoutes/lunchBuddyRoutes");
+const partyBuddyRoutes = require("./routes/studentRoutes/partyBuddyRoutes");
+const learningBuddyRoutes = require("./routes/studentRoutes/learningBuddRoutes");
+const gradeRoutes = require("./routes/facultyRoutes/gradeRoutes");
+const libraryRoutes = require("./routes/studentRoutes/libraryRoutes");
+const attendanceRoutes = require("./routes/facultyRoutes/attendanceRoutes");
+const assignmentRoutes = require("./routes/facultyRoutes/assignmentRoutes");
 
 
 app.use(cors());
@@ -37,7 +37,7 @@ app.use("/api/auth", require("./routes/authRoutes"));
 
 app.use("/api/protected", require("./routes/protectedRoutes"));
 
-app.use("/api/admin", require("./routes/adminRoutes"));
+app.use("/api/admin", require("./routes/adminRoutes/adminRoutes"));
 
 app.use("/api/admin", adminCourseRoutes);
 

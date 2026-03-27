@@ -1,7 +1,7 @@
 import { io, Socket } from "socket.io-client";
-import api from "../config/clientAPI";
+import api from "../../config/clientAPI";
 
-export type LunchBuddyMessage = {
+export type LearningBuddyMessage = {
   id: string;
   text: string;
   createdAt: string;
@@ -14,36 +14,36 @@ export type LunchBuddyMessage = {
   };
 };
 
-export type LunchBuddyPresencePayload = {
+export type LearningBuddyPresencePayload = {
   onlineCount: number;
 };
 
-export type LunchBuddySendAck = {
+export type LearningBuddySendAck = {
   ok: boolean;
   error?: string;
 };
 
-type LunchBuddyHistoryResponse = {
-  messages: LunchBuddyMessage[];
+type HistoryResponse = {
+  messages: LearningBuddyMessage[];
 };
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "";
 const SOCKET_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, "");
 
-export const getLunchBuddyMessages = async (limit = 50) => {
-  const response = await api.get<LunchBuddyHistoryResponse>("/api/lunch-buddy/messages", {
+export const getLearningBuddyMessages = async (limit = 50) => {
+  const response = await api.get<HistoryResponse>("/api/learning-buddy/messages", {
     params: { limit },
   });
 
   return response.data.messages;
 };
 
-export const connectLunchBuddySocket = (token: string): Socket => {
+export const connectLearningBuddySocket = (token: string): Socket => {
   if (!SOCKET_BASE_URL) {
     throw new Error("EXPO_PUBLIC_API_URL is not configured");
   }
 
-  return io(`${SOCKET_BASE_URL}/lunch-buddy`, {
+  return io(`${SOCKET_BASE_URL}/learning-buddy`, {
     auth: { token },
     transports: ["websocket"],
     reconnection: true,

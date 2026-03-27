@@ -9,7 +9,7 @@ import {
   type AttendanceStatus,
   type FacultyAttendanceCourse,
   type FacultyAttendanceCourseDetail,
-} from "../../services/attandanceService";
+} from "../../services/facultyServices/attandanceService";
 import { getFacultySchedule, type FacultyScheduleItem } from "../../services/scheduleService";
 
 const ATTENDANCE_STATUSES: AttendanceStatus[] = ["present", "absent", "late", "excused"];

@@ -1,4 +1,4 @@
-import api from "../config/clientAPI";
+import api from "../../config/clientAPI";
 
 export type AttendanceStatus = "present" | "absent" | "late" | "excused";
 

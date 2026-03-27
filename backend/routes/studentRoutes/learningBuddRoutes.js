@@ -1,7 +1,7 @@
 const express = require("express");
-const auth = require("../middleware/authMiddleware");
-const role = require("../middleware/roleMiddleware");
-const LunchBuddyMessage = require("../models/lunchBuddyMessage");
+const auth = require("../../middleware/authMiddleware");
+const role = require("../../middleware/roleMiddleware");
+const LearningBuddyMessage = require("../../models/learningBuddyMessage");
 
 const router = express.Router();
 
@@ -28,7 +28,7 @@ router.get("/messages", auth, role("student"), async (req, res) => {
       ? Math.min(Math.floor(requestedLimit), MAX_LIMIT)
       : DEFAULT_LIMIT;
 
-    const messages = await LunchBuddyMessage.find()
+    const messages = await LearningBuddyMessage.find()
       .sort({ createdAt: -1 })
       .limit(limit)
       .populate("sender", "name program yearLevel profile")
@@ -38,8 +38,8 @@ router.get("/messages", auth, role("student"), async (req, res) => {
       messages: messages.reverse().map(formatMessage),
     });
   } catch (err) {
-    console.error("LUNCH_BUDDY_HISTORY_ERROR:", err);
-    res.status(500).json({ message: "Failed to load Lunch Buddy messages" });
+    console.error("LEARNING_BUDDY_HISTORY_ERROR:", err);
+    res.status(500).json({ message: "Failed to load Learning Buddy messages" });
   }
 });
 

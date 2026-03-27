@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { getStudentGrades, type StudentGradesResponse } from "../../services/gradeService";
+import { getStudentGrades, type StudentGradesResponse } from "../../services/facultyServices/gradeService";
 
 export default function Grades() {
   const router = useRouter();

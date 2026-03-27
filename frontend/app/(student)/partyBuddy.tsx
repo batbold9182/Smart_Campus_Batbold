@@ -21,7 +21,7 @@ import {
   type PartyBuddyMessage,
   type PartyBuddyPresencePayload,
   type PartyBuddySendAck,
-} from "../../services/partyBuddyService";
+} from "../../services/studentServices/partyBuddyService";
 
 export default function PartyBuddy() {
   const router = useRouter();

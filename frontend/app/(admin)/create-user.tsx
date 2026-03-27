@@ -10,7 +10,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { createUser, getAcademicOptions } from "../../services/adminService";
+import { createUser, getAcademicOptions } from "../../services/adminServices/adminService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 

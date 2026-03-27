@@ -1,11 +1,11 @@
 const express = require("express");
-const auth = require("../middleware/authMiddleware");
-const authorizeRoles = require("../middleware/roleMiddleware");
+const auth = require("../../middleware/authMiddleware");
+const authorizeRoles = require("../../middleware/roleMiddleware");
 
-const User = require("../models/user");
-const Schedule = require("../models/schedule");
-const StudentSchedule = require("../models/studentSchedule");
-const Notification = require("../models/notification");
+const User = require("../../models/user");
+const Schedule = require("../../models/schedule");
+const StudentSchedule = require("../../models/studentSchedule");
+const Notification = require("../../models/notification");
 
 const router = express.Router();
 

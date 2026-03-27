@@ -8,7 +8,7 @@ import {
 	type AttendanceStatus,
 	type StudentAttendanceScheduleResponse,
 	type StudentAttendanceSummaryResponse,
-} from "../../services/attandanceService";
+} from "../../services/facultyServices/attandanceService";
 
 const toTodayDateKey = () => {
 	const now = new Date();

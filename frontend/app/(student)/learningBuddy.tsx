@@ -21,7 +21,7 @@ import {
   type LearningBuddyMessage,
   type LearningBuddyPresencePayload,
   type LearningBuddySendAck,
-} from "../../services/learningBuddyService";
+} from "../../services/studentServices/learningBuddyService";
 
 export default function LearningBuddy() {
   const router = useRouter();

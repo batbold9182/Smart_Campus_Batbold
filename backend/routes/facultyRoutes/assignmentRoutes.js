@@ -1,13 +1,13 @@
 const express = require("express");
-const auth = require("../middleware/authMiddleware");
-const authorizeRoles = require("../middleware/roleMiddleware");
+const auth = require("../../middleware/authMiddleware");
+const authorizeRoles = require("../../middleware/roleMiddleware");
 const multer = require("multer");
-const Assignment = require("../models/assignment");
-const AssignmentSubmission = require("../models/assignmentSubmission");
-const Course = require("../models/course");
-const Enrollment = require("../models/enrollment");
-const Notification = require("../models/notification");
-const { cloudinary, hasCloudinaryConfig } = require("../config/cloudinary");
+const Assignment = require("../../models/assignment");
+const AssignmentSubmission = require("../../models/assignmentSubmission");
+const Course = require("../../models/course");
+const Enrollment = require("../../models/enrollment");
+const Notification = require("../../models/notification");
+const { cloudinary, hasCloudinaryConfig } = require("../../config/cloudinary");
 
 const router = express.Router();
 const MAX_SUBMISSION_FILE_SIZE = 10 * 1024 * 1024;

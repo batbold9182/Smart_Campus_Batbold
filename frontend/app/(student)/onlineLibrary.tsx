@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { searchOnlineLibrary, type LibrarySearchItem } from "../../services/onlineLibraryService";
+import { searchOnlineLibrary, type LibrarySearchItem } from "../../services/studentServices/onlineLibraryService";
 
 const LIBRARY_CATEGORIES = [
   { label: "All", value: "" },

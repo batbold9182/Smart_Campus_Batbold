@@ -1,10 +1,10 @@
 const express = require("express");
-const Enrollment = require("../models/enrollment");
-const User = require("../models/user");
-const Course = require("../models/course");
-const auth = require("../middleware/authMiddleware");
-const authorizeRoles = require("../middleware/roleMiddleware");
-const notification = require("../models/notification");
+const Enrollment = require("../../models/enrollment");
+const User = require("../../models/user");
+const Course = require("../../models/course");
+const auth = require("../../middleware/authMiddleware");
+const authorizeRoles = require("../../middleware/roleMiddleware");
+const notification = require("../../models/notification");
 
 const router = express.Router();
 

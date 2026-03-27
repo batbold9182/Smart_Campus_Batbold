@@ -15,7 +15,7 @@ import {
   deleteCourse,
   getAllCourses,
 } from "../../services/courseService";
-import { getUsers } from "../../services/adminService";
+import { getUsers } from "../../services/adminServices/adminService";
 import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 

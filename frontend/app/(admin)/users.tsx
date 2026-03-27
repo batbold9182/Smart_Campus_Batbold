@@ -9,7 +9,7 @@ import {
   Modal,
   Alert,
 } from "react-native";
-import { getUsers, deleteUser, toggleUserStatus, updateUser, getAcademicOptions } from "../../services/adminService";
+import { getUsers, deleteUser, toggleUserStatus, updateUser, getAcademicOptions } from "../../services/adminServices/adminService";
 import { useRouter } from "expo-router";
 import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";

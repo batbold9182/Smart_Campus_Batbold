@@ -21,7 +21,7 @@ import {
   type LunchBuddyMessage,
   type LunchBuddyPresencePayload,
   type LunchBuddySendAck,
-} from "../../services/lunchBuddyService";
+} from "../../services/studentServices/lunchBuddyService";
 
 type BuddySection = "hub" | "lunch";
 type BuddySectionKey = "lunch" | "learning" | "party";

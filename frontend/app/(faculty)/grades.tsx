@@ -8,7 +8,7 @@ import {
   saveStudentGrade,
   type FacultyGradeCourse,
   type FacultyGradeCourseDetail,
-} from "../../services/gradeService";
+} from "../../services/facultyServices/gradeService";
 
 export default function Grades() {
   const router = useRouter();

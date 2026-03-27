@@ -1,4 +1,4 @@
-import api from "../config/clientAPI";
+import api from "../../config/clientAPI";
 
 export type LibrarySearchItem = {
   id: string;

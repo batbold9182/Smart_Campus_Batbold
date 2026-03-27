@@ -25,7 +25,7 @@ import {
   type FacultyAssignmentSubmissionDetail,
   type FacultyAssignmentCourse,
   type FacultyAssignmentCourseDetail,
-} from "../../services/assignmentService";
+} from "../../services/facultyServices/assignmentService";
 
 const toDateInputValue = (date = new Date()) => {
   const year = date.getUTCFullYear();

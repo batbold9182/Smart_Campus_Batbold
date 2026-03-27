@@ -4,7 +4,7 @@ import {
   assignSchedule,
   getStudents,
   getSchedules,
-} from "../../services/adminScheduleService";
+} from "../../services/adminServices/adminScheduleService";
 import { useRouter } from "expo-router";
 import { unassignSchedule } from "@/services/scheduleService";
 import { adminStyles } from "../../styles/adminStyles";

@@ -10,7 +10,7 @@ import {
   submitStudentAssignment,
   type AssignmentRecord,
   type StudentAssignmentsResponse,
-} from "../../services/assignmentService";
+} from "../../services/facultyServices/assignmentService";
 
 const toDateKey = (date = new Date()) => {
   const year = date.getUTCFullYear();

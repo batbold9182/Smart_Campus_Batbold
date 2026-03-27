@@ -1,10 +1,10 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
-const User = require("../models/user");
-const Course = require("../models/course");
-const auth = require("../middleware/authMiddleware");
-const role = require("../middleware/roleMiddleware");
-const academicHierarchy = require("../config/academicHierarchy");
+const User = require("../../models/user");
+const Course = require("../../models/course");
+const auth = require("../../middleware/authMiddleware");
+const role = require("../../middleware/roleMiddleware");
+const academicHierarchy = require("../../config/academicHierarchy");
 
 const router = express.Router();
 

@@ -1,4 +1,4 @@
-import api from "../config/clientAPI";
+import api from "../../config/clientAPI";
 
 export const assignSchedule = async (
   studentId: string,

@@ -1,5 +1,5 @@
-import api from "../config/clientAPI";
-import { getToken } from "./tokenStorage";
+import api from "../../config/clientAPI";
+import { getToken } from "../tokenStorage";
 
 export type FacultyAssignmentCourse = {
   id: string;
