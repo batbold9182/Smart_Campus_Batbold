@@ -1,0 +1,177 @@
+[
+  {
+    "id": 1,
+    "category": "Enrollment",
+    "question": "How do I enroll in a course?",
+    "answer": "To enroll in a course, go to the Enrollment section from your dashboard, browse available courses, and tap 'Enroll'. Your enrollment is subject to admin approval.",
+    "keywords": ["enroll", "enrolment", "register", "sign up", "add course", "join course", "how to enroll"]
+  },
+  {
+    "id": 2,
+    "category": "Enrollment",
+    "question": "How do I drop or withdraw from a course?",
+    "answer": "To drop a course, contact your academic advisor or visit the admin office. Withdrawal deadlines apply — check the academic calendar for exact dates.",
+    "keywords": ["drop", "withdraw", "remove course", "unenroll", "leave course", "cancel enrollment"]
+  },
+  {
+    "id": 3,
+    "category": "Enrollment",
+    "question": "How many courses can I enroll in per semester?",
+    "answer": "Students can typically enroll in up to 6 courses per semester. Special permission from your advisor is required to exceed this limit.",
+    "keywords": ["how many courses", "maximum courses", "course limit", "credit limit", "credits per semester"]
+  },
+  {
+    "id": 4,
+    "category": "Grades",
+    "question": "How do I view my grades?",
+    "answer": "You can view your grades by navigating to the Grades section in your student dashboard. Grades are updated by faculty after each assessment.",
+    "keywords": ["grades", "view grades", "check grades", "my grades", "grade report", "transcript"]
+  },
+  {
+    "id": 5,
+    "category": "Grades",
+    "question": "How is my GPA calculated?",
+    "answer": "GPA is calculated by dividing the total grade points earned by the total credit hours attempted. A = 4.0, B = 3.0, C = 2.0, D = 1.0, F = 0.0.",
+    "keywords": ["gpa", "grade point average", "calculate gpa", "gpa calculation", "grading scale"]
+  },
+  {
+    "id": 6,
+    "category": "Grades",
+    "question": "What happens if I fail a course?",
+    "answer": "If you fail a course, you will receive an F grade which impacts your GPA. You may need to retake the course. Consult your academic advisor for guidance.",
+    "keywords": ["fail", "failing", "failed course", "f grade", "retake", "repeat course"]
+  },
+  {
+    "id": 7,
+    "category": "Attendance",
+    "question": "What is the attendance policy?",
+    "answer": "Students must maintain at least 75% attendance in each course. Falling below this threshold may result in grade penalties or course withdrawal.",
+    "keywords": ["attendance", "attendance policy", "absent", "missing class", "attendance requirement", "75%"]
+  },
+  {
+    "id": 8,
+    "category": "Attendance",
+    "question": "How do I check my attendance record?",
+    "answer": "You can view your attendance record in the Attendance section of your dashboard. It shows attendance per course with total present and absent days.",
+    "keywords": ["check attendance", "view attendance", "attendance record", "my attendance", "attendance history"]
+  },
+  {
+    "id": 9,
+    "category": "Attendance",
+    "question": "What should I do if my attendance is marked wrong?",
+    "answer": "If you believe your attendance is incorrectly recorded, contact your course faculty directly or raise a concern through the admin office.",
+    "keywords": ["wrong attendance", "incorrect attendance", "attendance error", "fix attendance", "attendance mistake", "dispute attendance"]
+  },
+  {
+    "id": 10,
+    "category": "Assignments",
+    "question": "How do I submit an assignment?",
+    "answer": "Go to the Assignments section in your dashboard, find the relevant assignment, and tap 'Submit'. You can upload files or enter your submission text before the deadline.",
+    "keywords": ["submit assignment", "assignment submission", "how to submit", "upload assignment", "turn in assignment"]
+  },
+  {
+    "id": 11,
+    "category": "Assignments",
+    "question": "What happens if I miss an assignment deadline?",
+    "answer": "Late submissions may be penalized or not accepted depending on the faculty's policy. Check the assignment details or contact your faculty member directly.",
+    "keywords": ["missed deadline", "late submission", "overdue assignment", "deadline passed", "missed assignment", "late assignment"]
+  },
+  {
+    "id": 12,
+    "category": "Assignments",
+    "question": "Where can I see all my pending assignments?",
+    "answer": "All pending assignments are listed in the Assignments section of your dashboard, sorted by due date. Overdue assignments are highlighted separately.",
+    "keywords": ["pending assignments", "upcoming assignments", "due assignments", "assignment list", "my assignments"]
+  },
+  {
+    "id": 13,
+    "category": "Schedule",
+    "question": "How do I view my class schedule?",
+    "answer": "Your class schedule is available in the Schedule section of your dashboard. It shows all your enrolled courses along with their time, location, and faculty details.",
+    "keywords": ["schedule", "class schedule", "timetable", "view schedule", "my schedule", "class time", "when is class"]
+  },
+  {
+    "id": 14,
+    "category": "Schedule",
+    "question": "What do I do if there is a schedule conflict?",
+    "answer": "If you have a schedule conflict, contact your academic advisor or the admin office. They can help adjust your course registration.",
+    "keywords": ["schedule conflict", "class conflict", "overlapping classes", "timetable conflict", "conflict schedule"]
+  },
+  {
+    "id": 15,
+    "category": "Library",
+    "question": "How do I access the online library?",
+    "answer": "The online library is accessible through the Library section in your dashboard. You can search for books, journals, and research papers available in digital format.",
+    "keywords": ["library", "online library", "digital library", "access library", "books", "research papers", "journals", "e-library"]
+  },
+  {
+    "id": 16,
+    "category": "Library",
+    "question": "How long can I borrow a book?",
+    "answer": "Physical books can be borrowed for up to 14 days and can be renewed once if no one else has requested it. Digital resources are available anytime.",
+    "keywords": ["borrow book", "book loan", "checkout book", "library book", "book duration", "return book"]
+  },
+  {
+    "id": 17,
+    "category": "Account",
+    "question": "How do I reset my password?",
+    "answer": "On the login screen, tap 'Forgot Password' and enter your registered email address. You will receive a password reset link via email.",
+    "keywords": ["reset password", "forgot password", "change password", "password reset", "lost password", "can't login", "cannot login"]
+  },
+  {
+    "id": 18,
+    "category": "Account",
+    "question": "How do I update my profile information?",
+    "answer": "Go to your Profile section from the dashboard. You can update your contact details, profile picture, and other personal information.",
+    "keywords": ["update profile", "change profile", "edit profile", "personal information", "profile picture", "update info"]
+  },
+  {
+    "id": 19,
+    "category": "Campus",
+    "question": "Where can I find a campus map?",
+    "answer": "An interactive campus map is available in the Campus Map section of your dashboard. It shows building locations, lecture halls, and key facilities.",
+    "keywords": ["campus map", "building map", "where is", "location", "directions", "campus navigation", "find building"]
+  },
+  {
+    "id": 20,
+    "category": "Campus",
+    "question": "What campus facilities are available?",
+    "answer": "The campus includes lecture halls, computer labs, a library, a cafeteria, sports facilities, and student lounges. Check the campus map for exact locations.",
+    "keywords": ["facilities", "campus facilities", "lab", "computer lab", "cafeteria", "sports", "lounge", "what facilities"]
+  },
+  {
+    "id": 21,
+    "category": "Notifications",
+    "question": "How do I receive notifications?",
+    "answer": "Notifications are sent to your dashboard automatically for important updates like grade releases, assignment deadlines, and announcements. Check the Notifications section regularly.",
+    "keywords": ["notifications", "alerts", "announcements", "campus news", "updates", "receive notification"]
+  },
+  {
+    "id": 22,
+    "category": "Faculty",
+    "question": "How do I contact my faculty member?",
+    "answer": "Faculty contact information can be found on your course detail page or in the Faculty directory accessible from your dashboard.",
+    "keywords": ["contact faculty", "professor contact", "teacher contact", "email professor", "faculty info", "lecturer contact"]
+  },
+  {
+    "id": 23,
+    "category": "Graduation",
+    "question": "What are the graduation requirements?",
+    "answer": "To graduate, you must complete all required credits for your program, maintain a minimum GPA of 2.0, and have no outstanding financial obligations to the university.",
+    "keywords": ["graduation", "graduate", "graduation requirements", "degree requirements", "complete degree", "finish program"]
+  },
+  {
+    "id": 24,
+    "category": "Financial",
+    "question": "Are there scholarships available?",
+    "answer": "Yes, the university offers merit-based and need-based scholarships. Visit the Financial Aid office or check the university portal for current scholarship opportunities.",
+    "keywords": ["scholarship", "financial aid", "bursary", "funding", "fee waiver", "tuition help", "financial assistance"]
+  },
+  {
+    "id": 25,
+    "category": "Technical",
+    "question": "The app is not working properly. What should I do?",
+    "answer": "Try restarting the app or clearing the app cache. If the issue persists, contact technical support at support@smartcampus.edu or visit the IT help desk.",
+    "keywords": ["app not working", "app crash", "bug", "technical issue", "error", "help", "support", "not loading", "broken"]
+  }
+]
