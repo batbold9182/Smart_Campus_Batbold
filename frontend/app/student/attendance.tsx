@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, TextInput, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -81,7 +81,7 @@ export default function StudentAttendance() {
 		return (
 			<SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
 				<ActivityIndicator size="large" color="#2563eb" />
-				<Text className="mt-3 text-[#6b7280]">Loading attendance...</Text>
+				<Text className="mt-3 text-app-muted">Loading attendance...</Text>
 			</SafeAreaView>
 		);
 	}
@@ -94,15 +94,15 @@ export default function StudentAttendance() {
 				<View className="mb-4 flex-row justify-between gap-2">
 					<View className="flex-1 rounded-xl bg-white p-4 shadow">
 						<Text className="text-[20px] font-bold text-[#111827]">{summaryData?.summary.totalMarked || 0}</Text>
-						<Text className="mt-1 text-[12px] text-[#6b7280]">Marked Days</Text>
+						<Text className="mt-1 text-[12px] text-app-muted">Marked Days</Text>
 					</View>
 					<View className="flex-1 rounded-xl bg-white p-4 shadow">
 						<Text className="text-[20px] font-bold text-[#111827]">{summaryData?.summary.presentCount || 0}</Text>
-						<Text className="mt-1 text-[12px] text-[#6b7280]">Present</Text>
+						<Text className="mt-1 text-[12px] text-app-muted">Present</Text>
 					</View>
 					<View className="flex-1 rounded-xl bg-white p-4 shadow">
 						<Text className="text-[20px] font-bold text-[#111827]">{summaryData?.summary.absentCount || 0}</Text>
-						<Text className="mt-1 text-[12px] text-[#6b7280]">Absent</Text>
+						<Text className="mt-1 text-[12px] text-app-muted">Absent</Text>
 					</View>
 				</View>
 
@@ -127,21 +127,21 @@ export default function StudentAttendance() {
 
 				<View className="mb-4 rounded-xl bg-white p-4 shadow">
 					<Text className="mb-2 text-[16px] font-semibold text-[#111827]">
-						Schedule Attendance{scheduleData?.day ? ` â€¢ ${scheduleData.day}` : ""}
+						Schedule Attendance{scheduleData?.day ? ` • ${scheduleData.day}` : ""}
 					</Text>
 
 					{!scheduleData?.items.length ? (
-						<Text className="text-[#6b7280]">No scheduled classes found for this date.</Text>
+						<Text className="text-app-muted">No scheduled classes found for this date.</Text>
 					) : (
 						scheduleData.items.map((item) => (
 							<View key={item.schedule.id} className="mb-3 rounded-lg border border-[#e5e7eb] p-4 last:mb-0">
 								<View className="flex-row items-start justify-between gap-3">
 									<View className="flex-1">
 										<Text className="text-[15px] font-semibold text-[#111827]">{item.course?.title || "Untitled Course"}</Text>
-										<Text className="mt-1 text-[#6b7280]">
-											{item.course?.code || "No code"} â€¢ {item.schedule.startTime} - {item.schedule.endTime}
+										<Text className="mt-1 text-app-muted">
+											{item.course?.code || "No code"} • {item.schedule.startTime} - {item.schedule.endTime}
 										</Text>
-										<Text className="mt-1 text-[#9ca3af]">Room {item.schedule.room} â€¢ Faculty: {item.facultyName}</Text>
+										<Text className="mt-1 text-[#9ca3af]">Room {item.schedule.room} • Faculty: {item.facultyName}</Text>
 									</View>
 									<View className={`rounded-full px-3 py-2 ${getBadgeClassName(item.attendance?.status || null)}`}>
 										<Text className="text-[12px] font-semibold text-[#1f2937]">
@@ -152,7 +152,7 @@ export default function StudentAttendance() {
 
 								{item.attendance?.remarks ? (
 									<View className="mt-3 rounded-lg bg-[#f9fafb] p-3">
-										<Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Remarks</Text>
+										<Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Remarks</Text>
 										<Text className="mt-2 text-[#374151]">{item.attendance.remarks}</Text>
 									</View>
 								) : null}
@@ -165,14 +165,14 @@ export default function StudentAttendance() {
 					<Text className="mb-2 text-[16px] font-semibold text-[#111827]">Course Attendance Summary</Text>
 
 					{!summaryData?.items.length ? (
-						<Text className="text-[#6b7280]">Attendance records will appear here after faculty mark them.</Text>
+						<Text className="text-app-muted">Attendance records will appear here after faculty mark them.</Text>
 					) : (
 						summaryData.items.map((item) => (
 							<View key={item.course.id} className="mb-3 rounded-lg border border-[#e5e7eb] p-4 last:mb-0">
 								<View className="flex-row items-start justify-between gap-3">
 									<View className="flex-1">
 										<Text className="text-[15px] font-semibold text-[#111827]">{item.course.title}</Text>
-										<Text className="mt-1 text-[#6b7280]">{item.course.code} â€¢ Faculty: {item.course.facultyName}</Text>
+										<Text className="mt-1 text-app-muted">{item.course.code} • Faculty: {item.course.facultyName}</Text>
 									</View>
 									<View className="rounded-full bg-[#eff6ff] px-3 py-2">
 										<Text className="text-[12px] font-semibold text-[#1d4ed8]">{item.summary.totalMarked} records</Text>
@@ -195,7 +195,7 @@ export default function StudentAttendance() {
 								</View>
 
 								{item.latestAttendance ? (
-									<Text className="mt-3 text-[12px] text-[#6b7280]">
+									<Text className="mt-3 text-[12px] text-app-muted">
 										Latest record: {formatStatusLabel(item.latestAttendance.status)} on {item.latestAttendance.date}
 									</Text>
 								) : (

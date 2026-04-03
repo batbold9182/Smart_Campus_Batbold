@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { usePathname, useRouter } from "expo-router";
 import { Image, ImageSourcePropType, Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -107,7 +107,7 @@ export default function BuildingMapScreen() {
                   }`}
                 >
                   <Text className={`text-center text-[20px] font-bold ${active ? "text-white" : "text-black"}`}>{floor.title}</Text>
-                  <Text className={`text-center text-[11px] ${active ? "text-[#E5E7EB]" : "text-[#6B7280]"}`}>{floor.subtitle}</Text>
+                  <Text className={`text-center text-[11px] ${active ? "text-[#E5E7EB]" : "text-app-muted"}`}>{floor.subtitle}</Text>
                 </Pressable>
 
               );

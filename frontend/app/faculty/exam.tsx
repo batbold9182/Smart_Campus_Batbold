@@ -1,4 +1,4 @@
-﻿import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
@@ -12,7 +12,7 @@ export default function Exam() {
 
         <View className="mb-4 rounded-xl bg-white p-4 shadow">
           <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Feature Coming Soon</Text>
-          <Text className="text-[#6b7280]">
+          <Text className="text-app-muted">
             Exam scheduling, grading workflows, and result publishing tools will be added here.
           </Text>
         </View>

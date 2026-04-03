@@ -1,4 +1,4 @@
-﻿import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 
@@ -12,11 +12,11 @@ export default function CreateMeeting() {
 
         <View className="mb-4 rounded-xl bg-white p-4 shadow">
           <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Feature Coming Soon</Text>
-          <Text className="text-[#6b7280]">
+          <Text className="text-app-muted">
             Team projects can be discussed and meetings can be scheduled here. This will include live whiteboard,live chat,generates share links, and more.
             also whiteboard can be saved as pdf or image for later reference.
           </Text>
-          <Text className="text-[#6b7280] mt-2">
+          <Text className="text-app-muted mt-2">
             Implement this feature if i can.
           </Text>
         </View>

@@ -180,7 +180,7 @@ export default function CreateUserScreen() {
         <Text className={value ? "text-[#111827]" : "text-[#9ca3af]"}>
           {value || placeholder}
         </Text>
-        <Text className="text-[18px] text-[#6b7280]">▾</Text>
+        <Text className="text-[18px] text-app-muted">▾</Text>
       </TouchableOpacity>
     </View>
   );

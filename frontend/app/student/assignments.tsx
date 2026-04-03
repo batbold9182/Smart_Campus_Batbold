@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Alert, ActivityIndicator, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -39,7 +39,7 @@ const getAssignmentStatus = (dueDate: string) => {
   const todayKey = toDateKey(new Date());
 
   if (Number.isNaN(due.getTime())) {
-    return { label: "Unknown", chip: "bg-[#f3f4f6]", text: "text-[#6b7280]" };
+    return { label: "Unknown", chip: "bg-[#f3f4f6]", text: "text-app-muted" };
   }
 
   if (dueKey < todayKey) {
@@ -221,7 +221,7 @@ export default function StudentAssignments() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-[#6b7280]">Loading assignments...</Text>
+        <Text className="mt-3 text-app-muted">Loading assignments...</Text>
       </SafeAreaView>
     );
   }
@@ -234,55 +234,55 @@ export default function StudentAssignments() {
         <View className="mb-4 flex-row justify-between gap-2">
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.courseCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Courses</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Courses</Text>
           </View>
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.assignmentCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Assignments</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Assignments</Text>
           </View>
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.dueTodayCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Due Today</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Due Today</Text>
           </View>
         </View>
 
         <View className="mb-4 flex-row justify-between gap-2">
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.upcomingCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Upcoming</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Upcoming</Text>
           </View>
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.submittedCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Submitted</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Submitted</Text>
           </View>
         </View>
 
         <View className="mb-4 flex-row justify-between gap-2">
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.pendingCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Pending</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Pending</Text>
           </View>
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.overdueCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Overdue</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Overdue</Text>
           </View>
         </View>
 
         {!data?.items.length ? (
           <View className="mb-4 rounded-xl bg-white p-4 shadow">
             <Text className="mb-2 text-[16px] font-semibold text-[#111827]">No Assignments Yet</Text>
-            <Text className="text-[#6b7280]">Assignments from your enrolled courses will appear here once faculty publish them.</Text>
+            <Text className="text-app-muted">Assignments from your enrolled courses will appear here once faculty publish them.</Text>
           </View>
         ) : (
           data.items.map((item) => (
             <View key={item.course.id} className="mb-4 rounded-xl bg-white p-4 shadow">
               <Text className="text-[16px] font-semibold text-[#111827]">{item.course.title}</Text>
-              <Text className="mt-1 text-[#6b7280]">{item.course.code} â€¢ {item.course.credits} credits</Text>
+              <Text className="mt-1 text-app-muted">{item.course.code} • {item.course.credits} credits</Text>
               <Text className="mt-1 text-[#9ca3af]">Faculty: {item.course.facultyName}</Text>
 
               {item.assignments.length === 0 ? (
                 <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
-                  <Text className="text-[#6b7280]">No assignments published for this course yet.</Text>
+                  <Text className="text-app-muted">No assignments published for this course yet.</Text>
                 </View>
               ) : (
                 item.assignments.map((assignment) => {
@@ -295,8 +295,8 @@ export default function StudentAssignments() {
                       <View className="flex-row items-start justify-between gap-3">
                         <View className="flex-1">
                           <Text className="text-[15px] font-semibold text-[#111827]">{assignment.title}</Text>
-                          <Text className="mt-1 text-[#6b7280]">
-                            Due {formatReadableDate(assignment.dueDate)} â€¢ {assignment.maxPoints} points
+                          <Text className="mt-1 text-app-muted">
+                            Due {formatReadableDate(assignment.dueDate)} • {assignment.maxPoints} points
                           </Text>
                         </View>
                         <View className={`rounded-full px-3 py-2 ${status.chip}`}>
@@ -312,7 +312,7 @@ export default function StudentAssignments() {
 
                       {assignment.submission ? (
                         <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
-                          <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Current Submission</Text>
+                          <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Current Submission</Text>
                           <Text className="mt-2 text-[#374151]">
                             Submitted {formatReadableDate(assignment.submission.submittedAt)}
                           </Text>
@@ -326,7 +326,7 @@ export default function StudentAssignments() {
                           ) : null}
                           {assignment.submission.feedback ? (
                             <View className="mt-3 rounded-lg bg-white p-3">
-                              <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Faculty Feedback</Text>
+                              <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Faculty Feedback</Text>
                               <Text className="mt-2 text-[#374151]">{assignment.submission.feedback}</Text>
                             </View>
                           ) : null}
@@ -341,7 +341,7 @@ export default function StudentAssignments() {
                       ) : null}
 
                       <View className="mt-4">
-                        <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Submission Notes</Text>
+                        <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Submission Notes</Text>
                         <TextInput
                           multiline
                           value={currentNotes}
@@ -353,10 +353,10 @@ export default function StudentAssignments() {
                       </View>
 
                       <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
-                        <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">File Upload</Text>
-                        <Text className="mt-2 text-[#6b7280]">
+                        <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">File Upload</Text>
+                        <Text className="mt-2 text-app-muted">
                           {chosenFile
-                            ? `${chosenFile.name}${chosenFile.size ? ` â€¢ ${Math.ceil(chosenFile.size / 1024)} KB` : ""}`
+                            ? `${chosenFile.name}${chosenFile.size ? ` • ${Math.ceil(chosenFile.size / 1024)} KB` : ""}`
                             : "Choose a PDF, DOC, DOCX, TXT, JPG, PNG, WEBP, or GIF file up to 10 MB."}
                         </Text>
 

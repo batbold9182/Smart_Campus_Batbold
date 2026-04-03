@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -164,7 +164,7 @@ export default function Attendance() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-[#6b7280]">Loading attendance...</Text>
+        <Text className="mt-3 text-app-muted">Loading attendance...</Text>
       </SafeAreaView>
     );
   }
@@ -184,15 +184,15 @@ export default function Attendance() {
             autoCapitalize="none"
             autoCorrect={false}
           />
-          <Text className="mt-2 text-[12px] text-[#6b7280]">Use YYYY-MM-DD. Example: 2026-03-22</Text>
+          <Text className="mt-2 text-[12px] text-app-muted">Use YYYY-MM-DD. Example: 2026-03-22</Text>
         </View>
 
         <View className="mb-4 rounded-xl bg-white p-4 shadow">
           <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Schedule For Selected Date</Text>
           {!selectedDayName ? (
-            <Text className="text-[#6b7280]">Enter a valid date to view schedule.</Text>
+            <Text className="text-app-muted">Enter a valid date to view schedule.</Text>
           ) : schedulesForDate.length === 0 ? (
-            <Text className="text-[#6b7280]">No classes scheduled on {selectedDayName}.</Text>
+            <Text className="text-app-muted">No classes scheduled on {selectedDayName}.</Text>
           ) : (
             schedulesForDate.map((item) => (
               <TouchableOpacity
@@ -204,8 +204,8 @@ export default function Attendance() {
                 <Text className="text-[15px] font-semibold text-[#111827]">
                   {item.course?.title || item.course?.name || "Untitled Course"}
                 </Text>
-                <Text className="mt-1 text-[#6b7280]">
-                  {item.course?.code || "No code"} â€¢ {item.startTime} - {item.endTime} â€¢ Room {item.room}
+                <Text className="mt-1 text-app-muted">
+                  {item.course?.code || "No code"} • {item.startTime} - {item.endTime} • Room {item.room}
                 </Text>
                 <Text className="mt-2 text-[12px] font-semibold text-[#2563eb]">Open attendance</Text>
               </TouchableOpacity>
@@ -217,12 +217,12 @@ export default function Attendance() {
           <>
             <View className="mb-4 rounded-xl bg-white p-4 shadow">
               <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Assigned Courses</Text>
-              <Text className="text-[#6b7280]">Choose a course and manually mark each student.</Text>
+              <Text className="text-app-muted">Choose a course and manually mark each student.</Text>
             </View>
 
             {courses.length === 0 ? (
               <View className="mb-4 rounded-xl bg-white p-4 shadow">
-                <Text className="text-[#6b7280]">No courses assigned yet.</Text>
+                <Text className="text-app-muted">No courses assigned yet.</Text>
               </View>
             ) : (
               courses.map((course) => (
@@ -235,7 +235,7 @@ export default function Attendance() {
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
                       <Text className="text-[16px] font-semibold text-[#111827]">{course.title}</Text>
-                      <Text className="mt-1 text-[#6b7280]">{course.code} â€¢ {course.credits} credits</Text>
+                      <Text className="mt-1 text-app-muted">{course.code} • {course.credits} credits</Text>
                     </View>
                     <Text className="text-[12px] font-semibold text-[#2563eb]">
                       {loadingCourseId === course.id ? "Loading..." : "Open"}
@@ -261,7 +261,7 @@ export default function Attendance() {
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
                   <Text className="text-[18px] font-semibold text-[#111827]">{selectedCourse.course.title}</Text>
-                  <Text className="mt-1 text-[#6b7280]">{selectedCourse.course.code} â€¢ {selectedCourse.course.credits} credits</Text>
+                  <Text className="mt-1 text-app-muted">{selectedCourse.course.code} • {selectedCourse.course.credits} credits</Text>
                 </View>
                 <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-[#eff6ff] px-3 py-2">
                   <Text className="font-semibold text-[#2563eb]">Courses</Text>
@@ -279,16 +279,16 @@ export default function Attendance() {
 
             {selectedCourse.students.length === 0 ? (
               <View className="mb-4 rounded-xl bg-white p-4 shadow">
-                <Text className="text-[#6b7280]">No enrolled students in this course yet.</Text>
+                <Text className="text-app-muted">No enrolled students in this course yet.</Text>
               </View>
             ) : (
               selectedCourse.students.map((item) => (
                 <View key={item.student.id} className="mb-4 rounded-xl bg-white p-4 shadow">
                   <Text className="text-[16px] font-semibold text-[#111827]">{item.student.name}</Text>
-                  <Text className="mt-1 text-[#6b7280]">{item.student.program || "Program not set"}{item.student.yearLevel ? ` â€¢ Year ${item.student.yearLevel}` : ""}</Text>
+                  <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` • Year ${item.student.yearLevel}` : ""}</Text>
                   <Text className="mt-1 text-[#9ca3af]">{item.student.email}</Text>
 
-                  <Text className="mb-2 mt-4 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Status</Text>
+                  <Text className="mb-2 mt-4 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Status</Text>
                   <View className="flex-row flex-wrap gap-2">
                     {ATTENDANCE_STATUSES.map((status) => {
                       const isActive = (draftStatus[item.student.id] || "present") === status;
@@ -307,7 +307,7 @@ export default function Attendance() {
                   </View>
 
                   <View className="mt-4">
-                    <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Remarks</Text>
+                    <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Remarks</Text>
                     <TextInput
                       multiline
                       value={draftRemarks[item.student.id] || ""}
@@ -319,7 +319,7 @@ export default function Attendance() {
                   </View>
 
                   {item.attendance ? (
-                    <Text className="mt-3 text-[12px] text-[#6b7280]">
+                    <Text className="mt-3 text-[12px] text-app-muted">
                       Current saved attendance: {formatStatusLabel(item.attendance.status)}
                     </Text>
                   ) : (

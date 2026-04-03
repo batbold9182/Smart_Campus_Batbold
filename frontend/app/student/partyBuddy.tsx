@@ -177,7 +177,7 @@ export default function PartyBuddy() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
         <ActivityIndicator size="large" color="#dc2626" />
-        <Text className="mt-3 text-[15px] text-[#6b7280]">Loading Party Buddy...</Text>
+        <Text className="mt-3 text-[15px] text-app-muted">Loading Party Buddy...</Text>
       </SafeAreaView>
     );
   }
@@ -192,7 +192,7 @@ export default function PartyBuddy() {
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
               <Text className="text-[22px] font-bold text-[#111827]">🎉 Party Buddy</Text>
-              <Text className="mt-1 text-[13px] text-[#6b7280]">
+              <Text className="mt-1 text-[13px] text-app-muted">
                 Plan events, invite friends, and discover social hangouts on campus.
               </Text>
             </View>
@@ -237,7 +237,7 @@ export default function PartyBuddy() {
           {messages.length === 0 ? (
             <View className="mt-10 rounded-2xl bg-white p-5 shadow-sm">
               <Text className="text-[16px] font-semibold text-[#111827]">Start the conversation</Text>
-              <Text className="mt-2 leading-6 text-[#6b7280]">
+              <Text className="mt-2 leading-6 text-app-muted">
                 Share plans, suggest hangout spots, or find people going to the same event.
               </Text>
             </View>
@@ -287,7 +287,7 @@ export default function PartyBuddy() {
           </View>
 
           <View className="mt-3 flex-row items-center justify-between">
-            <Text className="text-[12px] text-[#6b7280]">{draft.trim().length}/400 characters</Text>
+            <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
 
             <TouchableOpacity
               className={`rounded-full px-5 py-3 ${

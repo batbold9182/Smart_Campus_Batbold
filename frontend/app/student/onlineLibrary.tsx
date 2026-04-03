@@ -1,4 +1,4 @@
-Ôªøimport { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -103,7 +103,7 @@ export default function OnlineLibrary() {
 
         <View className="mb-4 rounded-xl bg-white p-4 shadow">
           <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Search OpenLibrary</Text>
-          <Text className="mb-3 text-[#6b7280]">
+          <Text className="mb-3 text-app-muted">
             Find books by title, author, or topic using OpenLibrary&apos;s free catalog.
           </Text>
 
@@ -148,13 +148,13 @@ export default function OnlineLibrary() {
         {loading ? (
           <View className="mb-4 items-center rounded-xl bg-white p-6 shadow">
             <ActivityIndicator size="large" color="#2563eb" />
-            <Text className="mt-3 text-[#6b7280]">Searching library...</Text>
+            <Text className="mt-3 text-app-muted">Searching library...</Text>
           </View>
         ) : null}
 
         {!loading && searched ? (
           <View className="mb-3 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[#6b7280]">Found {total} results, showing {results.length} on page {currentPage}</Text>
+            <Text className="text-app-muted">Found {total} results, showing {results.length} on page {currentPage}</Text>
             <Text className="mt-1 text-[12px] text-[#9ca3af]">Active category: {appliedCategoryLabel}</Text>
           </View>
         ) : null}
@@ -162,13 +162,13 @@ export default function OnlineLibrary() {
         {!loading && searched && usedCategoryFallback ? (
           <View className="mb-3 rounded-xl border border-amber-200 bg-amber-50 p-4">
             <Text className="font-semibold text-amber-800">No results in {selectedCategoryLabel}</Text>
-            <Text className="mt-1 text-amber-700">Showing all categories for ‚Äú{query.trim()}‚Äù.</Text>
+            <Text className="mt-1 text-amber-700">Showing all categories for ì{query.trim()}î.</Text>
           </View>
         ) : null}
 
         {!loading && searched && results.length === 0 ? (
           <View className="mb-4 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[#6b7280]">No books found. Try a different keyword.</Text>
+            <Text className="text-app-muted">No books found. Try a different keyword.</Text>
           </View>
         ) : null}
 
@@ -185,11 +185,11 @@ export default function OnlineLibrary() {
 
               <View className="flex-1">
                 <Text className="text-[16px] font-semibold text-[#111827]">{book.title}</Text>
-                <Text className="mt-1 text-[#6b7280]" numberOfLines={2}>
+                <Text className="mt-1 text-app-muted" numberOfLines={2}>
                   {book.authors.length ? `By ${book.authors.join(", ")}` : "Author unavailable"}
                 </Text>
                 <Text className="mt-1 text-[12px] text-[#9ca3af]">
-                  {book.firstPublishYear ? `First published ${book.firstPublishYear}` : "Year unknown"} ‚Ä¢ {book.editionCount} editions
+                  {book.firstPublishYear ? `First published ${book.firstPublishYear}` : "Year unknown"} ï {book.editionCount} editions
                 </Text>
 
                 <TouchableOpacity className="mt-3 self-start rounded-full bg-[#e0ecff] px-3 py-2" onPress={() => openBook(book.openLibraryUrl)}>
@@ -210,7 +210,7 @@ export default function OnlineLibrary() {
               <Text className="font-semibold text-white">Previous</Text>
             </TouchableOpacity>
 
-            <Text className="text-[#6b7280]">Page {currentPage}</Text>
+            <Text className="text-app-muted">Page {currentPage}</Text>
 
             <TouchableOpacity
               className={`rounded-lg px-4 py-2 ${currentPage * pageSize < total ? "bg-blue-500" : "bg-[#bfdbfe]"}`}

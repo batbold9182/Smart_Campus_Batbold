@@ -173,7 +173,7 @@ export default function LearningBuddy() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
         <ActivityIndicator size="large" color="#16a34a" />
-        <Text className="mt-3 text-[15px] text-[#6b7280]">Loading Learning Buddy...</Text>
+        <Text className="mt-3 text-[15px] text-app-muted">Loading Learning Buddy...</Text>
       </SafeAreaView>
     );
   }
@@ -188,7 +188,7 @@ export default function LearningBuddy() {
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
               <Text className="text-[22px] font-bold text-[#111827]">📘 Learning Buddy</Text>
-              <Text className="mt-1 text-[13px] text-[#6b7280]">
+              <Text className="mt-1 text-[13px] text-app-muted">
                 Study partners, revision circles, and assignment help.
               </Text>
             </View>
@@ -233,7 +233,7 @@ export default function LearningBuddy() {
           {messages.length === 0 ? (
             <View className="mt-10 rounded-2xl bg-white p-5 shadow-sm">
               <Text className="text-[16px] font-semibold text-[#111827]">Start the conversation</Text>
-              <Text className="mt-2 leading-6 text-[#6b7280]">
+              <Text className="mt-2 leading-6 text-app-muted">
                 Ask about an assignment, form a study group, or find classmates reviewing for the same exam.
               </Text>
             </View>
@@ -283,7 +283,7 @@ export default function LearningBuddy() {
           </View>
 
           <View className="mt-3 flex-row items-center justify-between">
-            <Text className="text-[12px] text-[#6b7280]">{draft.trim().length}/400 characters</Text>
+            <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
 
             <TouchableOpacity
               className={`rounded-full px-5 py-3 ${

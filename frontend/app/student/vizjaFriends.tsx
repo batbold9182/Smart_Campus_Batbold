@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -37,7 +37,7 @@ const buddySections: {
   {
     key: "lunch",
     title: "Lunch Buddy",
-    icon: "🍜",
+    icon: "??",
     description: "Find students who are free to eat now and chat in real time.",
     accentClassName: "bg-[#dbeafe]",
     badgeLabel: "Live",
@@ -45,7 +45,7 @@ const buddySections: {
   {
     key: "learning",
     title: "Learning Buddy",
-    icon: "📘",
+    icon: "??",
     description: "Meet classmates for review sessions, study groups, and exam prep.",
     accentClassName: "bg-[#dcfce7]",
     badgeLabel: "Live",
@@ -53,7 +53,7 @@ const buddySections: {
   {
     key: "party",
     title: "Party Buddy",
-    icon: "🎉",
+    icon: "??",
     description: "Plan events, invite friends, and discover social hangouts on campus.",
     accentClassName: "bg-[#fee2e2]",
     badgeLabel: "Live",
@@ -295,7 +295,7 @@ export default function VizjaFriends() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-[15px] text-[#6b7280]">Loading Vizja Friends...</Text>
+        <Text className="mt-3 text-[15px] text-app-muted">Loading Vizja Friends...</Text>
       </SafeAreaView>
     );
   }
@@ -317,7 +317,7 @@ export default function VizjaFriends() {
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
               <Text className="text-[22px] font-bold text-[#111827]">{headerTitle}</Text>
-              <Text className="mt-1 text-[13px] text-[#6b7280]">
+              <Text className="mt-1 text-[13px] text-app-muted">
                 {headerDescription}
               </Text>
             </View>
@@ -398,7 +398,7 @@ export default function VizjaFriends() {
                   <View className="flex-1 pr-4">
                     <Text className="text-[28px]">{section.icon}</Text>
                     <Text className="mt-3 text-[20px] font-bold text-[#111827]">{section.title}</Text>
-                    <Text className="mt-2 leading-6 text-[#6b7280]">{section.description}</Text>
+                    <Text className="mt-2 leading-6 text-app-muted">{section.description}</Text>
                   </View>
                   <View className={`rounded-full px-3 py-2 ${section.accentClassName}`}>
                     <Text className="text-[12px] font-semibold text-[#1f2937]">{section.badgeLabel}</Text>
@@ -407,7 +407,7 @@ export default function VizjaFriends() {
 
                 <View className="mt-5 flex-row items-center justify-between border-t border-[#f3f4f6] pt-4">
                   <Text className="text-[13px] font-semibold text-[#1d4ed8]">Open section</Text>
-                  <Text className="text-[18px] text-[#9ca3af]">→</Text>
+                  <Text className="text-[18px] text-[#9ca3af]">?</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -417,7 +417,7 @@ export default function VizjaFriends() {
             {chatLoading ? (
               <View className="flex-1 items-center justify-center px-5">
                 <ActivityIndicator size="large" color="#2563eb" />
-                <Text className="mt-3 text-[15px] text-[#6b7280]">Connecting to Lunch Buddy...</Text>
+                <Text className="mt-3 text-[15px] text-app-muted">Connecting to Lunch Buddy...</Text>
               </View>
             ) : (
               <>
@@ -431,7 +431,7 @@ export default function VizjaFriends() {
                   {messages.length === 0 ? (
                     <View className="mt-10 rounded-2xl bg-white p-5 shadow-sm">
                       <Text className="text-[16px] font-semibold text-[#111827]">Start the conversation</Text>
-                      <Text className="mt-2 leading-6 text-[#6b7280]">
+                      <Text className="mt-2 leading-6 text-app-muted">
                         Ask who is free for lunch, suggest a cafe, or find classmates nearby.
                       </Text>
                     </View>
@@ -450,7 +450,7 @@ export default function VizjaFriends() {
                         {!isMine ? (
                           <Text className="mb-1 text-[12px] font-semibold text-[#1d4ed8]">
                             {message.sender.name}
-                            {message.sender.program ? ` • ${message.sender.program}` : ""}
+                            {message.sender.program ? ` � ${message.sender.program}` : ""}
                           </Text>
                         ) : null}
 
@@ -481,7 +481,7 @@ export default function VizjaFriends() {
                   </View>
 
                   <View className="mt-3 flex-row items-center justify-between">
-                    <Text className="text-[12px] text-[#6b7280]">{draft.trim().length}/400 characters</Text>
+                    <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
 
                     <TouchableOpacity
                       className={`rounded-full px-5 py-3 ${

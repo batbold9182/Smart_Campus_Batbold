@@ -372,7 +372,7 @@ export default function AdminUsersScreen() {
                 <Text className={editForm.school ? "text-app-text" : "text-[#9ca3af]"}>
                   {editForm.school || "Select school"}
                 </Text>
-                <Text className="text-[16px] text-[#6b7280]">▾</Text>
+                <Text className="text-[16px] text-app-muted">▾</Text>
               </TouchableOpacity>
             </View>
 
@@ -393,7 +393,7 @@ export default function AdminUsersScreen() {
                 <Text className={editForm.department ? "text-app-text" : "text-[#9ca3af]"}>
                   {editForm.department || "Select department"}
                 </Text>
-                <Text className={`text-[16px] ${editForm.school ? "text-[#6b7280]" : "text-[#d1d5db]"}`}>▾</Text>
+                <Text className={`text-[16px] ${editForm.school ? "text-app-muted" : "text-[#d1d5db]"}`}>▾</Text>
               </TouchableOpacity>
             </View>
 
@@ -450,7 +450,7 @@ export default function AdminUsersScreen() {
                     <Text className={editForm.program ? "text-app-text" : "text-[#9ca3af]"}>
                       {editForm.program || "Select program"}
                     </Text>
-                    <Text className={`text-[16px] ${editForm.school && editForm.department ? "text-[#6b7280]" : "text-[#d1d5db]"}`}>▾</Text>
+                    <Text className={`text-[16px] ${editForm.school && editForm.department ? "text-app-muted" : "text-[#d1d5db]"}`}>▾</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -500,7 +500,7 @@ export default function AdminUsersScreen() {
               <View className="mb-4 flex-row items-center justify-between">
                 <Text className="text-[18px] font-bold text-app-text">{pickerState.title}</Text>
                 <TouchableOpacity onPress={closePicker}>
-                  <Text className="text-[24px] text-[#6b7280]">X</Text>
+                  <Text className="text-[24px] text-app-muted">X</Text>
                 </TouchableOpacity>
               </View>
 

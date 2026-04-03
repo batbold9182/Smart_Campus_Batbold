@@ -12,7 +12,7 @@ module.exports = {
         "app-bg": "#f5f7fb",
         "app-surface": "#ffffff",
         "app-text": "#111827",
-        "app-muted": "#6b7280",
+        "app-muted": "#4b5563",
         "app-border": "#d1d5db",
       },
       boxShadow: {

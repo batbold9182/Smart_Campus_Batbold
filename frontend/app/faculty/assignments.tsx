@@ -1,4 +1,4 @@
-ï»¿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -57,7 +57,7 @@ const getAssignmentStatus = (dueDate: string) => {
   const todayKey = toDateInputValue(today);
 
   if (Number.isNaN(due.getTime())) {
-    return { label: "Unknown", tone: "text-[#6b7280]", chip: "bg-[#f3f4f6]" };
+    return { label: "Unknown", tone: "text-app-muted", chip: "bg-[#f3f4f6]" };
   }
 
   if (dueKey < todayKey) {
@@ -289,7 +289,7 @@ export default function Assignments() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-[#6b7280]">Loading assignments...</Text>
+        <Text className="mt-3 text-app-muted">Loading assignments...</Text>
       </SafeAreaView>
     );
   }
@@ -303,12 +303,12 @@ export default function Assignments() {
           <>
             <View className="mb-4 rounded-xl bg-white p-4 shadow">
               <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Assigned Courses</Text>
-              <Text className="text-[#6b7280]">Select a course to create, review, and manage assignments.</Text>
+              <Text className="text-app-muted">Select a course to create, review, and manage assignments.</Text>
             </View>
 
             {courses.length === 0 ? (
               <View className="mb-4 rounded-xl bg-white p-4 shadow">
-                <Text className="text-[#6b7280]">No courses assigned yet.</Text>
+                <Text className="text-app-muted">No courses assigned yet.</Text>
               </View>
             ) : (
               courses.map((course) => (
@@ -321,7 +321,7 @@ export default function Assignments() {
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
                       <Text className="text-[16px] font-semibold text-[#111827]">{course.title}</Text>
-                      <Text className="mt-1 text-[#6b7280]">{course.code} â€¢ {course.credits} credits</Text>
+                      <Text className="mt-1 text-app-muted">{course.code} • {course.credits} credits</Text>
                     </View>
                     <Text className="text-[12px] font-semibold text-[#2563eb]">
                       {loadingCourseId === course.id ? "Loading..." : "Open"}
@@ -346,8 +346,8 @@ export default function Assignments() {
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
                   <Text className="text-[18px] font-semibold text-[#111827]">{selectedCourse.course.title}</Text>
-                  <Text className="mt-1 text-[#6b7280]">
-                    {selectedCourse.course.code} â€¢ {selectedCourse.course.credits} credits
+                  <Text className="mt-1 text-app-muted">
+                    {selectedCourse.course.code} • {selectedCourse.course.credits} credits
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-[#eff6ff] px-3 py-2">
@@ -360,7 +360,7 @@ export default function Assignments() {
               <Text className="mb-3 text-[16px] font-semibold text-[#111827]">Create Assignment</Text>
 
               <View className="mb-3">
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Title</Text>
+                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Title</Text>
                 <TextInput
                   value={draftTitle}
                   onChangeText={setDraftTitle}
@@ -370,7 +370,7 @@ export default function Assignments() {
               </View>
 
               <View className="mb-3">
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Description</Text>
+                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Description</Text>
                 <TextInput
                   multiline
                   value={draftDescription}
@@ -382,7 +382,7 @@ export default function Assignments() {
               </View>
 
               <View className="mb-3">
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Due Date</Text>
+                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Due Date</Text>
                 <TextInput
                   value={draftDueDate}
                   onChangeText={setDraftDueDate}
@@ -394,7 +394,7 @@ export default function Assignments() {
               </View>
 
               <View>
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Max Points</Text>
+                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Max Points</Text>
                 <TextInput
                   keyboardType="numeric"
                   value={draftMaxPoints}
@@ -415,12 +415,12 @@ export default function Assignments() {
 
             <View className="mb-4 rounded-xl bg-white p-4 shadow">
               <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Published Assignments</Text>
-              <Text className="text-[#6b7280]">Track due dates and remove outdated work items when needed.</Text>
+              <Text className="text-app-muted">Track due dates and remove outdated work items when needed.</Text>
             </View>
 
             {selectedCourse.assignments.length === 0 ? (
               <View className="mb-4 rounded-xl bg-white p-4 shadow">
-                <Text className="text-[#6b7280]">No assignments posted for this course yet.</Text>
+                <Text className="text-app-muted">No assignments posted for this course yet.</Text>
               </View>
             ) : (
               selectedCourse.assignments.map((assignment) => {
@@ -432,8 +432,8 @@ export default function Assignments() {
                     <View className="flex-row items-start justify-between gap-3">
                       <View className="flex-1">
                         <Text className="text-[16px] font-semibold text-[#111827]">{assignment.title}</Text>
-                        <Text className="mt-1 text-[#6b7280]">
-                          Due {formatReadableDate(assignment.dueDate)} â€¢ {assignment.maxPoints} points
+                        <Text className="mt-1 text-app-muted">
+                          Due {formatReadableDate(assignment.dueDate)} • {assignment.maxPoints} points
                         </Text>
                       </View>
                       <View className={`rounded-full px-3 py-2 ${status.chip}`}>
@@ -479,7 +479,7 @@ export default function Assignments() {
                     {isSelectedAssignment ? (
                       <View className="mt-4 rounded-lg bg-[#f9fafb] p-4">
                         <Text className="text-[16px] font-semibold text-[#111827]">Submissions</Text>
-                        <Text className="mt-1 text-[#6b7280]">Review student uploads, add scores, and publish feedback.</Text>
+                        <Text className="mt-1 text-app-muted">Review student uploads, add scores, and publish feedback.</Text>
 
                         {selectedAssignmentDetail?.submissions.length ? (
                           selectedAssignmentDetail.submissions.map((submission) => (
@@ -487,10 +487,10 @@ export default function Assignments() {
                               <View className="flex-row items-start justify-between gap-3">
                                 <View className="flex-1">
                                   <Text className="text-[15px] font-semibold text-[#111827]">{submission.student.name}</Text>
-                                  <Text className="mt-1 text-[#6b7280]">{submission.student.email}</Text>
+                                  <Text className="mt-1 text-app-muted">{submission.student.email}</Text>
                                   <Text className="mt-1 text-[#9ca3af]">
                                     {submission.student.program || "Program not set"}
-                                    {submission.student.yearLevel ? ` â€¢ Year ${submission.student.yearLevel}` : ""}
+                                    {submission.student.yearLevel ? ` • Year ${submission.student.yearLevel}` : ""}
                                   </Text>
                                 </View>
                                 <View className="rounded-full bg-[#eff6ff] px-3 py-2">
@@ -502,7 +502,7 @@ export default function Assignments() {
 
                               {submission.notes ? (
                                 <View className="mt-3 rounded-lg bg-[#f9fafb] p-3">
-                                  <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Student Notes</Text>
+                                  <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Student Notes</Text>
                                   <Text className="mt-2 text-[#374151]">{submission.notes}</Text>
                                 </View>
                               ) : null}
@@ -521,7 +521,7 @@ export default function Assignments() {
                               )}
 
                               <View className="mt-4">
-                                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Score</Text>
+                                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Score</Text>
                                 <TextInput
                                   keyboardType="numeric"
                                   value={draftScores[submission.id] || ""}
@@ -532,7 +532,7 @@ export default function Assignments() {
                               </View>
 
                               <View className="mt-4">
-                                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Feedback</Text>
+                                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Feedback</Text>
                                 <TextInput
                                   multiline
                                   value={draftFeedback[submission.id] || ""}
@@ -544,9 +544,9 @@ export default function Assignments() {
                               </View>
 
                               {submission.reviewedAt ? (
-                                <Text className="mt-3 text-[12px] text-[#6b7280]">
+                                <Text className="mt-3 text-[12px] text-app-muted">
                                   Reviewed {formatReadableDate(submission.reviewedAt)}
-                                  {submission.score !== null ? ` â€¢ Score ${submission.score}/${assignment.maxPoints}` : ""}
+                                  {submission.score !== null ? ` • Score ${submission.score}/${assignment.maxPoints}` : ""}
                                 </Text>
                               ) : (
                                 <Text className="mt-3 text-[12px] text-[#9ca3af]">Not reviewed yet</Text>
@@ -565,7 +565,7 @@ export default function Assignments() {
                           ))
                         ) : (
                           <View className="mt-4 rounded-lg bg-white p-4">
-                            <Text className="text-[#6b7280]">No student submissions yet.</Text>
+                            <Text className="text-app-muted">No student submissions yet.</Text>
                           </View>
                         )}
                       </View>

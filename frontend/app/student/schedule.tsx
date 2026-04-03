@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { getStudentSchedule } from "../../services/scheduleService";
 import { useRouter } from "expo-router";
@@ -27,11 +27,11 @@ export default function StudentScheduleScreen() {
 
         {loading ? (
           <View className="rounded-xl bg-white p-4 shadow">
-            <Text className="text-center text-[#6b7280]">Loading schedule...</Text>
+            <Text className="text-center text-app-muted">Loading schedule...</Text>
           </View>
         ) : schedule.length === 0 ? (
           <View className="rounded-xl bg-white p-4 shadow">
-            <Text className="text-center text-[#6b7280]">No schedule assigned yet</Text>
+            <Text className="text-center text-app-muted">No schedule assigned yet</Text>
           </View>
         ) : (
           <FlatList
@@ -40,9 +40,9 @@ export default function StudentScheduleScreen() {
             renderItem={({ item }) => (
               <View className="mb-3 rounded-xl bg-white p-4 shadow">
                 <Text className="text-[16px] font-bold text-[#111827]">{item.course?.title || item.course?.name || "Untitled Course"}</Text>
-                <Text className="mt-1 text-[#6b7280]">Day: {item.day}</Text>
-                <Text className="text-[#6b7280]">Time: {item.startTime} - {item.endTime}</Text>
-                <Text className="text-[#6b7280]">Room: {item.room}</Text>
+                <Text className="mt-1 text-app-muted">Day: {item.day}</Text>
+                <Text className="text-app-muted">Time: {item.startTime} - {item.endTime}</Text>
+                <Text className="text-app-muted">Room: {item.room}</Text>
               </View>
             )}
           />

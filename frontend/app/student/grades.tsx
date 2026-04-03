@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
@@ -26,7 +26,7 @@ export default function Grades() {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-[#6b7280]">Loading grades...</Text>
+        <Text className="mt-3 text-app-muted">Loading grades...</Text>
       </SafeAreaView>
     );
   }
@@ -39,22 +39,22 @@ export default function Grades() {
         <View className="mb-4 flex-row justify-between gap-2">
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.courseCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Courses</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Courses</Text>
           </View>
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.gradedCount || 0}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Published Grades</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Published Grades</Text>
           </View>
           <View className="flex-1 rounded-xl bg-white p-4 shadow">
             <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.averageGrade ?? "-"}</Text>
-            <Text className="mt-1 text-[12px] text-[#6b7280]">Average</Text>
+            <Text className="mt-1 text-[12px] text-app-muted">Average</Text>
           </View>
         </View>
 
         {!data?.items.length ? (
           <View className="mb-4 rounded-xl bg-white p-4 shadow">
             <Text className="mb-2 text-[16px] font-semibold text-[#111827]">No Grades Yet</Text>
-            <Text className="text-[#6b7280]">Your published course grades will appear here once faculty submit them.</Text>
+            <Text className="text-app-muted">Your published course grades will appear here once faculty submit them.</Text>
           </View>
         ) : (
           data.items.map((item) => {
@@ -72,7 +72,7 @@ export default function Grades() {
                 <View className="flex-row items-start justify-between gap-3">
                   <View className="flex-1">
                     <Text className="text-[16px] font-semibold text-[#111827]">{item.course.title}</Text>
-                    <Text className="mt-1 text-[#6b7280]">{item.course.code} • {item.course.credits} credits</Text>
+                    <Text className="mt-1 text-app-muted">{item.course.code} � {item.course.credits} credits</Text>
                     <Text className="mt-1 text-[#9ca3af]">Faculty: {item.course.facultyName}</Text>
                   </View>
                   <View className={`rounded-full px-3 py-2 ${badgeClassName}`}>
@@ -84,7 +84,7 @@ export default function Grades() {
 
                 {item.grade?.remarks ? (
                   <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
-                    <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-[#6b7280]">Remarks</Text>
+                    <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Remarks</Text>
                     <Text className="mt-2 text-[#374151]">{item.grade.remarks}</Text>
                   </View>
                 ) : null}
