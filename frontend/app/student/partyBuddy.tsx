@@ -62,6 +62,10 @@ export default function PartyBuddy() {
     const init = async () => {
       try {
         const token = await getToken();
+        if (!token) {
+          router.replace("/auth/login");
+          return;
+        }
 
         const [profile, history] = await Promise.all([
           getProfile(),

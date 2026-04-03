@@ -30,6 +30,26 @@ const normalize = (value) =>
     .replace(/\s+/g, " ")
     .trim();
 
+const OPEN_LIBRARY_TIMEOUT_MS = 8000;
+
+const fetchWithRetry = async (url, retries = 1) => {
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), OPEN_LIBRARY_TIMEOUT_MS);
+    try {
+      const response = await fetch(url, {
+        signal: controller.signal,
+        headers: { "User-Agent": "SmartCampusApp/1.0 (educational project)" },
+      });
+      clearTimeout(timer);
+      return response;
+    } catch (err) {
+      clearTimeout(timer);
+      if (attempt === retries) throw err;
+    }
+  }
+};
+
 const isCategoryMatch = (subjects, category) => {
   const normalizedCategory = normalize(category);
   if (!normalizedCategory) {
@@ -71,10 +91,10 @@ router.get("/search", auth, async (req, res) => {
       params.set("subject", normalizedCategory);
     }
 
-    const response = await fetch(`https://openlibrary.org/search.json?${params.toString()}`);
+    const response = await fetchWithRetry(`https://openlibrary.org/search.json?${params.toString()}`);
 
     if (!response.ok) {
-      return res.status(502).json({ message: "OpenLibrary request failed" });
+      return res.status(502).json({ message: "OpenLibrary is temporarily unavailable. Please try again shortly." });
     }
 
     const data = await response.json();
@@ -108,6 +128,9 @@ router.get("/search", auth, async (req, res) => {
     });
   } catch (err) {
     console.error("ONLINE_LIBRARY_SEARCH_ERROR:", err);
+    if (err.name === "AbortError") {
+      return res.status(503).json({ message: "OpenLibrary timed out. Please try again." });
+    }
     res.status(500).json({ message: "Failed to search OpenLibrary" });
   }
 });
