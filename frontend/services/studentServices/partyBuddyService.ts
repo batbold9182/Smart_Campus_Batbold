@@ -1,4 +1,4 @@
-import { io, Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import api from "../../config/clientAPI";
 
 export type PartyBuddyMessage = {
@@ -38,11 +38,12 @@ export const getPartyBuddyMessages = async (limit = 50) => {
   return response.data.messages;
 };
 
-export const connectPartyBuddySocket = (token: string): Socket => {
+export const connectPartyBuddySocket = async (token: string): Promise<Socket> => {
   if (!SOCKET_BASE_URL) {
     throw new Error("EXPO_PUBLIC_API_URL is not configured");
   }
 
+  const { io } = await import("socket.io-client");
   return io(`${SOCKET_BASE_URL}/party-buddy`, {
     auth: { token },
     transports: ["websocket"],

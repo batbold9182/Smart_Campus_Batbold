@@ -6,3 +6,5 @@
 # Frontend
 1. After wiring everything with the backend fully upgrade UI/UX.
 2. start design on figma will make it ready on april 10th - 15th
+3. do test's and focus on performance lazy imports caching and disconnect sockets on page hide etc
+4. production test

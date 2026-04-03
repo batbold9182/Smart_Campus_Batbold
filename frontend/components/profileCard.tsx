@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
-import * as ImagePicker from "expo-image-picker";
+import type * as ImagePicker from "expo-image-picker";
 import { updateMyProfilePicture, type AppUserProfile } from "../services/userService";
 import { theme } from "../styles/theme";
 
@@ -91,13 +91,14 @@ export default function ProfileCard({ user }: ProfileCardProps) {
 
   const chooseFromGallery = async () => {
     try {
-      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      const IP = await import("expo-image-picker");
+      const permission = await IP.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
         setStatusMessage("Gallery permission is required");
         return;
       }
 
-      const result = await ImagePicker.launchImageLibraryAsync({
+      const result = await IP.launchImageLibraryAsync({
         mediaTypes: ["images"],
         allowsEditing: true,
         quality: 0.7,
@@ -125,13 +126,14 @@ export default function ProfileCard({ user }: ProfileCardProps) {
     }
 
     try {
-      const permission = await ImagePicker.requestCameraPermissionsAsync();
+      const IP = await import("expo-image-picker");
+      const permission = await IP.requestCameraPermissionsAsync();
       if (!permission.granted) {
         setStatusMessage("Camera permission is required");
         return;
       }
 
-      const result = await ImagePicker.launchCameraAsync({
+      const result = await IP.launchCameraAsync({
         allowsEditing: true,
         quality: 0.7,
         base64: true,

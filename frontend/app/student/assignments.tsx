@@ -2,7 +2,7 @@
 import { Alert, ActivityIndicator, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import * as DocumentPicker from "expo-document-picker";
+import type { DocumentPickerAsset } from "expo-document-picker";
 import {
   downloadAssignmentSubmission,
   getAssignmentSubmissionDownloadUrl,
@@ -68,11 +68,11 @@ const inferMimeTypeFromName = (fileName: string) => {
   return "application/octet-stream";
 };
 
-const appendSubmissionFile = async (formData: FormData, selectedFile: DocumentPicker.DocumentPickerAsset) => {
+const appendSubmissionFile = async (formData: FormData, selectedFile: DocumentPickerAsset) => {
   const resolvedType = selectedFile.mimeType || inferMimeTypeFromName(selectedFile.name);
 
   if (Platform.OS === "web") {
-    const browserFile = (selectedFile as DocumentPicker.DocumentPickerAsset & { file?: File }).file;
+    const browserFile = (selectedFile as DocumentPickerAsset & { file?: File }).file;
 
     if (browserFile) {
       const normalizedFile =
@@ -105,7 +105,7 @@ export default function StudentAssignments() {
   const [data, setData] = useState<StudentAssignmentsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [draftNotes, setDraftNotes] = useState<Record<string, string>>({});
-  const [selectedFiles, setSelectedFiles] = useState<Record<string, DocumentPicker.DocumentPickerAsset | null>>({});
+  const [selectedFiles, setSelectedFiles] = useState<Record<string, DocumentPickerAsset | null>>({});
   const [submittingAssignmentId, setSubmittingAssignmentId] = useState<string | null>(null);
 
   const hydrateDraftNotes = (response: StudentAssignmentsResponse) => {
@@ -140,6 +140,7 @@ export default function StudentAssignments() {
 
   const pickDocument = async (assignmentId: string) => {
     try {
+      const DocumentPicker = await import("expo-document-picker");
       const result = await DocumentPicker.getDocumentAsync({
         multiple: false,
         copyToCacheDirectory: true,

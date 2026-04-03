@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import { Socket } from "socket.io-client";
+import type { Socket } from "socket.io-client";
 import { getToken } from "../../services/tokenStorage";
 import { getProfile, type AppUserProfile } from "../../services/userService";
 import {
@@ -73,7 +73,7 @@ export default function LearningBuddy() {
         setCurrentUser(profile);
         setMessages(history);
 
-        const socket = connectLearningBuddySocket(token ?? "");
+        const socket = await connectLearningBuddySocket(token ?? "");
         socketRef.current = socket;
 
         socket.on("connect", () => {
