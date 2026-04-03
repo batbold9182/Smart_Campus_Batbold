@@ -59,6 +59,15 @@ export default function LearningBuddy() {
   useEffect(() => {
     let isMounted = true;
 
+    const handleVisibilityChange = () => {
+      if (typeof document === "undefined") return;
+      if (document.visibilityState === "hidden") {
+        socketRef.current?.disconnect();
+      } else {
+        socketRef.current?.connect();
+      }
+    };
+
     const init = async () => {
       try {
         const token = await getToken();
@@ -78,6 +87,9 @@ export default function LearningBuddy() {
 
         socket.on("connect", () => {
           if (!isMounted) return;
+          getLearningBuddyMessages(100).then((msgs) => {
+            if (isMounted) setMessages(msgs);
+          });
           setStatusLabel("Live");
           setError("");
         });
@@ -104,6 +116,10 @@ export default function LearningBuddy() {
           scrollToEnd();
         });
 
+        if (typeof document !== "undefined") {
+          document.addEventListener("visibilitychange", handleVisibilityChange);
+        }
+
         setLoading(false);
         scrollToEnd();
       } catch (loadError: any) {
@@ -122,6 +138,9 @@ export default function LearningBuddy() {
 
     return () => {
       isMounted = false;
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+      }
       socketRef.current?.disconnect();
       socketRef.current = null;
     };

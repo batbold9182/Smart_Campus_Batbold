@@ -59,6 +59,15 @@ export default function PartyBuddy() {
   useEffect(() => {
     let isMounted = true;
 
+    const handleVisibilityChange = () => {
+      if (typeof document === "undefined") return;
+      if (document.visibilityState === "hidden") {
+        socketRef.current?.disconnect();
+      } else {
+        socketRef.current?.connect();
+      }
+    };
+
     const init = async () => {
       try {
         const token = await getToken();
@@ -82,6 +91,9 @@ export default function PartyBuddy() {
 
         socket.on("connect", () => {
           if (!isMounted) return;
+          getPartyBuddyMessages(100).then((msgs) => {
+            if (isMounted) setMessages(msgs);
+          });
           setStatusLabel("Live");
           setError("");
         });
@@ -108,6 +120,10 @@ export default function PartyBuddy() {
           scrollToEnd();
         });
 
+        if (typeof document !== "undefined") {
+          document.addEventListener("visibilitychange", handleVisibilityChange);
+        }
+
         setLoading(false);
         scrollToEnd();
       } catch (loadError: any) {
@@ -126,6 +142,9 @@ export default function PartyBuddy() {
 
     return () => {
       isMounted = false;
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+      }
       socketRef.current?.disconnect();
       socketRef.current = null;
     };

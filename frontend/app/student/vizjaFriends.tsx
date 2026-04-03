@@ -162,6 +162,15 @@ export default function VizjaFriends() {
     setStatusLabel("Connecting...");
     setError("");
 
+    const handleVisibilityChange = () => {
+      if (typeof document === "undefined") return;
+      if (document.visibilityState === "hidden") {
+        socketRef.current?.disconnect();
+      } else {
+        socketRef.current?.connect();
+      }
+    };
+
     const initializeLunchBuddy = async () => {
       try {
         const history = await getLunchBuddyMessages(60);
@@ -180,6 +189,9 @@ export default function VizjaFriends() {
             return;
           }
 
+          getLunchBuddyMessages(100).then((msgs) => {
+            if (isMounted) setMessages(msgs);
+          });
           setStatusLabel("Live");
           setError("");
         });
@@ -218,6 +230,10 @@ export default function VizjaFriends() {
           scrollToEnd();
         });
 
+        if (typeof document !== "undefined") {
+          document.addEventListener("visibilitychange", handleVisibilityChange);
+        }
+
         setChatLoading(false);
         scrollToEnd();
       } catch (loadError: any) {
@@ -240,6 +256,9 @@ export default function VizjaFriends() {
 
     return () => {
       isMounted = false;
+      if (typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", handleVisibilityChange);
+      }
       socketRef.current?.disconnect();
       socketRef.current = null;
     };
