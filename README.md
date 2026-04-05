@@ -14,7 +14,8 @@
 ### 🔒 Authentication & Authorization
 - Secure login and registration using **JWT tokens**  
 - Role-based access control (e.g., students, admins)  
-- Protected routes and token expiration handling  
+- Protected routes and token expiration handling
+- OTP for password resetting usign **nodemailer** 
 
 ### 💬 Live Chat
 - Real-time chat using **Socket.io**  
@@ -56,11 +57,12 @@
 ## 🛠️ Tech Stack
 
 - **Frontend:** React, React Router
-- **Backend:** Node.js, Express.js  
+- **Backend:** Node.js, Express.js
 - **Database:** MongoDB  
 - **Real-time:** Socket.io  
 - **File Storage:** Cloudinary  
-- **Authentication:** JWT  
+- **Authentication:** JWT
+- **OTP** nodemailer
 - **Other:** Axios, dotenv  
 
 ---
@@ -89,3 +91,6 @@ JWT_SECRET=your_jwt_secret
 CLOUDINARY_CLOUD_NAME=your_cloud_name
 CLOUDINARY_API_KEY=your_api_key
 CLOUDINARY_API_SECRET=your_api_secret
+EMAIL_SERVICE=gmail
+EMAIL_USER=your_gmail
+EMAIL_PASS=your_gmail_password
