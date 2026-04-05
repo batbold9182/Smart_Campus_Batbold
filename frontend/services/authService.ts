@@ -29,14 +29,15 @@ export const forgotPassword = async (email: string) => {
   const response = await api.post("/api/auth/forgot-password", { email });
   return response.data as {
     message: string;
-    resetToken?: string;
+    otp?: string;
     expiresInMinutes?: number;
   };
 };
 
-export const resetPassword = async (token: string, newPassword: string) => {
+export const resetPassword = async (email: string, otp: string, newPassword: string) => {
   const response = await api.post("/api/auth/reset-password", {
-    token,
+    email,
+    otp,
     newPassword,
   });
   return response.data as { message: string };

@@ -2,10 +2,19 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 const User = require("../models/adminModels/user");
 
 const router = express.Router();
 const RESET_TOKEN_TTL_MINUTES = 15;
+
+const transporter = nodemailer.createTransport({
+  service: process.env.EMAIL_SERVICE || "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 // REGISTER
 router.post("/register", async (req, res) => {
@@ -82,25 +91,35 @@ router.post("/forgot-password", async (req, res) => {
 
     const user = await User.findOne({ email });
     if (user) {
-      const rawToken = crypto.randomBytes(32).toString("hex");
-      const hashedToken = crypto.createHash("sha256").update(rawToken).digest("hex");
+      const otp = String(crypto.randomInt(100000, 999999));
+      const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
-      user.resetPasswordToken = hashedToken;
+      user.resetPasswordToken = hashedOtp;
       user.resetPasswordExpiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000);
       await user.save();
 
-      // For production, send this token via email instead of returning it.
-      if (process.env.NODE_ENV !== "production") {
+      if (process.env.EMAIL_USER) {
+        await transporter.sendMail({
+          from: `"Smart Campus" <${process.env.EMAIL_USER}>`,
+          to: email,
+          subject: "Your Password Reset OTP",
+          text: `Your OTP is: ${otp}\nIt expires in ${RESET_TOKEN_TTL_MINUTES} minutes.`,
+          html: `<p>Your OTP is: <strong>${otp}</strong></p><p>It expires in ${RESET_TOKEN_TTL_MINUTES} minutes.</p>`,
+        });
+      }
+
+      // In dev without email configured, return OTP in response
+      if (!process.env.EMAIL_USER) {
         return res.json({
-          message: "Password reset token generated",
-          resetToken: rawToken,
+          message: "OTP generated (no email configured)",
+          otp,
           expiresInMinutes: RESET_TOKEN_TTL_MINUTES,
         });
       }
     }
 
     return res.json({
-      message: "If an account exists for this email, a reset link has been sent.",
+      message: "If an account exists for this email, an OTP has been sent.",
     });
   } catch (err) {
     return res.status(500).json({ message: err.message });
@@ -110,26 +129,28 @@ router.post("/forgot-password", async (req, res) => {
 // RESET PASSWORD
 router.post("/reset-password", async (req, res) => {
   try {
-    const token = String(req.body?.token || "").trim();
+    const email = String(req.body?.email || "").trim().toLowerCase();
+    const otp = String(req.body?.otp || "").trim();
     const newPassword = String(req.body?.newPassword || "");
 
-    if (!token || !newPassword) {
-      return res.status(400).json({ message: "Token and new password are required" });
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "Email, OTP, and new password are required" });
     }
 
     if (newPassword.length < 6) {
       return res.status(400).json({ message: "Password must be at least 6 characters" });
     }
 
-    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 
     const user = await User.findOne({
-      resetPasswordToken: hashedToken,
+      email,
+      resetPasswordToken: hashedOtp,
       resetPasswordExpiresAt: { $gt: new Date() },
     });
 
     if (!user) {
-      return res.status(400).json({ message: "Reset token is invalid or expired" });
+      return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
     user.password = await bcrypt.hash(newPassword, 10);

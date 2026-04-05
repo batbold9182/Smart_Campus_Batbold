@@ -14,18 +14,24 @@ import { resetPassword } from "../../services/authService";
 import { rootStyles } from "../../styles/rootStyles";
 
 export default function ResetPasswordScreen() {
-  const params = useLocalSearchParams<{ token?: string }>();
-  const [token, setToken] = useState(typeof params.token === "string" ? params.token : "");
+  const params = useLocalSearchParams<{ email?: string }>();
+  const [email, setEmail] = useState(typeof params.email === "string" ? params.email : "");
+  const [otp, setOtp] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleReset = async () => {
-    const cleanToken = token.trim();
+    const cleanOtp = otp.trim();
 
-    if (!cleanToken || !newPassword || !confirmPassword) {
-      Alert.alert("Missing fields", "Token, new password, and confirm password are required.");
+    if (!email || !cleanOtp || !newPassword || !confirmPassword) {
+      Alert.alert("Missing fields", "Email, OTP, new password, and confirm password are required.");
+      return;
+    }
+
+    if (cleanOtp.length !== 6) {
+      Alert.alert("Invalid OTP", "Please enter the 6-digit OTP.");
       return;
     }
 
@@ -42,7 +48,7 @@ export default function ResetPasswordScreen() {
     try {
       setLoading(true);
       setMessage("");
-      const response = await resetPassword(cleanToken, newPassword);
+      const response = await resetPassword(email.trim(), cleanOtp, newPassword);
       setMessage(response.message);
       setTimeout(() => {
         router.replace("/auth/login");
@@ -59,15 +65,26 @@ export default function ResetPasswordScreen() {
       <ScrollView contentContainerClassName="flex-grow justify-center p-5" keyboardShouldPersistTaps="handled">
         <View className="bg-app-surface rounded-2xl p-5 elevation-3">
           <Text className="text-[24px] font-bold text-app-text mb-[6px]">Reset Password</Text>
-          <Text className="text-app-muted mb-4">Enter your reset token and set a new password.</Text>
+          <Text className="text-app-muted mb-4">Enter the 6-digit OTP sent to your email and set a new password.</Text>
 
           <TextInput
             className={rootStyles.input + " mb-3"}
-            placeholder="Reset token"
+            placeholder="Email"
             placeholderTextColor="#6b7280"
             autoCapitalize="none"
-            value={token}
-            onChangeText={setToken}
+            keyboardType="email-address"
+            value={email}
+            onChangeText={setEmail}
+          />
+
+          <TextInput
+            className={rootStyles.input + " mb-3 text-center text-xl tracking-[8px]"}
+            placeholder="000000"
+            placeholderTextColor="#6b7280"
+            keyboardType="number-pad"
+            maxLength={6}
+            value={otp}
+            onChangeText={setOtp}
           />
 
           <TextInput
@@ -96,10 +113,14 @@ export default function ResetPasswordScreen() {
             {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-[15px] font-bold">Reset Password</Text>}
           </TouchableOpacity>
 
+          <TouchableOpacity className="`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center" onPress={() => router.replace("/auth/forgot-password")}>
+            <Text className="text-blue-600 font-semibold">Get one time password</Text>
+          </TouchableOpacity>
+
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
           <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/auth/login")}>
-            <Text className="text-blue-600 font-semibold">Back to Login</Text>
+            <Text className="text-blue-600 font-semibold">Back to login</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

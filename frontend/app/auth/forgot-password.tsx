@@ -16,7 +16,7 @@ import { rootStyles } from "../../styles/rootStyles";
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
-  const [devToken, setDevToken] = useState("");
+  const [devOtp, setDevOtp] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleRequestReset = async () => {
@@ -29,12 +29,12 @@ export default function ForgotPasswordScreen() {
     try {
       setLoading(true);
       setMessage("");
-      setDevToken("");
+      setDevOtp("");
       const response = await forgotPassword(cleanEmail);
       setMessage(response.message);
 
-      if (response.resetToken) {
-        setDevToken(response.resetToken);
+      if (response.otp) {
+        setDevOtp(response.otp);
       }
     } catch (error: any) {
       setMessage(error?.response?.data?.message || "Failed to request password reset");
@@ -48,7 +48,7 @@ export default function ForgotPasswordScreen() {
       <ScrollView contentContainerClassName="flex-grow justify-center p-5" keyboardShouldPersistTaps="handled">
         <View className="bg-app-surface rounded-2xl p-5 elevation-3">
           <Text className="text-[24px] font-bold text-app-text mb-[6px]">Forgot Password</Text>
-          <Text className="text-app-muted mb-4">Enter your account email to generate a reset token.</Text>
+          <Text className="text-app-muted mb-4">Enter your account email to receive a 6-digit OTP.</Text>
 
           <TextInput
             className={rootStyles.input + " mb-3"}
@@ -65,26 +65,26 @@ export default function ForgotPasswordScreen() {
             onPress={handleRequestReset}
             disabled={loading}
           >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-[15px] font-bold">Send Reset Token</Text>}
+            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-[15px] font-bold">Send OTP</Text>}
           </TouchableOpacity>
 
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
-          {devToken ? (
+          {devOtp ? (
             <View className="mt-[14px] border border-app-border rounded-[10px] p-3 bg-[#f8fafc]">
-              <Text className="font-bold text-app-text mb-[6px]">Development Token</Text>
-              <Text selectable className="text-[#374151] mb-[10px]">{devToken}</Text>
+              <Text className="font-bold text-app-text mb-[6px]">Development OTP</Text>
+              <Text selectable className="text-[#374151] text-2xl tracking-[8px] text-center mb-[10px]">{devOtp}</Text>
               <TouchableOpacity
                 className="items-center justify-center rounded-lg border border-blue-600 py-[10px]"
-                onPress={() => router.push({ pathname: "/auth/reset-password", params: { token: devToken } })}
+                onPress={() => router.push({ pathname: "/auth/reset-password", params: { email: email.trim() } })}
               >
                 <Text className="text-blue-600 font-bold">Continue to Reset Password</Text>
               </TouchableOpacity>
             </View>
           ) : null}
 
-          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/auth/login")}>
-            <Text className="text-blue-600 font-semibold">Back to Login</Text>
+          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/auth/reset-password")}>
+            <Text className="text-blue-600 font-semibold">Back</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
