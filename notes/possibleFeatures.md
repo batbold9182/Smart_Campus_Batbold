@@ -1,4 +1,3 @@
 # Map 
-1. Might add campus's map -->implemented
-2. team meeting --> feels useless 
+1. team meeting --> feels useless 
 

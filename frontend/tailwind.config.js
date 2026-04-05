@@ -14,6 +14,13 @@ module.exports = {
         "app-text": "#111827",
         "app-muted": "#4b5563",
         "app-border": "#d1d5db",
+        // Dark purple theme (student dashboard)
+        "dark-bg": "#0d0221",
+        "dark-surface": "#1a0a3e",
+        "dark-card": "#231152",
+        "dark-border": "#6b21a8",
+        "dark-text": "#ffffff",
+        "dark-muted": "#a78bfa",
       },
       boxShadow: {
         card: "0 2px 6px rgba(15, 23, 42, 0.08)",
