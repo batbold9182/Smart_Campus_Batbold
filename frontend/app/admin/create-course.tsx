@@ -247,7 +247,7 @@ export default function AdminCreateCourse() {
 
         <TouchableOpacity
           className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
-          onPress={() => router.push("../dashboard")}
+          onPress={() => router.push("/admin/dashboard")}
         >
           <Text className="font-semibold text-app-text">Back to Dashboard</Text>
         </TouchableOpacity>

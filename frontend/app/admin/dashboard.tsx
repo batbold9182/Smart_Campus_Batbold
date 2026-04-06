@@ -1,24 +1,31 @@
-﻿import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, useWindowDimensions} from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+﻿import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, useWindowDimensions } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useEffect, useState } from "react";
 import { getProfile } from "../../services/userService";
 import { useRouter } from "expo-router";
 import { logout } from "../../services/authService";
 import { getUnreadCount } from "../../services/notificationService";
-import { formatTime, formatDate } from "../../services/clockService";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
 import api from "../../config/clientAPI";
+import { getTheme } from "../../styles/theme";
+import { getDashboardStyles } from "../../styles/dashboardStyles";
 
 export default function AdminDashboard() {
   const { width } = useWindowDimensions();
   const { loading, user: authUser } = useAuthGuard();
-    const headerLogoSize = width >= 1024 ? 30 : width >= 768 ? 34 : 38;
-
+  const insets = useSafeAreaInsets();
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
-  const [count , setCount] = useState(0); 
+  const [count, setCount] = useState(0);
   const [time, setTime] = useState(new Date());
   const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
+  const [isDark, setIsDark] = useState(true);
+
+  const t = getTheme(isDark);
+  const s = getDashboardStyles(t, width, isDark);
 
   const getScheduleStatus = (startTime: string, endTime: string) => {
     const now = time.getHours() * 60 + time.getMinutes();
@@ -26,7 +33,6 @@ export default function AdminDashboard() {
     const [endH, endM] = String(endTime || "0:0").split(":").map(Number);
     const start = startH * 60 + startM;
     const end = endH * 60 + endM;
-
     if (now >= start && now <= end) return "Now";
     if (now < start) return "Upcoming";
     return "Done";
@@ -34,33 +40,15 @@ export default function AdminDashboard() {
 
   const loadTodaySchedule = async () => {
     try {
-      const res = await api.get("/api/admin/schedules", {
-        params: { page: 1, limit: 100 },
-      });
-      const allSchedules: any[] = Array.isArray(res.data)
-        ? res.data
-        : (res.data?.items || []);
+      const res = await api.get("/api/admin/schedules", { params: { page: 1, limit: 100 } });
+      const allSchedules: any[] = Array.isArray(res.data) ? res.data : (res.data?.items || []);
       const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
-      const filtered = allSchedules.filter((item) => item?.day === today);
-      setTodaySchedule(filtered);
-    } catch (err) {
+      setTodaySchedule(allSchedules.filter((item) => item?.day === today));
+    } catch {
       setTodaySchedule([]);
-      console.log(err, "Failed to load schedule");
     }
   };
 
-useEffect(() => {
-  loadTodaySchedule();
-}, [])
-
-
-  useEffect(() => {
-  const timer = setInterval(() => {
-    setTime(new Date());
-  }, 1000);
-
-  return () => clearInterval(timer);
-}, []);
   const loadCount = async () => {
     try {
       const data = await getUnreadCount();
@@ -68,16 +56,23 @@ useEffect(() => {
     } catch {
       setCount(0);
     }
-  }
+  };
+
   useEffect(() => {
+    loadTodaySchedule();
     loadCount();
-  }
-  ,[])
+  }, []);
+
+  useEffect(() => {
+    const timer = setInterval(() => setTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   const handleLogout = async () => {
     await logout();
     router.replace("/auth/login");
-  }
+  };
+
   useEffect(() => {
     if (!loading && !authUser) {
       router.replace("/auth/login");
@@ -87,172 +82,191 @@ useEffect(() => {
   useEffect(() => {
     const load = async () => {
       const profile = await getProfile();
-
       if (profile.role !== "admin") {
         router.replace("/auth/login");
         return;
       }
-
       setUser(profile);
     };
-
-    if (authUser) {
-      load();
-    }
+    if (authUser) load();
   }, [authUser, router]);
 
-  if (loading) {
-    return <Text className="flex-1 pt-20 text-center text-[18px] text-app-muted">Loading admin panel...</Text>;
-  }
+  if (loading || !authUser || !user) return null;
 
-  if (!authUser || !user) {
-    return null;
-  }
+  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
+
+  const quickActions = [
+    { label: "Manage Courses", subtitle: "Create & edit", icon: <MaterialIcons name="menu-book" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/admin/create-course" as const },
+    { label: "Create Schedule", subtitle: "Add timetable", icon: <Ionicons name="calendar" size={24} color="#fff" />, gradient: ["#16a34a", "#4ade80"] as const, route: "/admin/create-schedule" as const },
+    { label: "Assign Schedule", subtitle: "Link to students", icon: <MaterialIcons name="assignment-ind" size={24} color="#fff" />, gradient: ["#ea580c", "#f97316"] as const, route: "/admin/assignSchedule" as const },
+    { label: "Create User", subtitle: "Add accounts", icon: <Ionicons name="person-add" size={24} color="#fff" />, gradient: ["#0d9488", "#2dd4bf"] as const, route: "../create-user" as const },
+    { label: "Users List", subtitle: "Manage accounts", icon: <Ionicons name="people" size={24} color="#fff" />, gradient: ["#2563eb", "#60a5fa"] as const, route: "/admin/users" as const },
+    { label: "Enroll Students", subtitle: "Course enrollment", icon: <MaterialCommunityIcons name="school" size={24} color="#fff" />, gradient: ["#6d28d9", "#8b5cf6"] as const, route: "/admin/enroll" as const },
+    { label: "Campus Map", subtitle: "Navigate campus", icon: <Ionicons name="location" size={24} color="#fff" />, gradient: ["#0891b2", "#22d3ee"] as const, route: "/admin/buildingMap" as const },
+    { label: "Chat Bot", subtitle: "Ask anything", icon: <Ionicons name="chatbubble-ellipses" size={24} color="#fff" />, gradient: ["#d97706", "#fbbf24"] as const, route: "/admin/chatBot" as const },
+  ];
 
   return (
-    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
-        <View className="mb-4 flex-row items-center justify-between">
-  
-  <View className="flex-row items-center">
-    <Image
-      source={require("../../assets/images/Logo_VIZJA.png")}
-      className="mr-2"
-      style={{ width: headerLogoSize, height: headerLogoSize }}
-      resizeMode="contain"
-    />
-    <View>
-      <Text className="text-[20px] font-bold text-app-text">Admin Panel</Text>
-      <Text className="text-app-muted text-[12px]">Welcome, {user?.name}</Text>
-    </View>
-  </View>
+    <View style={s.container}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} showsVerticalScrollIndicator={false}>
 
-  <View className="flex-row items-center">
-    <View className="mr-3 items-end">
-      <Text className="text-[16px] font-bold text-app-text">{formatTime(time)}</Text>
-      <Text className="text-[11px] text-app-muted">{formatDate(time)}</Text>
-    </View>
-
-    <TouchableOpacity onPress={() => router.push("/admin/notifications")}>
-      <View className="relative">
-        <Text className="text-[24px]">🔔</Text>
-        {count > 0 && (
-          <View className="absolute -right-[6px] -top-1 rounded-full bg-red-500 px-[6px]">
-            <Text className="text-[11px] font-bold text-white">{count}</Text>
+        {/* Header */}
+        <LinearGradient
+          colors={["#6b21a8", "#a21caf", "#db2777"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[s.headerGradient, { paddingTop: insets.top + 4 }]}
+        >
+          <View style={s.headerLogoWrap}>
+            <Image source={require("../../assets/images/logo_long.png")} style={s.headerLogo} resizeMode="contain" />
           </View>
-        )}
-      </View>
-    </TouchableOpacity>
-  </View>
+        </LinearGradient>
 
-</View>
+        <View style={s.contentPadding}>
 
-      <View className="mb-4 flex-row justify-between gap-2">
-        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-app-text">{todaySchedule.length}</Text>
-          <Text className="mt-1 text-[11px] text-app-muted">Today Classes</Text>
-        </View>
-        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-app-text">{count}</Text>
-          <Text className="mt-1 text-[11px] text-app-muted">Unread Alerts</Text>
-        </View>
-        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-app-text">Admin</Text>
-          <Text className="mt-1 text-[11px] text-app-muted">Role</Text>
-        </View>
-      </View>
-
-      <View className="mb-[22px] rounded-xl bg-app-surface p-4 shadow">
-        <Text className="mb-[10px] text-[18px] font-bold text-app-text">📅 Todays Schedule</Text>
-
-        {todaySchedule.length === 0 ? (
-          <View className="items-center gap-2 py-[10px]">
-            <Text className="text-[28px]">🗓️</Text>
-            <Text className="text-app-muted">No classes scheduled today</Text>
-          </View>
-        ) : (
-          todaySchedule.map((item, index) => {
-            const status = getScheduleStatus(item.startTime, item.endTime);
-
-            return (
-              <View key={index} className="mb-3 flex-row items-center border-b border-app-border pb-[10px]">
-                <Text className="mr-3 w-[90px] font-bold text-app-text">{item.startTime}-{item.endTime}</Text>
-                <View className="flex-1">
-                  <Text className="font-semibold text-app-text">{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
-                  <Text className="mt-[2px] text-[12px] text-[#374151]">Prof: {item.faculty?.name || "Unassigned"}</Text>
-                  <Text className="text-[12px] text-app-muted">{item.room}</Text>
+          {/* Profile row */}
+          <View style={s.profileRow}>
+            <View style={s.profileRowLeft}>
+              <TouchableOpacity onPress={() => router.push("/admin/profile")} style={s.profileAvatarBtn}>
+                <View style={s.profileAvatar}>
+                  {profileUri ? (
+                    <Image source={{ uri: profileUri }} style={s.profileAvatarImage} />
+                  ) : (
+                    <View style={s.profileAvatarFallback}>
+                      <Ionicons name="person" size={24} color="#a78bfa" />
+                    </View>
+                  )}
                 </View>
-                <View
-                  className={`rounded-full px-[10px] py-1 ${
-                    status === "Now"
-                      ? "bg-green-100"
-                      : status === "Done"
-                      ? "bg-gray-200"
-                      : "bg-blue-100"
-                  }`}
-                >
-                  <Text className="text-[11px] font-bold text-[#1f2937]">{status}</Text>
-                </View>
+                <View style={s.onlineDot} />
+              </TouchableOpacity>
+              <View style={s.profileTextWrap}>
+                <Text style={s.profileTitle}>Admin Panel</Text>
+                <Text style={s.profileSubtitle}>Welcome back, {user?.name} 👋</Text>
               </View>
-            );
-          })
-        )}
-      </View>
+            </View>
 
-      <View className="mt-[2px] flex-row flex-wrap justify-between">
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/create-course")}>
-          <Text className="mb-2 text-[30px]">📚</Text>
-          <Text className="font-semibold">Manage Courses</Text>
-        </Pressable>
+            <View style={s.headerActions}>
+              <TouchableOpacity onPress={() => setIsDark(!isDark)} style={s.themeToggle}>
+                <Ionicons name={isDark ? "sunny" : "moon"} size={20} color={isDark ? "#facc15" : "#6b21a8"} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/admin/notifications")}>
+                <View>
+                  <Ionicons name="notifications" size={26} color="#facc15" />
+                  {count > 0 && (
+                    <View style={s.badge}>
+                      <Text style={s.badgeText}>{count}</Text>
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/create-schedule")}>
-          <Text className="mb-2 text-[30px]">➕</Text>
-          <Text className="font-semibold">Create Schedule</Text>
-        </Pressable>
+          {/* Stats Row */}
+          <View style={s.statsRow}>
+            <View style={s.statsCard}>
+              <View style={s.statsIconWrap("#2563eb")}>
+                <Ionicons name="calendar" size={16} color="#fff" />
+              </View>
+              <Text style={s.statsValue}>{todaySchedule.length}</Text>
+              <Text style={s.statsLabel}>Today Classes</Text>
+            </View>
+            <View style={s.statsCard}>
+              <View style={s.statsIconWrap("#eab308")}>
+                <Ionicons name="notifications" size={16} color="#fff" />
+              </View>
+              <Text style={s.statsValue}>{count}</Text>
+              <Text style={s.statsLabel}>Unread Alerts</Text>
+            </View>
+            <View style={s.statsCardGreen}>
+              <View style={s.statsIconWrap("#22c55e")}>
+                <Ionicons name="shield-checkmark" size={16} color="#fff" />
+              </View>
+              <Text style={s.statsValue}>Admin</Text>
+              <Text style={s.statsLabel}>Your Role</Text>
+            </View>
+          </View>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/assignSchedule")}>
-          <Text className="mb-2 text-[30px]">📅</Text>
-          <Text className="font-semibold">Assign Schedule</Text>
-        </Pressable>
+          {/* Today's Schedule */}
+          <View style={s.scheduleCard}>
+            <View style={s.scheduleHeader}>
+              <View style={s.sectionTitleRow}>
+                <View style={s.accentBar} />
+                <Text style={s.sectionTitle}>Today&apos;s Schedule</Text>
+              </View>
+              <TouchableOpacity onPress={() => router.push("/admin/create-schedule")}>
+                <Text style={s.viewAllLink}>View All</Text>
+              </TouchableOpacity>
+            </View>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("../create-user")}>
-          <Text className="mb-2 text-[30px]">👨‍🏫</Text>
-          <Text className="font-semibold">Create User</Text>
-        </Pressable>
+            {todaySchedule.length === 0 ? (
+              <View style={s.emptyScheduleWrap}>
+                <Text style={s.emptyScheduleEmoji}>🗓️</Text>
+                <Text style={s.emptyScheduleTitle}>No classes scheduled today</Text>
+                <Text style={s.emptyScheduleSubtitle}>Enjoy your free day!</Text>
+              </View>
+            ) : (
+              todaySchedule.map((item, index) => {
+                const status = getScheduleStatus(item.startTime, item.endTime);
+                return (
+                  <View key={index} style={s.scheduleItemRow(index >= todaySchedule.length - 1)}>
+                    <Text style={s.scheduleTime}>{item.startTime}-{item.endTime}</Text>
+                    <View style={s.scheduleItemContent}>
+                      <Text style={s.scheduleCourseName}>{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
+                      <Text style={s.scheduleProf}>Prof: {item.faculty?.name || "Unassigned"}</Text>
+                      <Text style={s.scheduleRoom}>{item.room}</Text>
+                    </View>
+                    <View style={s.scheduleBadge(status)}>
+                      <Text style={s.scheduleBadgeText}>{status}</Text>
+                    </View>
+                  </View>
+                );
+              })
+            )}
+          </View>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/users")}>
-          <Text className="mb-2 text-[30px]">👤</Text>
-          <Text className="font-semibold">Users List</Text>
-        </Pressable>
+          {/* Quick Actions */}
+          <View style={s.quickActionsSection}>
+            <View style={s.quickActionsSectionHeader}>
+              <View style={s.accentBar} />
+              <Text style={s.sectionTitle}>Quick Actions</Text>
+            </View>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/enroll")}>
-          <Text className="mb-2 text-[30px]">🎓</Text>
-          <Text className="font-semibold">Enroll Students</Text>
-        </Pressable>
+            <View style={s.quickActionsGrid}>
+              {quickActions.map((action) => (
+                <View key={action.label} style={s.quickActionCardWrap}>
+                  <Pressable
+                    style={({ pressed }) => s.quickActionPressable(pressed, action.gradient[0])}
+                    onPress={() => router.push(action.route)}
+                  >
+                    <LinearGradient colors={action.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.quickActionGradientBar} />
+                    <View style={s.quickActionContent}>
+                      <LinearGradient colors={action.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.quickActionIconWrap}>
+                        {action.icon}
+                      </LinearGradient>
+                      <Text style={s.quickActionLabel}>{action.label}</Text>
+                      <Text style={s.quickActionSubtitle}>{action.subtitle}</Text>
+                      <View style={s.quickActionArrowWrap}>
+                        <Ionicons name="arrow-forward" size={13} color={action.gradient[0]} />
+                      </View>
+                    </View>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          </View>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/profile")}>
-          <Text className="mb-2 text-[30px]">👤</Text>
-          <Text className="font-semibold">Profile</Text>
-        </Pressable>
+          {/* Logout */}
+          <LinearGradient colors={["#e11d48", "#db2777"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.logoutGradient}>
+            <TouchableOpacity style={s.logoutButton} onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={s.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </LinearGradient>
 
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/buildingMap")}>
-          <Text className="mb-2 text-[30px]">🗺️</Text>
-          <Text className="font-semibold">Campus Map</Text>
-        </Pressable>
-
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/admin/chatBot")}>
-          <Text className="mb-2 text-[30px]">🤖</Text>
-          <Text className="font-semibold">Chat Bot</Text>
-        </Pressable>
-      </View>
-
-      <View className="mt-3">
-
-        <TouchableOpacity className="items-center rounded-lg bg-red-500 p-[14px]" onPress={handleLogout}>
-          <Text className="font-semibold text-white">Logout</Text>
-        </TouchableOpacity>
-      </View>
+        </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

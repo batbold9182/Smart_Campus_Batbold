@@ -1,19 +1,50 @@
 ﻿import { View, Text, ScrollView, Pressable, TouchableOpacity, Image, useWindowDimensions } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
-import {logout} from "../../services/authService";
+import { logout } from "../../services/authService";
 import { useEffect, useState } from "react";
 import { getUnreadCount } from "../../services/notificationService";
 import { getProfile } from "../../services/userService";
-import { formatTime, formatDate } from "../../services/clockService";
+import { getFacultySchedule } from "../../services/scheduleService";
+import { LinearGradient } from "expo-linear-gradient";
+import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { StatusBar } from "expo-status-bar";
+import { getTheme } from "../../styles/theme";
+import { getDashboardStyles } from "../../styles/dashboardStyles";
 
 export default function FacultyDashboard() {
   const { width } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const router = useRouter();
-  const headerLogoSize = width >= 1024 ? 30 : width >= 768 ? 34 : 38;
   const [count, setCount] = useState(0);
   const [user, setUser] = useState<any>(null);
   const [time, setTime] = useState(new Date());
+  const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
+  const [isDark, setIsDark] = useState(true);
+
+  const t = getTheme(isDark);
+  const s = getDashboardStyles(t, width, isDark);
+
+  const getScheduleStatus = (startTime: string, endTime: string) => {
+    const now = time.getHours() * 60 + time.getMinutes();
+    const [startH, startM] = String(startTime || "0:0").split(":").map(Number);
+    const [endH, endM] = String(endTime || "0:0").split(":").map(Number);
+    const start = startH * 60 + startM;
+    const end = endH * 60 + endM;
+    if (now >= start && now <= end) return "Now";
+    if (now < start) return "Upcoming";
+    return "Done";
+  };
+
+  const loadTodaySchedule = async () => {
+    try {
+      const allSchedules = await getFacultySchedule();
+      const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
+      setTodaySchedule((Array.isArray(allSchedules) ? allSchedules : []).filter((item) => item?.day === today));
+    } catch {
+      setTodaySchedule([]);
+    }
+  };
 
   const loadCount = async () => {
     try {
@@ -26,13 +57,11 @@ export default function FacultyDashboard() {
 
   useEffect(() => {
     loadCount();
+    loadTodaySchedule();
   }, []);
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-
+    const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
@@ -51,144 +80,182 @@ export default function FacultyDashboard() {
   const handleLogout = async () => {
     await logout();
     router.replace("/auth/login");
-  }
+  };
 
-  if (!user) {
-    return null;
-  }
-// Back to courses
+  if (!user) return null;
+
+  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
+
+  const quickActions = [
+    { label: "My Courses", subtitle: "Manage classes", icon: <MaterialIcons name="menu-book" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/faculty/courses" as const },
+    { label: "Assignments", subtitle: "Review tasks", icon: <MaterialIcons name="assignment" size={24} color="#fff" />, gradient: ["#0d9488", "#2dd4bf"] as const, route: "/faculty/assignments" as const },
+    { label: "Grades", subtitle: "Record scores", icon: <MaterialCommunityIcons name="book-open-variant" size={24} color="#fff" />, gradient: ["#16a34a", "#4ade80"] as const, route: "/faculty/grades" as const },
+    { label: "Attendance", subtitle: "Track presence", icon: <MaterialIcons name="fact-check" size={24} color="#fff" />, gradient: ["#ea580c", "#f97316"] as const, route: "/faculty/attendance" as const },
+    { label: "Exam", subtitle: "Schedule exams", icon: <MaterialIcons name="edit-document" size={24} color="#fff" />, gradient: ["#2563eb", "#60a5fa"] as const, route: "/faculty/exam" as const },
+    { label: "Campus Map", subtitle: "Navigate campus", icon: <Ionicons name="location" size={24} color="#fff" />, gradient: ["#0891b2", "#22d3ee"] as const, route: "/faculty/buildingMap" as const },
+    { label: "Chat Bot", subtitle: "Ask anything", icon: <Ionicons name="chatbubble-ellipses" size={24} color="#fff" />, gradient: ["#d97706", "#fbbf24"] as const, route: "/faculty/chatBot" as const },
+  ];
+
   return (
-    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
-      <View className="mb-4 flex-row items-center justify-between">
-        <View className="flex-1 flex-row items-center pr-2">
-          <Image
-            source={require("../../assets/images/Logo_VIZJA.png")}
-            className="mr-2"
-            style={{ width: headerLogoSize, height: headerLogoSize }}
-            resizeMode="contain"
-          />
-          <View className="flex-1">
-            <Text className="text-[22px] font-bold text-app-text" numberOfLines={1}>Dashboard</Text>
-            <Text className="mt-1 text-app-muted">Welcome, {user?.name}</Text>
+    <View style={s.container}>
+      <StatusBar style={isDark ? "light" : "dark"} />
+      <ScrollView style={{ flex: 1 }} contentContainerStyle={s.scrollContent} showsVerticalScrollIndicator={false}>
+
+        {/* Header */}
+        <LinearGradient
+          colors={["#6b21a8", "#a21caf", "#db2777"]}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 0 }}
+          style={[s.headerGradient, { paddingTop: insets.top + 4 }]}
+        >
+          <View style={s.headerLogoWrap}>
+            <Image source={require("../../assets/images/logo_long.png")} style={s.headerLogo} resizeMode="contain" />
           </View>
-        </View>
+        </LinearGradient>
 
-        <View className="flex-row items-center">
-          <View className="mr-3 items-end">
-            <Text className="text-[18px] font-bold text-app-text">{formatTime(time)}</Text>
-            <Text className="text-[12px] text-app-muted">{formatDate(time)}</Text>
-          </View>
+        <View style={s.contentPadding}>
 
-          <TouchableOpacity onPress={() => router.push("/faculty/notifications")}>
-            <View className="relative">
-              <Text className="text-[26px]">🔔</Text>
-
-              {count > 0 && (
-                <View className="absolute -right-[6px] -top-1 rounded-full bg-red-500 px-[6px]">
-                  <Text className="text-[12px] font-bold text-white">{count}</Text>
+          {/* Profile row */}
+          <View style={s.profileRow}>
+            <View style={s.profileRowLeft}>
+              <TouchableOpacity onPress={() => router.push("/faculty/profile")} style={s.profileAvatarBtn}>
+                <View style={s.profileAvatar}>
+                  {profileUri ? (
+                    <Image source={{ uri: profileUri }} style={s.profileAvatarImage} />
+                  ) : (
+                    <View style={s.profileAvatarFallback}>
+                      <Ionicons name="person" size={24} color="#a78bfa" />
+                    </View>
+                  )}
                 </View>
-              )}
+                <View style={s.onlineDot} />
+              </TouchableOpacity>
+              <View style={s.profileTextWrap}>
+                <Text style={s.profileTitle}>Dashboard</Text>
+                <Text style={s.profileSubtitle}>Welcome back, {user?.name} 👋</Text>
+              </View>
             </View>
-          </TouchableOpacity>
+
+            <View style={s.headerActions}>
+              <TouchableOpacity onPress={() => setIsDark(!isDark)} style={s.themeToggle}>
+                <Ionicons name={isDark ? "sunny" : "moon"} size={20} color={isDark ? "#facc15" : "#6b21a8"} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => router.push("/faculty/notifications")}>
+                <View>
+                  <Ionicons name="notifications" size={26} color="#facc15" />
+                  {count > 0 && (
+                    <View style={s.badge}>
+                      <Text style={s.badgeText}>{count}</Text>
+                    </View>
+                  )}
+                </View>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Stats Row */}
+          <View style={s.statsRow}>
+            <View style={s.statsCard}>
+              <View style={s.statsIconWrap("#2563eb")}>
+                <Ionicons name="calendar" size={16} color="#fff" />
+              </View>
+              <Text style={s.statsValue}>{todaySchedule.length}</Text>
+              <Text style={s.statsLabel}>Today Classes</Text>
+            </View>
+            <View style={s.statsCard}>
+              <View style={s.statsIconWrap("#eab308")}>
+                <Ionicons name="notifications" size={16} color="#fff" />
+              </View>
+              <Text style={s.statsValue}>{count}</Text>
+              <Text style={s.statsLabel}>Unread Alerts</Text>
+            </View>
+            <View style={s.statsCardGreen}>
+              <View style={s.statsIconWrap("#22c55e")}>
+                <Ionicons name="person" size={16} color="#fff" />
+              </View>
+              <Text style={s.statsValue}>Faculty</Text>
+              <Text style={s.statsLabel}>Your Role</Text>
+            </View>
+          </View>
+
+          {/* Today's Schedule */}
+          <View style={s.scheduleCard}>
+            <View style={s.scheduleHeader}>
+              <View style={s.sectionTitleRow}>
+                <View style={s.accentBar} />
+                <Text style={s.sectionTitle}>Today&apos;s Schedule</Text>
+              </View>
+              <TouchableOpacity onPress={() => router.push("/faculty/courses")}>
+                <Text style={s.viewAllLink}>View All</Text>
+              </TouchableOpacity>
+            </View>
+
+            {todaySchedule.length === 0 ? (
+              <View style={s.emptyScheduleWrap}>
+                <Text style={s.emptyScheduleEmoji}>🗓️</Text>
+                <Text style={s.emptyScheduleTitle}>No classes scheduled today</Text>
+                <Text style={s.emptyScheduleSubtitle}>Enjoy your free day!</Text>
+              </View>
+            ) : (
+              todaySchedule.map((item, index) => {
+                const status = getScheduleStatus(item.startTime, item.endTime);
+                return (
+                  <View key={index} style={s.scheduleItemRow(index >= todaySchedule.length - 1)}>
+                    <Text style={s.scheduleTime}>{item.startTime}-{item.endTime}</Text>
+                    <View style={s.scheduleItemContent}>
+                      <Text style={s.scheduleCourseName}>{item.course?.title || item.course?.name || item.course?.code || "Course"}</Text>
+                      <Text style={s.scheduleRoom}>{item.room}</Text>
+                    </View>
+                    <View style={s.scheduleBadge(status)}>
+                      <Text style={s.scheduleBadgeText}>{status}</Text>
+                    </View>
+                  </View>
+                );
+              })
+            )}
+          </View>
+
+          {/* Quick Actions */}
+          <View style={s.quickActionsSection}>
+            <View style={s.quickActionsSectionHeader}>
+              <View style={s.accentBar} />
+              <Text style={s.sectionTitle}>Quick Actions</Text>
+            </View>
+
+            <View style={s.quickActionsGrid}>
+              {quickActions.map((action) => (
+                <View key={action.label} style={s.quickActionCardWrap}>
+                  <Pressable
+                    style={({ pressed }) => s.quickActionPressable(pressed, action.gradient[0])}
+                    onPress={() => router.push(action.route)}
+                  >
+                    <LinearGradient colors={action.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.quickActionGradientBar} />
+                    <View style={s.quickActionContent}>
+                      <LinearGradient colors={action.gradient} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={s.quickActionIconWrap}>
+                        {action.icon}
+                      </LinearGradient>
+                      <Text style={s.quickActionLabel}>{action.label}</Text>
+                      <Text style={s.quickActionSubtitle}>{action.subtitle}</Text>
+                      <View style={s.quickActionArrowWrap}>
+                        <Ionicons name="arrow-forward" size={13} color={action.gradient[0]} />
+                      </View>
+                    </View>
+                  </Pressable>
+                </View>
+              ))}
+            </View>
+          </View>
+
+          {/* Logout */}
+          <LinearGradient colors={["#e11d48", "#db2777"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={s.logoutGradient}>
+            <TouchableOpacity style={s.logoutButton} onPress={handleLogout}>
+              <Ionicons name="log-out-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
+              <Text style={s.logoutText}>Logout</Text>
+            </TouchableOpacity>
+          </LinearGradient>
+
         </View>
-      </View>
-
-      <View className="mb-4 flex-row justify-between gap-2">
-        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-app-text">{count}</Text>
-          <Text className="mt-1 text-[11px] text-app-muted">Unread Alerts</Text>
-        </View>
-        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-app-text">Courses</Text>
-          <Text className="mt-1 text-[11px] text-app-muted">Overview</Text>
-        </View>
-        <View className="flex-1 items-center rounded-xl bg-app-surface py-3 shadow-sm">
-          <Text className="text-[16px] font-bold text-app-text">Faculty</Text>
-          <Text className="mt-1 text-[11px] text-app-muted">Role</Text>
-        </View>
-      </View>
-
-      <View className="mb-[22px] rounded-xl bg-app-surface p-4 shadow">
-        <Text className="mb-2 text-[18px] font-bold text-app-text">Today</Text>
-        <Text className="text-app-muted">Review course pages and notifications to keep classes and announcements up to date.</Text>
-      </View>
-
-      <View className="mt-[2px] flex-row flex-wrap justify-between">
-        <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/faculty/courses")}
-        >
-          <Text className="mb-2 text-[30px]">📚</Text>
-          <Text className="font-semibold">My Courses</Text>
-        </Pressable>
-
-        <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/faculty/assignments")}
-        >
-          <Text className="mb-2 text-[30px]">📖</Text>
-          <Text className="font-semibold">Assignments</Text>
-        </Pressable>
-
-        <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/faculty/grades")}
-        >
-          <Text className="mb-2 text-[30px]">📖</Text>
-          <Text className="font-semibold">Grades</Text>
-        </Pressable>
-
-        <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/faculty/attendance")}
-        >
-          <Text className="mb-2 text-[30px]">📝</Text>
-          <Text className="font-semibold">Attendance Check</Text>
-        </Pressable>
-
-        <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/faculty/profile")}
-        >
-          <Text className="mb-2 text-[30px]">👤</Text>
-          <Text className="font-semibold">Profile</Text>
-        </Pressable>
-
-        <Pressable
-          className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow"
-          style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]}
-          onPress={() => router.push("/faculty/exam")}
-        >
-          <Text className="mb-2 text-[30px]">📝</Text>
-          <Text className="font-semibold">Exam</Text>
-        </Pressable>
-        
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/faculty/buildingMap")}>
-          <Text className="mb-2 text-[30px]">🗺️</Text>
-          <Text className="font-semibold">Campus Map</Text>
-        </Pressable>
-
-        <Pressable className="mb-[15px] min-h-[118px] w-[48%] items-center rounded-xl bg-app-surface p-[18px] shadow" style={({ pressed }) => [{ opacity: pressed ? 0.85 : 1, transform: [{ scale: pressed ? 0.98 : 1 }] }]} onPress={() => router.push("/faculty/chatBot")}>
-          <Text className="mb-2 text-[30px]">🤖</Text>
-          <Text className="font-semibold">Chat Bot</Text>
-        </Pressable>
-
-      </View>
-
-      <View className="mt-3">
-        
-
-        <TouchableOpacity className="items-center rounded-lg bg-red-500 p-[14px]" onPress={handleLogout}>
-          <Text className="font-semibold text-white">Logout</Text>
-        </TouchableOpacity>
-      </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }

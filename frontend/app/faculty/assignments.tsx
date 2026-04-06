@@ -239,7 +239,7 @@ export default function Assignments() {
     }
 
     const rawScore = (draftScores[submissionId] || "").trim();
-    const numericScore = rawScore === "" ? null : Number(rawScore);
+    const numericScore = rawScore === "" ? 0 : Number(rawScore);
 
     if (rawScore !== "" && (!Number.isFinite(numericScore) || numericScore < 0 || numericScore > assignment.maxPoints)) {
       Alert.alert("Invalid score", `Enter a number between 0 and ${assignment.maxPoints}.`);
@@ -321,7 +321,7 @@ export default function Assignments() {
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
                       <Text className="text-[16px] font-semibold text-[#111827]">{course.title}</Text>
-                      <Text className="mt-1 text-app-muted">{course.code} • {course.credits} credits</Text>
+                      <Text className="mt-1 text-app-muted">{course.code} ï¿½ {course.credits} credits</Text>
                     </View>
                     <Text className="text-[12px] font-semibold text-[#2563eb]">
                       {loadingCourseId === course.id ? "Loading..." : "Open"}
@@ -347,7 +347,7 @@ export default function Assignments() {
                 <View className="flex-1 pr-3">
                   <Text className="text-[18px] font-semibold text-[#111827]">{selectedCourse.course.title}</Text>
                   <Text className="mt-1 text-app-muted">
-                    {selectedCourse.course.code} • {selectedCourse.course.credits} credits
+                    {selectedCourse.course.code} ï¿½ {selectedCourse.course.credits} credits
                   </Text>
                 </View>
                 <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-[#eff6ff] px-3 py-2">
@@ -433,7 +433,7 @@ export default function Assignments() {
                       <View className="flex-1">
                         <Text className="text-[16px] font-semibold text-[#111827]">{assignment.title}</Text>
                         <Text className="mt-1 text-app-muted">
-                          Due {formatReadableDate(assignment.dueDate)} • {assignment.maxPoints} points
+                          Due {formatReadableDate(assignment.dueDate)} ï¿½ {assignment.maxPoints} points
                         </Text>
                       </View>
                       <View className={`rounded-full px-3 py-2 ${status.chip}`}>
@@ -490,7 +490,7 @@ export default function Assignments() {
                                   <Text className="mt-1 text-app-muted">{submission.student.email}</Text>
                                   <Text className="mt-1 text-[#9ca3af]">
                                     {submission.student.program || "Program not set"}
-                                    {submission.student.yearLevel ? ` • Year ${submission.student.yearLevel}` : ""}
+                                    {submission.student.yearLevel ? ` ï¿½ Year ${submission.student.yearLevel}` : ""}
                                   </Text>
                                 </View>
                                 <View className="rounded-full bg-[#eff6ff] px-3 py-2">
@@ -546,7 +546,7 @@ export default function Assignments() {
                               {submission.reviewedAt ? (
                                 <Text className="mt-3 text-[12px] text-app-muted">
                                   Reviewed {formatReadableDate(submission.reviewedAt)}
-                                  {submission.score !== null ? ` • Score ${submission.score}/${assignment.maxPoints}` : ""}
+                                  {submission.score !== null ? ` ï¿½ Score ${submission.score}/${assignment.maxPoints}` : ""}
                                 </Text>
                               ) : (
                                 <Text className="mt-3 text-[12px] text-[#9ca3af]">Not reviewed yet</Text>
