@@ -33,7 +33,7 @@ const initialSelectState: SelectState = {
 };
 
 export default function CreateUserScreen() {
-  const inputClassName = "mb-3 rounded-xl border border-[#9ca3af] bg-white px-3 py-3 text-[16px] text-app-text";
+  const inputClassName = "mb-3 rounded-xl border border-app-placeholder bg-app-surface px-3 py-3 text-[16px] text-app-text";
   const [selectedRole, setSelectedRole] = useState<"faculty" | "student">("faculty");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -167,17 +167,17 @@ export default function CreateUserScreen() {
     disabled?: boolean;
   }) => (
     <View className="mb-3">
-      <Text className="mb-1 text-[13px] font-semibold text-[#374151]">{label}</Text>
+      <Text className="mb-1 text-[13px] font-semibold text-app-text-secondary">{label}</Text>
       <TouchableOpacity
         className={`min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
           disabled
-            ? "border-[#e5e7eb] bg-[#f3f4f6]"
-            : "border-[#d1d5db] bg-white"
+            ? "border-app-border-light bg-app-bg-muted"
+            : "border-app-border bg-app-surface"
         }`}
         onPress={onPress}
         disabled={disabled}
       >
-        <Text className={value ? "text-[#111827]" : "text-[#9ca3af]"}>
+        <Text className={value ? "text-app-text" : "text-app-placeholder"}>
           {value || placeholder}
         </Text>
         <Text className="text-[18px] text-app-muted">▾</Text>
@@ -186,7 +186,7 @@ export default function CreateUserScreen() {
   );
 
   return (
-    <SafeAreaView className="flex-1 bg-[#eef3fb]">
+    <SafeAreaView className="flex-1 bg-app-bg">
       <KeyboardAvoidingView
         style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : undefined}
@@ -197,9 +197,9 @@ export default function CreateUserScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="rounded-2xl border border-[#e5e7eb] bg-white p-4 shadow-sm">
-            <Text className="text-[26px] font-bold text-[#0f172a]">Create User</Text>
-            <Text className="mb-4 mt-1 text-[13px] text-[#64748b]">
+          <View className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
+            <Text className="text-[26px] font-bold text-app-text">Create User</Text>
+            <Text className="mb-4 mt-1 text-[13px] text-app-text-subtle">
               Add faculty or student accounts from one form.
             </Text>
 
@@ -207,28 +207,28 @@ export default function CreateUserScreen() {
               <TouchableOpacity
                 className={`flex-1 items-center rounded-xl border px-3 py-3 ${
                   selectedRole === "faculty"
-                    ? "border-[#2563eb] bg-[#dbeafe]"
-                    : "border-[#d1d5db] bg-white"
+                    ? "border-app-primary bg-app-primary-light"
+                    : "border-app-border bg-app-surface"
                 }`}
                 onPress={() => {
                   setSelectedRole("faculty");
                   setMessage("");
                 }}
               >
-                <Text className="font-semibold text-[#111827]">Faculty</Text>
+                <Text className="font-semibold text-app-text">Faculty</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 className={`flex-1 items-center rounded-xl border px-3 py-3 ${
                   selectedRole === "student"
-                    ? "border-[#2563eb] bg-[#dbeafe]"
-                    : "border-[#d1d5db] bg-white"
+                    ? "border-app-primary bg-app-primary-light"
+                    : "border-app-border bg-app-surface"
                 }`}
                 onPress={() => {
                   setSelectedRole("student");
                   setMessage("");
                 }}
               >
-                <Text className="font-semibold text-[#111827]">Student</Text>
+                <Text className="font-semibold text-app-text">Student</Text>
               </TouchableOpacity>
             </View>
 
@@ -332,11 +332,11 @@ export default function CreateUserScreen() {
             />
 
             {message ? (
-              <Text className="mb-3 text-center text-[13px] text-[#334155]">{message}</Text>
+              <Text className="mb-3 text-center text-[13px] text-app-text-subtle">{message}</Text>
             ) : null}
 
             <TouchableOpacity
-              className="mb-2 items-center rounded-xl bg-[#2563eb] px-4 py-3"
+              className="mb-2 items-center rounded-xl bg-app-primary px-4 py-3"
               onPress={handleCreate}
               disabled={isSubmitting}
             >
@@ -344,10 +344,10 @@ export default function CreateUserScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="items-center rounded-xl border border-[#cbd5e1] bg-white px-4 py-3"
+              className="items-center rounded-xl border border-app-disabled bg-app-surface px-4 py-3"
               onPress={() => router.push("../dashboard")}
             >
-              <Text className="text-[15px] font-semibold text-[#0f172a]">Back to Dashboard</Text>
+              <Text className="text-[15px] font-semibold text-app-text">Back to Dashboard</Text>
             </TouchableOpacity>
           </View>
         </ScrollView>
@@ -355,16 +355,16 @@ export default function CreateUserScreen() {
 
       <Modal transparent visible={selectState.visible} animationType="fade" onRequestClose={closePicker}>
         <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={closePicker}>
-          <Pressable className="max-h-[70%] w-full rounded-2xl bg-white p-4" onPress={() => {}}>
+          <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
             <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-[17px] font-bold text-[#0f172a]">{selectState.title}</Text>
+              <Text className="text-[17px] font-bold text-app-text">{selectState.title}</Text>
               <TouchableOpacity onPress={closePicker}>
-                <Text className="text-[14px] font-semibold text-[#2563eb]">Done</Text>
+                <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
               </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {selectState.options.length === 0 ? (
-                <Text className="py-3 text-[#64748b]">No options available.</Text>
+                <Text className="py-3 text-app-text-subtle">No options available.</Text>
               ) : (
                 selectState.options.map((option) => {
                   const active = selectState.selectedValue === option;
@@ -373,15 +373,15 @@ export default function CreateUserScreen() {
                       key={option}
                       className={`mb-2 rounded-lg border px-3 py-3 ${
                         active
-                          ? "border-[#2563eb] bg-[#eff6ff]"
-                          : "border-[#e5e7eb] bg-white"
+                          ? "border-app-primary bg-app-primary-bg"
+                          : "border-app-border-light bg-app-surface"
                       }`}
                       onPress={() => {
                         selectState.onSelect(option);
                         closePicker();
                       }}
                     >
-                      <Text className={`font-medium ${active ? "text-[#1d4ed8]" : "text-[#111827]"}`}>
+                      <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
                         {option}
                       </Text>
                     </TouchableOpacity>

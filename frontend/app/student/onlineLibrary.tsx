@@ -97,12 +97,12 @@ export default function OnlineLibrary() {
   const appliedCategoryLabel = LIBRARY_CATEGORIES.find((item) => item.value === appliedCategory)?.label || "All";
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">Online Library</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">Online Library</Text>
 
-        <View className="mb-4 rounded-xl bg-white p-4 shadow">
-          <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Search OpenLibrary</Text>
+        <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+          <Text className="mb-2 text-[16px] font-semibold text-app-text">Search OpenLibrary</Text>
           <Text className="mb-3 text-app-muted">
             Find books by title, author, or topic using OpenLibrary&apos;s free catalog.
           </Text>
@@ -114,7 +114,7 @@ export default function OnlineLibrary() {
                 return (
                   <TouchableOpacity
                     key={category.label}
-                    className={`rounded-full px-3 py-2 ${active ? "bg-blue-500" : "bg-[#e5e7eb]"}`}
+                    className={`rounded-full px-3 py-2 ${active ? "bg-blue-500" : "bg-app-border-light"}`}
                     onPress={() => {
                       setSelectedCategory(category.value);
                       if (searched || query.trim()) {
@@ -122,7 +122,7 @@ export default function OnlineLibrary() {
                       }
                     }}
                   >
-                    <Text className={`text-[12px] font-semibold ${active ? "text-white" : "text-[#374151]"}`}>
+                    <Text className={`text-[12px] font-semibold ${active ? "text-white" : "text-app-text-secondary"}`}>
                       {category.label}
                     </Text>
                   </TouchableOpacity>
@@ -136,7 +136,7 @@ export default function OnlineLibrary() {
             value={query}
             onChangeText={setQuery}
             onSubmitEditing={() => onSearch(1)}
-            className="rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+            className="rounded-lg border border-app-border px-4 py-3 text-app-text"
             returnKeyType="search"
           />
 
@@ -146,16 +146,16 @@ export default function OnlineLibrary() {
         </View>
 
         {loading ? (
-          <View className="mb-4 items-center rounded-xl bg-white p-6 shadow">
+          <View className="mb-4 items-center rounded-xl bg-app-surface p-6 shadow">
             <ActivityIndicator size="large" color="#2563eb" />
             <Text className="mt-3 text-app-muted">Searching library...</Text>
           </View>
         ) : null}
 
         {!loading && searched ? (
-          <View className="mb-3 rounded-xl bg-white p-4 shadow">
+          <View className="mb-3 rounded-xl bg-app-surface p-4 shadow">
             <Text className="text-app-muted">Found {total} results, showing {results.length} on page {currentPage}</Text>
-            <Text className="mt-1 text-[12px] text-[#9ca3af]">Active category: {appliedCategoryLabel}</Text>
+            <Text className="mt-1 text-[12px] text-app-placeholder">Active category: {appliedCategoryLabel}</Text>
           </View>
         ) : null}
 
@@ -167,33 +167,33 @@ export default function OnlineLibrary() {
         ) : null}
 
         {!loading && searched && results.length === 0 ? (
-          <View className="mb-4 rounded-xl bg-white p-4 shadow">
+          <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
             <Text className="text-app-muted">No books found. Try a different keyword.</Text>
           </View>
         ) : null}
 
         {!loading && results.map((book) => (
-          <View key={book.id} className="mb-4 rounded-xl bg-white p-4 shadow">
+          <View key={book.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
             <View className="flex-row">
-              <View className="mr-3 h-[96px] w-[72px] items-center justify-center overflow-hidden rounded-md bg-[#f3f4f6]">
+              <View className="mr-3 h-[96px] w-[72px] items-center justify-center overflow-hidden rounded-md bg-app-bg-muted">
                 {book.coverUrl ? (
                   <Image source={{ uri: book.coverUrl }} className="h-full w-full" resizeMode="cover" />
                 ) : (
-                  <Text className="text-[10px] text-[#9ca3af]">No Cover</Text>
+                  <Text className="text-[10px] text-app-placeholder">No Cover</Text>
                 )}
               </View>
 
               <View className="flex-1">
-                <Text className="text-[16px] font-semibold text-[#111827]">{book.title}</Text>
+                <Text className="text-[16px] font-semibold text-app-text">{book.title}</Text>
                 <Text className="mt-1 text-app-muted" numberOfLines={2}>
                   {book.authors.length ? `By ${book.authors.join(", ")}` : "Author unavailable"}
                 </Text>
-                <Text className="mt-1 text-[12px] text-[#9ca3af]">
+                <Text className="mt-1 text-[12px] text-app-placeholder">
                   {book.firstPublishYear ? `First published ${book.firstPublishYear}` : "Year unknown"} • {book.editionCount} editions
                 </Text>
 
-                <TouchableOpacity className="mt-3 self-start rounded-full bg-[#e0ecff] px-3 py-2" onPress={() => openBook(book.openLibraryUrl)}>
-                  <Text className="font-semibold text-[#1d4ed8]">Open in Library</Text>
+                <TouchableOpacity className="mt-3 self-start rounded-full bg-app-primary-light px-3 py-2" onPress={() => openBook(book.openLibraryUrl)}>
+                  <Text className="font-semibold text-app-primary-dark">Open in Library</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -201,9 +201,9 @@ export default function OnlineLibrary() {
         ))}
 
         {!loading && searched && total > pageSize ? (
-          <View className="mb-4 flex-row items-center justify-between rounded-xl bg-white p-4 shadow">
+          <View className="mb-4 flex-row items-center justify-between rounded-xl bg-app-surface p-4 shadow">
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${currentPage > 1 ? "bg-blue-500" : "bg-[#bfdbfe]"}`}
+              className={`rounded-lg px-4 py-2 ${currentPage > 1 ? "bg-blue-500" : "bg-app-primary-muted"}`}
               disabled={currentPage <= 1}
               onPress={() => onSearch(currentPage - 1, appliedCategory)}
             >
@@ -213,7 +213,7 @@ export default function OnlineLibrary() {
             <Text className="text-app-muted">Page {currentPage}</Text>
 
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${currentPage * pageSize < total ? "bg-blue-500" : "bg-[#bfdbfe]"}`}
+              className={`rounded-lg px-4 py-2 ${currentPage * pageSize < total ? "bg-blue-500" : "bg-app-primary-muted"}`}
               disabled={currentPage * pageSize >= total}
               onPress={() => onSearch(currentPage + 1, appliedCategory)}
             >

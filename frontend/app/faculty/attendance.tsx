@@ -162,7 +162,7 @@ export default function Attendance() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
+      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text className="mt-3 text-app-muted">Loading attendance...</Text>
       </SafeAreaView>
@@ -170,25 +170,25 @@ export default function Attendance() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">Attendance</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">Attendance</Text>
 
-        <View className="mb-4 rounded-xl bg-white p-4 shadow">
-          <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Attendance Date</Text>
+        <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+          <Text className="mb-2 text-[16px] font-semibold text-app-text">Attendance Date</Text>
           <TextInput
             value={selectedDate}
             onChangeText={setSelectedDate}
             placeholder="YYYY-MM-DD"
-            className="rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+            className="rounded-lg border border-app-border px-4 py-3 text-app-text"
             autoCapitalize="none"
             autoCorrect={false}
           />
           <Text className="mt-2 text-[12px] text-app-muted">Use YYYY-MM-DD. Example: 2026-03-22</Text>
         </View>
 
-        <View className="mb-4 rounded-xl bg-white p-4 shadow">
-          <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Schedule For Selected Date</Text>
+        <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+          <Text className="mb-2 text-[16px] font-semibold text-app-text">Schedule For Selected Date</Text>
           {!selectedDayName ? (
             <Text className="text-app-muted">Enter a valid date to view schedule.</Text>
           ) : schedulesForDate.length === 0 ? (
@@ -197,17 +197,17 @@ export default function Attendance() {
             schedulesForDate.map((item) => (
               <TouchableOpacity
                 key={item._id}
-                className="mb-3 rounded-lg border border-[#e5e7eb] px-3 py-3"
+                className="mb-3 rounded-lg border border-app-border-light px-3 py-3"
                 onPress={() => item.course?._id && openCourse(item.course._id, item._id)}
                 disabled={!item.course?._id}
               >
-                <Text className="text-[15px] font-semibold text-[#111827]">
+                <Text className="text-[15px] font-semibold text-app-text">
                   {item.course?.title || item.course?.name || "Untitled Course"}
                 </Text>
                 <Text className="mt-1 text-app-muted">
                   {item.course?.code || "No code"} • {item.startTime} - {item.endTime} • Room {item.room}
                 </Text>
-                <Text className="mt-2 text-[12px] font-semibold text-[#2563eb]">Open attendance</Text>
+                <Text className="mt-2 text-[12px] font-semibold text-app-primary">Open attendance</Text>
               </TouchableOpacity>
             ))
           )}
@@ -215,38 +215,38 @@ export default function Attendance() {
 
         {!selectedCourse ? (
           <>
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
-              <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Assigned Courses</Text>
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <Text className="mb-2 text-[16px] font-semibold text-app-text">Assigned Courses</Text>
               <Text className="text-app-muted">Choose a course and manually mark each student.</Text>
             </View>
 
             {courses.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-white p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                 <Text className="text-app-muted">No courses assigned yet.</Text>
               </View>
             ) : (
               courses.map((course) => (
                 <TouchableOpacity
                   key={course.id}
-                  className="mb-4 rounded-xl bg-white p-4 shadow"
+                  className="mb-4 rounded-xl bg-app-surface p-4 shadow"
                   onPress={() => openCourse(course.id)}
                   disabled={loadingCourseId === course.id}
                 >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
-                      <Text className="text-[16px] font-semibold text-[#111827]">{course.title}</Text>
+                      <Text className="text-[16px] font-semibold text-app-text">{course.title}</Text>
                       <Text className="mt-1 text-app-muted">{course.code} • {course.credits} credits</Text>
                     </View>
-                    <Text className="text-[12px] font-semibold text-[#2563eb]">
+                    <Text className="text-[12px] font-semibold text-app-primary">
                       {loadingCourseId === course.id ? "Loading..." : "Open"}
                     </Text>
                   </View>
                   <View className="mt-3 flex-row gap-2">
-                    <View className="rounded-full bg-[#eff6ff] px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-[#1d4ed8]">{course.enrolledCount} enrolled</Text>
+                    <View className="rounded-full bg-app-primary-bg px-3 py-2">
+                      <Text className="text-[12px] font-semibold text-app-primary-dark">{course.enrolledCount} enrolled</Text>
                     </View>
-                    <View className="rounded-full bg-[#ecfdf5] px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-[#047857]">
+                    <View className="rounded-full bg-app-success-bg-subtle px-3 py-2">
+                      <Text className="text-[12px] font-semibold text-app-success">
                         {course.markedTodayCount} marked today
                       </Text>
                     </View>
@@ -257,36 +257,36 @@ export default function Attendance() {
           </>
         ) : (
           <>
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
-                  <Text className="text-[18px] font-semibold text-[#111827]">{selectedCourse.course.title}</Text>
+                  <Text className="text-[18px] font-semibold text-app-text">{selectedCourse.course.title}</Text>
                   <Text className="mt-1 text-app-muted">{selectedCourse.course.code} • {selectedCourse.course.credits} credits</Text>
                 </View>
-                <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-[#eff6ff] px-3 py-2">
-                  <Text className="font-semibold text-[#2563eb]">Courses</Text>
+                <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-app-primary-bg px-3 py-2">
+                  <Text className="font-semibold text-app-primary">Courses</Text>
                 </TouchableOpacity>
               </View>
 
               {selectedScheduleId ? (
-                <Text className="mt-2 text-[12px] text-[#2563eb]">Session-specific attendance mode</Text>
+                <Text className="mt-2 text-[12px] text-app-primary">Session-specific attendance mode</Text>
               ) : null}
 
-              <TouchableOpacity onPress={handleReloadForDate} className="mt-3 self-start rounded-lg bg-[#e5e7eb] px-3 py-2">
-                <Text className="font-semibold text-[#374151]">Reload For Date</Text>
+              <TouchableOpacity onPress={handleReloadForDate} className="mt-3 self-start rounded-lg bg-app-border-light px-3 py-2">
+                <Text className="font-semibold text-app-text-secondary">Reload For Date</Text>
               </TouchableOpacity>
             </View>
 
             {selectedCourse.students.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-white p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                 <Text className="text-app-muted">No enrolled students in this course yet.</Text>
               </View>
             ) : (
               selectedCourse.students.map((item) => (
-                <View key={item.student.id} className="mb-4 rounded-xl bg-white p-4 shadow">
-                  <Text className="text-[16px] font-semibold text-[#111827]">{item.student.name}</Text>
+                <View key={item.student.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+                  <Text className="text-[16px] font-semibold text-app-text">{item.student.name}</Text>
                   <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` • Year ${item.student.yearLevel}` : ""}</Text>
-                  <Text className="mt-1 text-[#9ca3af]">{item.student.email}</Text>
+                  <Text className="mt-1 text-app-placeholder">{item.student.email}</Text>
 
                   <Text className="mb-2 mt-4 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Status</Text>
                   <View className="flex-row flex-wrap gap-2">
@@ -296,9 +296,9 @@ export default function Attendance() {
                         <TouchableOpacity
                           key={status}
                           onPress={() => setDraftStatus((current) => ({ ...current, [item.student.id]: status }))}
-                          className={`rounded-full px-3 py-2 ${isActive ? "bg-blue-500" : "bg-[#e5e7eb]"}`}
+                          className={`rounded-full px-3 py-2 ${isActive ? "bg-blue-500" : "bg-app-border-light"}`}
                         >
-                          <Text className={`text-[12px] font-semibold ${isActive ? "text-white" : "text-[#374151]"}`}>
+                          <Text className={`text-[12px] font-semibold ${isActive ? "text-white" : "text-app-text-secondary"}`}>
                             {formatStatusLabel(status)}
                           </Text>
                         </TouchableOpacity>
@@ -313,7 +313,7 @@ export default function Attendance() {
                       value={draftRemarks[item.student.id] || ""}
                       onChangeText={(value) => setDraftRemarks((current) => ({ ...current, [item.student.id]: value }))}
                       placeholder="Optional note"
-                      className="min-h-[84px] rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                      className="min-h-[84px] rounded-lg border border-app-border px-4 py-3 text-app-text"
                       textAlignVertical="top"
                     />
                   </View>
@@ -323,7 +323,7 @@ export default function Attendance() {
                       Current saved attendance: {formatStatusLabel(item.attendance.status)}
                     </Text>
                   ) : (
-                    <Text className="mt-3 text-[12px] text-[#9ca3af]">No attendance saved for this date</Text>
+                    <Text className="mt-3 text-[12px] text-app-placeholder">No attendance saved for this date</Text>
                   )}
 
                   <TouchableOpacity

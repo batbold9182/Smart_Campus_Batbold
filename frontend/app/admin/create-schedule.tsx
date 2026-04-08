@@ -13,7 +13,7 @@ import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function CreateScheduleScreen() {
-  const inputClassName = "mb-3 rounded-xl border border-[#9ca3af] bg-white px-3 py-3 text-[16px] text-app-text";
+  const inputClassName = "mb-3 rounded-xl border border-app-placeholder bg-app-surface px-3 py-3 text-[16px] text-app-text";
   const [courses, setCourses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [course, setCourse] = useState("");
@@ -105,10 +105,10 @@ export default function CreateScheduleScreen() {
             Build class slots with time and room details.
           </Text>
 
-          <Text className="mb-1 text-[13px] font-semibold text-[#374151]">Course</Text>
+          <Text className="mb-1 text-[13px] font-semibold text-app-text-secondary">Course</Text>
           <TouchableOpacity
             className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
-              courses.length > 0 ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f3f4f6]"
+              courses.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
             }`}
             onPress={() => setCourseSelectorOpen(true)}
             disabled={courses.length === 0}
@@ -123,7 +123,7 @@ export default function CreateScheduleScreen() {
           <TextInput placeholder="Room" placeholderTextColor="#6b7280" value={room} onChangeText={setRoom} className={`${inputClassName} mb-4`} />
 
           <TouchableOpacity
-            className={`mb-2 items-center rounded-xl px-4 py-3 ${isCreating ? "bg-[#93c5fd]" : "bg-blue-500"}`}
+            className={`mb-2 items-center rounded-xl px-4 py-3 ${isCreating ? "bg-app-primary-loading" : "bg-blue-500"}`}
             onPress={handleCreate}
             disabled={isCreating}
           >
@@ -135,13 +135,13 @@ export default function CreateScheduleScreen() {
             <Text className="mb-3 text-app-muted">No schedules found</Text>
           ) : (
             schedules.map((item) => (
-              <View key={item._id} className="mb-2 rounded-xl border border-app-border bg-white p-3">
+              <View key={item._id} className="mb-2 rounded-xl border border-app-border bg-app-surface p-3">
                 <Text className="font-semibold text-app-text">
                   {item.course?.title || item.course?.name || "Course"}
                 </Text>
                 <Text className="mb-2 text-app-muted">{item.day} • {item.startTime}-{item.endTime} • Room {item.room}</Text>
                 <TouchableOpacity
-                  className={`items-center rounded-lg px-3 py-2 ${loadingDeleteId === item._id ? "bg-[#fca5a5]" : "bg-red-500"}`}
+                  className={`items-center rounded-lg px-3 py-2 ${loadingDeleteId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
                   disabled={loadingDeleteId === item._id}
                   onPress={() => handleDelete(item._id)}
                 >
@@ -152,7 +152,7 @@ export default function CreateScheduleScreen() {
           )}
 
           <TouchableOpacity
-            className="mt-2 items-center rounded-xl border border-app-border bg-white px-4 py-3"
+            className="mt-2 items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
             onPress={() => router.push("../dashboard")}
           >
             <Text className="font-semibold text-app-text">Back to Dashboard</Text>
@@ -168,16 +168,16 @@ export default function CreateScheduleScreen() {
 
         <Modal transparent visible={courseSelectorOpen} animationType="fade" onRequestClose={() => setCourseSelectorOpen(false)}>
           <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setCourseSelectorOpen(false)}>
-            <Pressable className="max-h-[70%] w-full rounded-2xl bg-white p-4" onPress={() => {}}>
+            <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
               <View className="mb-2 flex-row items-center justify-between">
-                <Text className="text-[17px] font-bold text-[#0f172a]">Select Course</Text>
+                <Text className="text-[17px] font-bold text-app-text">Select Course</Text>
                 <TouchableOpacity onPress={() => setCourseSelectorOpen(false)}>
-                  <Text className="text-[14px] font-semibold text-[#2563eb]">Done</Text>
+                  <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
                 </TouchableOpacity>
               </View>
               <ScrollView showsVerticalScrollIndicator={false}>
                 {courses.length === 0 ? (
-                  <Text className="py-3 text-[#64748b]">No courses available.</Text>
+                  <Text className="py-3 text-app-text-subtle">No courses available.</Text>
                 ) : (
                   courses.map((c) => {
                     const active = course === c._id;
@@ -185,14 +185,14 @@ export default function CreateScheduleScreen() {
                       <TouchableOpacity
                         key={c._id}
                         className={`mb-2 rounded-lg border px-3 py-3 ${
-                          active ? "border-[#2563eb] bg-[#eff6ff]" : "border-[#e5e7eb] bg-white"
+                          active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
                         }`}
                         onPress={() => {
                           setCourse(c._id);
                           setCourseSelectorOpen(false);
                         }}
                       >
-                        <Text className={`font-medium ${active ? "text-[#1d4ed8]" : "text-[#111827]"}`}>
+                        <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
                           {c.title}
                         </Text>
                       </TouchableOpacity>

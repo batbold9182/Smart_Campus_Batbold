@@ -171,7 +171,7 @@ export default function LearningBuddy() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
+      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
         <ActivityIndicator size="large" color="#16a34a" />
         <Text className="mt-3 text-[15px] text-app-muted">Loading Learning Buddy...</Text>
       </SafeAreaView>
@@ -179,47 +179,47 @@ export default function LearningBuddy() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="border-b border-[#e5e7eb] bg-white px-5 pb-4 pt-2">
+        <View className="border-b border-app-border-light bg-app-surface px-5 pb-4 pt-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
-              <Text className="text-[22px] font-bold text-[#111827]">📘 Learning Buddy</Text>
+              <Text className="text-[22px] font-bold text-app-text">📘 Learning Buddy</Text>
               <Text className="mt-1 text-[13px] text-app-muted">
                 Study partners, revision circles, and assignment help.
               </Text>
             </View>
 
             <TouchableOpacity
-              className="rounded-full bg-[#dcfce7] px-4 py-2"
+              className="rounded-full bg-app-success-light px-4 py-2"
               onPress={() => router.back()}
             >
-              <Text className="font-semibold text-[#166534]">Sections</Text>
+              <Text className="font-semibold text-app-success-dark">Sections</Text>
             </TouchableOpacity>
           </View>
 
           <View className="mt-4 flex-row flex-wrap gap-2">
-            <View className="rounded-full bg-[#dcfce7] px-3 py-2">
-              <Text className="text-[12px] font-semibold text-[#166534]">{statusLabel}</Text>
+            <View className="rounded-full bg-app-success-light px-3 py-2">
+              <Text className="text-[12px] font-semibold text-app-success-dark">{statusLabel}</Text>
             </View>
-            <View className="rounded-full bg-[#d1fae5] px-3 py-2">
-              <Text className="text-[12px] font-semibold text-[#065f46]">{onlineCount} students online</Text>
+            <View className="rounded-full bg-app-success-bg px-3 py-2">
+              <Text className="text-[12px] font-semibold text-app-success">{onlineCount} students online</Text>
             </View>
             {currentUser?.program ? (
-              <View className="rounded-full bg-[#f3f4f6] px-3 py-2">
-                <Text className="text-[12px] font-semibold text-[#374151]">{currentUser.program}</Text>
+              <View className="rounded-full bg-app-bg-muted px-3 py-2">
+                <Text className="text-[12px] font-semibold text-app-text-secondary">{currentUser.program}</Text>
               </View>
             ) : null}
           </View>
         </View>
 
         {error ? (
-          <View className="mx-5 mt-4 rounded-xl border border-[#fecaca] bg-[#fef2f2] p-4">
-            <Text className="font-semibold text-[#991b1b]">Connection issue</Text>
-            <Text className="mt-1 text-[#b91c1c]">{error}</Text>
+          <View className="mx-5 mt-4 rounded-xl border border-app-error-light bg-app-error-bg-subtle p-4">
+            <Text className="font-semibold text-app-error-dark">Connection issue</Text>
+            <Text className="mt-1 text-app-error">{error}</Text>
           </View>
         ) : null}
 
@@ -231,8 +231,8 @@ export default function LearningBuddy() {
           onContentSizeChange={scrollToEnd}
         >
           {messages.length === 0 ? (
-            <View className="mt-10 rounded-2xl bg-white p-5 shadow-sm">
-              <Text className="text-[16px] font-semibold text-[#111827]">Start the conversation</Text>
+            <View className="mt-10 rounded-2xl bg-app-surface p-5 shadow-sm">
+              <Text className="text-[16px] font-semibold text-app-text">Start the conversation</Text>
               <Text className="mt-2 leading-6 text-app-muted">
                 Ask about an assignment, form a study group, or find classmates reviewing for the same exam.
               </Text>
@@ -246,21 +246,21 @@ export default function LearningBuddy() {
               <View
                 key={message.id}
                 className={`max-w-[88%] rounded-2xl px-4 py-3 ${
-                  isMine ? "self-end bg-[#16a34a]" : "self-start bg-white"
+                  isMine ? "self-end bg-app-success-accent" : "self-start bg-app-surface"
                 }`}
               >
                 {!isMine ? (
-                  <Text className="mb-1 text-[12px] font-semibold text-[#16a34a]">
+                  <Text className="mb-1 text-[12px] font-semibold text-app-success-accent">
                     {message.sender.name}
                     {message.sender.program ? ` • ${message.sender.program}` : ""}
                   </Text>
                 ) : null}
 
-                <Text className={isMine ? "text-[15px] leading-6 text-white" : "text-[15px] leading-6 text-[#111827]"}>
+                <Text className={isMine ? "text-[15px] leading-6 text-white" : "text-[15px] leading-6 text-app-text"}>
                   {message.text}
                 </Text>
 
-                <Text className={`mt-2 text-[11px] ${isMine ? "text-[#bbf7d0]" : "text-[#9ca3af]"}`}>
+                <Text className={`mt-2 text-[11px] ${isMine ? "text-app-success-timestamp" : "text-app-placeholder"}`}>
                   {formatMessageTime(message.createdAt)}
                 </Text>
               </View>
@@ -268,8 +268,8 @@ export default function LearningBuddy() {
           })}
         </ScrollView>
 
-        <View className="border-t border-[#e5e7eb] bg-white px-5 pb-5 pt-4">
-          <View className="rounded-2xl border border-[#d1d5db] bg-[#f9fafb] px-4 py-3">
+        <View className="border-t border-app-border-light bg-app-surface px-5 pb-5 pt-4">
+          <View className="rounded-2xl border border-app-border bg-app-bg-subtle px-4 py-3">
             <TextInput
               multiline
               maxLength={400}
@@ -277,7 +277,7 @@ export default function LearningBuddy() {
               placeholderTextColor="#9ca3af"
               value={draft}
               onChangeText={setDraft}
-              className="min-h-[44px] text-[15px] leading-6 text-[#111827]"
+              className="min-h-[44px] text-[15px] leading-6 text-app-text"
               textAlignVertical="top"
             />
           </View>
@@ -288,8 +288,8 @@ export default function LearningBuddy() {
             <TouchableOpacity
               className={`rounded-full px-5 py-3 ${
                 draft.trim() && !sending && socketRef.current?.connected
-                  ? "bg-[#16a34a]"
-                  : "bg-[#bbf7d0]"
+                  ? "bg-app-success-accent"
+                  : "bg-app-success-timestamp"
               }`}
               disabled={!draft.trim() || sending || !socketRef.current?.connected}
               onPress={handleSend}

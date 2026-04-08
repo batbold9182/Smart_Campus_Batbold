@@ -39,18 +39,18 @@ const getAssignmentStatus = (dueDate: string) => {
   const todayKey = toDateKey(new Date());
 
   if (Number.isNaN(due.getTime())) {
-    return { label: "Unknown", chip: "bg-[#f3f4f6]", text: "text-app-muted" };
+    return { label: "Unknown", chip: "bg-app-bg-muted", text: "text-app-muted" };
   }
 
   if (dueKey < todayKey) {
-    return { label: "Overdue", chip: "bg-[#fee2e2]", text: "text-[#b91c1c]" };
+    return { label: "Overdue", chip: "bg-app-error-bg", text: "text-app-error" };
   }
 
   if (dueKey === todayKey) {
-    return { label: "Due Today", chip: "bg-[#fef3c7]", text: "text-[#b45309]" };
+    return { label: "Due Today", chip: "bg-app-warning-bg", text: "text-app-warning" };
   }
 
-  return { label: "Upcoming", chip: "bg-[#d1fae5]", text: "text-[#047857]" };
+  return { label: "Upcoming", chip: "bg-app-success-bg", text: "text-app-success" };
 };
 
 const inferMimeTypeFromName = (fileName: string) => {
@@ -219,7 +219,7 @@ export default function StudentAssignments() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
+      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text className="mt-3 text-app-muted">Loading assignments...</Text>
       </SafeAreaView>
@@ -227,61 +227,61 @@ export default function StudentAssignments() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">Assignments</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">Assignments</Text>
 
         <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.courseCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.courseCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Courses</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.assignmentCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.assignmentCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Assignments</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.dueTodayCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.dueTodayCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Due Today</Text>
           </View>
         </View>
 
         <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.upcomingCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.upcomingCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Upcoming</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.submittedCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.submittedCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Submitted</Text>
           </View>
         </View>
 
         <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.pendingCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.pendingCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Pending</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.overdueCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.overdueCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Overdue</Text>
           </View>
         </View>
 
         {!data?.items.length ? (
-          <View className="mb-4 rounded-xl bg-white p-4 shadow">
-            <Text className="mb-2 text-[16px] font-semibold text-[#111827]">No Assignments Yet</Text>
+          <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="mb-2 text-[16px] font-semibold text-app-text">No Assignments Yet</Text>
             <Text className="text-app-muted">Assignments from your enrolled courses will appear here once faculty publish them.</Text>
           </View>
         ) : (
           data.items.map((item) => (
-            <View key={item.course.id} className="mb-4 rounded-xl bg-white p-4 shadow">
-              <Text className="text-[16px] font-semibold text-[#111827]">{item.course.title}</Text>
+            <View key={item.course.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <Text className="text-[16px] font-semibold text-app-text">{item.course.title}</Text>
               <Text className="mt-1 text-app-muted">{item.course.code} • {item.course.credits} credits</Text>
-              <Text className="mt-1 text-[#9ca3af]">Faculty: {item.course.facultyName}</Text>
+              <Text className="mt-1 text-app-placeholder">Faculty: {item.course.facultyName}</Text>
 
               {item.assignments.length === 0 ? (
-                <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
+                <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
                   <Text className="text-app-muted">No assignments published for this course yet.</Text>
                 </View>
               ) : (
@@ -291,10 +291,10 @@ export default function StudentAssignments() {
                   const currentNotes = draftNotes[assignment.id] ?? assignment.submission?.notes ?? "";
 
                   return (
-                    <View key={assignment.id} className="mt-4 rounded-lg border border-[#e5e7eb] p-4">
+                    <View key={assignment.id} className="mt-4 rounded-lg border border-app-border-light p-4">
                       <View className="flex-row items-start justify-between gap-3">
                         <View className="flex-1">
-                          <Text className="text-[15px] font-semibold text-[#111827]">{assignment.title}</Text>
+                          <Text className="text-[15px] font-semibold text-app-text">{assignment.title}</Text>
                           <Text className="mt-1 text-app-muted">
                             Due {formatReadableDate(assignment.dueDate)} • {assignment.maxPoints} points
                           </Text>
@@ -305,34 +305,34 @@ export default function StudentAssignments() {
                       </View>
 
                       {assignment.description ? (
-                        <Text className="mt-3 leading-6 text-[#374151]">{assignment.description}</Text>
+                        <Text className="mt-3 leading-6 text-app-text-secondary">{assignment.description}</Text>
                       ) : (
-                        <Text className="mt-3 text-[#9ca3af]">No description provided.</Text>
+                        <Text className="mt-3 text-app-placeholder">No description provided.</Text>
                       )}
 
                       {assignment.submission ? (
-                        <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
+                        <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
                           <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Current Submission</Text>
-                          <Text className="mt-2 text-[#374151]">
+                          <Text className="mt-2 text-app-text-secondary">
                             Submitted {formatReadableDate(assignment.submission.submittedAt)}
                           </Text>
                           {assignment.submission.score !== null ? (
-                            <Text className="mt-2 font-semibold text-[#111827]">
+                            <Text className="mt-2 font-semibold text-app-text">
                               Score: {assignment.submission.score}/{assignment.maxPoints}
                             </Text>
                           ) : null}
                           {assignment.submission.notes ? (
-                            <Text className="mt-2 text-[#4b5563]">{assignment.submission.notes}</Text>
+                            <Text className="mt-2 text-app-muted">{assignment.submission.notes}</Text>
                           ) : null}
                           {assignment.submission.feedback ? (
-                            <View className="mt-3 rounded-lg bg-white p-3">
+                            <View className="mt-3 rounded-lg bg-app-surface p-3">
                               <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Faculty Feedback</Text>
-                              <Text className="mt-2 text-[#374151]">{assignment.submission.feedback}</Text>
+                              <Text className="mt-2 text-app-text-secondary">{assignment.submission.feedback}</Text>
                             </View>
                           ) : null}
                           {assignment.submission.fileUrl ? (
-                            <TouchableOpacity onPress={() => openFile(assignment.submission?.id || "", assignment.submission?.fileUrl || "", assignment.submission?.fileName)} className="mt-3 self-start rounded-full bg-[#eff6ff] px-3 py-2">
-                              <Text className="text-[12px] font-semibold text-[#2563eb]">
+                            <TouchableOpacity onPress={() => openFile(assignment.submission?.id || "", assignment.submission?.fileUrl || "", assignment.submission?.fileName)} className="mt-3 self-start rounded-full bg-app-primary-bg px-3 py-2">
+                              <Text className="text-[12px] font-semibold text-app-primary">
                                 {assignment.submission.fileName || "Download uploaded file"}
                               </Text>
                             </TouchableOpacity>
@@ -347,12 +347,12 @@ export default function StudentAssignments() {
                           value={currentNotes}
                           onChangeText={(value) => setDraftNotes((current) => ({ ...current, [assignment.id]: value }))}
                           placeholder="Add notes, links, or short submission details."
-                          className="min-h-[84px] rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                          className="min-h-[84px] rounded-lg border border-app-border px-4 py-3 text-app-text"
                           textAlignVertical="top"
                         />
                       </View>
 
-                      <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
+                      <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
                         <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">File Upload</Text>
                         <Text className="mt-2 text-app-muted">
                           {chosenFile
@@ -361,15 +361,15 @@ export default function StudentAssignments() {
                         </Text>
 
                         <View className="mt-3 flex-row gap-2">
-                          <TouchableOpacity className="flex-1 items-center rounded-lg bg-[#e5e7eb] p-[12px]" onPress={() => pickDocument(assignment.id)}>
-                            <Text className="font-semibold text-[#374151]">{chosenFile ? "Change File" : "Choose File"}</Text>
+                          <TouchableOpacity className="flex-1 items-center rounded-lg bg-app-border-light p-[12px]" onPress={() => pickDocument(assignment.id)}>
+                            <Text className="font-semibold text-app-text-secondary">{chosenFile ? "Change File" : "Choose File"}</Text>
                           </TouchableOpacity>
                           {chosenFile ? (
                             <TouchableOpacity
-                              className="items-center rounded-lg bg-[#fef2f2] px-4 py-[12px]"
+                              className="items-center rounded-lg bg-app-error-bg-subtle px-4 py-[12px]"
                               onPress={() => setSelectedFiles((current) => ({ ...current, [assignment.id]: null }))}
                             >
-                              <Text className="font-semibold text-[#b91c1c]">Clear</Text>
+                              <Text className="font-semibold text-app-error">Clear</Text>
                             </TouchableOpacity>
                           ) : null}
                         </View>

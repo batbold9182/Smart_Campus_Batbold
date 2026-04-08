@@ -1,7 +1,10 @@
 import { useMemo, useState } from "react";
 import { usePathname, useRouter } from "expo-router";
-import { Image, ImageSourcePropType, Pressable, ScrollView, Text, View, useWindowDimensions } from "react-native";
+import { Image, ImageSourcePropType, Pressable, ScrollView, Text, TouchableOpacity, View, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../contexts/ThemeContext";
+import { getBuildingMapStyles } from "../styles/components_style/buildingMapStyles";
 
 type FloorPlan = {
   id: string;
@@ -61,6 +64,9 @@ export default function BuildingMapScreen() {
   const { width } = useWindowDimensions();
   const isWide = width >= 900;
   const [selectedFloorId, setSelectedFloorId] = useState("4");
+  const { isDark, t, toggleTheme } = useTheme();
+
+  const s = getBuildingMapStyles(t, isWide, isDark);
 
   const selectedFloor = useMemo(
     () => FLOOR_PLANS.find((floor) => floor.id === selectedFloorId) ?? FLOOR_PLANS[0],
@@ -82,18 +88,18 @@ export default function BuildingMapScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#DCDCDC]" edges={["top"]}>
-      <View className={`flex-1 ${isWide ? "flex-row" : ""}`}>
-        <View className={`${isWide ? "w-[160px] border-r border-[#CFCFCF] bg-[#EFEFEF] px-3 py-4" : "px-4 pb-2 pt-3"}`}>
-          <Text className="text-[18px] font-bold text-black">Building Plan</Text>
-          <Text className="mt-1 text-[12px] text-[#4B5563]">Select floor</Text>
+    <SafeAreaView style={s.safeArea} edges={["top"]}>
+      <View style={s.rootRow}>
+        <View style={s.sidebar}>
+          <Text style={s.sidebarTitle}>Building Plan</Text>
+          <Text style={s.sidebarSubtitle}>Select floor</Text>
 
           <ScrollView
             horizontal={!isWide}
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
-            className={isWide ? "mt-4" : "mt-3"}
-            contentContainerClassName={isWide ? "gap-2 pb-6" : "gap-2 pr-2"}
+            style={s.scroll}
+            contentContainerStyle={s.scrollContent}
           >
             {FLOOR_PLANS.map((floor) => {
               const active = floor.id === selectedFloorId;
@@ -102,28 +108,30 @@ export default function BuildingMapScreen() {
                 <Pressable
                   key={floor.id}
                   onPress={() => setSelectedFloorId(floor.id)}
-                  className={`${isWide ? "w-full" : "min-w-[90px]"} rounded-xl border px-3 py-2 ${
-                    active ? "border-black bg-black" : "border-[#D1D5DB] bg-white"
-                  }`}
+                  style={[s.floorBtn, s.floorBtnDynamic(active)]}
                 >
-                  <Text className={`text-center text-[20px] font-bold ${active ? "text-white" : "text-black"}`}>{floor.title}</Text>
-                  <Text className={`text-center text-[11px] ${active ? "text-[#E5E7EB]" : "text-app-muted"}`}>{floor.subtitle}</Text>
+                  <Text style={s.floorBtnTitle(active)}>{floor.title}</Text>
+                  <Text style={s.floorBtnSub(active)}>{floor.subtitle}</Text>
                 </Pressable>
-
               );
             })}
           </ScrollView>
         </View>
 
-        <View className="flex-1 bg-[#DCDCDC] p-3">
-          <View className="mb-2 flex-row items-center justify-between gap-2 rounded-xl bg-black px-3 py-2">
-            <Text className="text-[16px] font-bold text-white">Floor {selectedFloor.id}</Text>
-            <Pressable onPress={handleBackToDashboard} className="rounded-lg bg-white px-3 py-1.5">
-              <Text className="text-[12px] font-semibold text-black">Back to Dashboard</Text>
-            </Pressable>
+        <View style={s.contentArea}>
+          <View style={s.topBar}>
+            <Text style={s.topBarTitle}>Floor {selectedFloor.id}</Text>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <TouchableOpacity onPress={toggleTheme} style={s.themeToggle}>
+                <Ionicons name={isDark ? "sunny" : "moon"} size={18} color={isDark ? "#facc15" : "#6b21a8"} />
+              </TouchableOpacity>
+              <Pressable onPress={handleBackToDashboard} style={s.backButton}>
+                <Text style={s.backButtonText}>Back to Dashboard</Text>
+              </Pressable>
+            </View>
           </View>
 
-          <View className="flex-1 items-center justify-center rounded-xl bg-[#DCDCDC]">
+          <View style={s.imageWrap}>
             <Image
               source={selectedFloor.image}
               resizeMode="contain"

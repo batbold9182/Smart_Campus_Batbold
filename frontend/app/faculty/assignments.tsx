@@ -57,18 +57,18 @@ const getAssignmentStatus = (dueDate: string) => {
   const todayKey = toDateInputValue(today);
 
   if (Number.isNaN(due.getTime())) {
-    return { label: "Unknown", tone: "text-app-muted", chip: "bg-[#f3f4f6]" };
+    return { label: "Unknown", tone: "text-app-muted", chip: "bg-app-bg-muted" };
   }
 
   if (dueKey < todayKey) {
-    return { label: "Overdue", tone: "text-[#b91c1c]", chip: "bg-[#fee2e2]" };
+    return { label: "Overdue", tone: "text-app-error", chip: "bg-app-error-bg" };
   }
 
   if (dueKey === todayKey) {
-    return { label: "Due Today", tone: "text-[#b45309]", chip: "bg-[#fef3c7]" };
+    return { label: "Due Today", tone: "text-app-warning", chip: "bg-app-warning-bg" };
   }
 
-  return { label: "Upcoming", tone: "text-[#047857]", chip: "bg-[#d1fae5]" };
+  return { label: "Upcoming", tone: "text-app-success", chip: "bg-app-success-bg" };
 };
 
 export default function Assignments() {
@@ -287,7 +287,7 @@ export default function Assignments() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
+      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text className="mt-3 text-app-muted">Loading assignments...</Text>
       </SafeAreaView>
@@ -295,45 +295,45 @@ export default function Assignments() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">Assignments</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">Assignments</Text>
 
         {!selectedCourse ? (
           <>
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
-              <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Assigned Courses</Text>
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <Text className="mb-2 text-[16px] font-semibold text-app-text">Assigned Courses</Text>
               <Text className="text-app-muted">Select a course to create, review, and manage assignments.</Text>
             </View>
 
             {courses.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-white p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                 <Text className="text-app-muted">No courses assigned yet.</Text>
               </View>
             ) : (
               courses.map((course) => (
                 <TouchableOpacity
                   key={course.id}
-                  className="mb-4 rounded-xl bg-white p-4 shadow"
+                  className="mb-4 rounded-xl bg-app-surface p-4 shadow"
                   onPress={() => openCourse(course.id)}
                   disabled={loadingCourseId === course.id}
                 >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
-                      <Text className="text-[16px] font-semibold text-[#111827]">{course.title}</Text>
+                      <Text className="text-[16px] font-semibold text-app-text">{course.title}</Text>
                       <Text className="mt-1 text-app-muted">{course.code} � {course.credits} credits</Text>
                     </View>
-                    <Text className="text-[12px] font-semibold text-[#2563eb]">
+                    <Text className="text-[12px] font-semibold text-app-primary">
                       {loadingCourseId === course.id ? "Loading..." : "Open"}
                     </Text>
                   </View>
 
                   <View className="mt-3 flex-row gap-2">
-                    <View className="rounded-full bg-[#eff6ff] px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-[#1d4ed8]">{course.enrolledCount} enrolled</Text>
+                    <View className="rounded-full bg-app-primary-bg px-3 py-2">
+                      <Text className="text-[12px] font-semibold text-app-primary-dark">{course.enrolledCount} enrolled</Text>
                     </View>
-                    <View className="rounded-full bg-[#ecfdf5] px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-[#047857]">{course.assignmentCount} assignments</Text>
+                    <View className="rounded-full bg-app-success-bg-subtle px-3 py-2">
+                      <Text className="text-[12px] font-semibold text-app-success">{course.assignmentCount} assignments</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -342,22 +342,22 @@ export default function Assignments() {
           </>
         ) : (
           <>
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
-                  <Text className="text-[18px] font-semibold text-[#111827]">{selectedCourse.course.title}</Text>
+                  <Text className="text-[18px] font-semibold text-app-text">{selectedCourse.course.title}</Text>
                   <Text className="mt-1 text-app-muted">
                     {selectedCourse.course.code} � {selectedCourse.course.credits} credits
                   </Text>
                 </View>
-                <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-[#eff6ff] px-3 py-2">
-                  <Text className="font-semibold text-[#2563eb]">Courses</Text>
+                <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-app-primary-bg px-3 py-2">
+                  <Text className="font-semibold text-app-primary">Courses</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
-              <Text className="mb-3 text-[16px] font-semibold text-[#111827]">Create Assignment</Text>
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <Text className="mb-3 text-[16px] font-semibold text-app-text">Create Assignment</Text>
 
               <View className="mb-3">
                 <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Title</Text>
@@ -365,7 +365,7 @@ export default function Assignments() {
                   value={draftTitle}
                   onChangeText={setDraftTitle}
                   placeholder="Midterm reflection"
-                  className="rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                 />
               </View>
 
@@ -376,7 +376,7 @@ export default function Assignments() {
                   value={draftDescription}
                   onChangeText={setDraftDescription}
                   placeholder="Describe the requirements and expected submission."
-                  className="min-h-[96px] rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                  className="min-h-[96px] rounded-lg border border-app-border px-4 py-3 text-app-text"
                   textAlignVertical="top"
                 />
               </View>
@@ -389,7 +389,7 @@ export default function Assignments() {
                   placeholder="YYYY-MM-DD"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  className="rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                 />
               </View>
 
@@ -400,7 +400,7 @@ export default function Assignments() {
                   value={draftMaxPoints}
                   onChangeText={setDraftMaxPoints}
                   placeholder="100"
-                  className="rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                 />
               </View>
 
@@ -413,13 +413,13 @@ export default function Assignments() {
               </TouchableOpacity>
             </View>
 
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
-              <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Published Assignments</Text>
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <Text className="mb-2 text-[16px] font-semibold text-app-text">Published Assignments</Text>
               <Text className="text-app-muted">Track due dates and remove outdated work items when needed.</Text>
             </View>
 
             {selectedCourse.assignments.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-white p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                 <Text className="text-app-muted">No assignments posted for this course yet.</Text>
               </View>
             ) : (
@@ -428,10 +428,10 @@ export default function Assignments() {
                 const isSelectedAssignment = selectedAssignmentDetail?.assignment.id === assignment.id;
 
                 return (
-                  <View key={assignment.id} className="mb-4 rounded-xl bg-white p-4 shadow">
+                  <View key={assignment.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                     <View className="flex-row items-start justify-between gap-3">
                       <View className="flex-1">
-                        <Text className="text-[16px] font-semibold text-[#111827]">{assignment.title}</Text>
+                        <Text className="text-[16px] font-semibold text-app-text">{assignment.title}</Text>
                         <Text className="mt-1 text-app-muted">
                           Due {formatReadableDate(assignment.dueDate)} � {assignment.maxPoints} points
                         </Text>
@@ -442,32 +442,32 @@ export default function Assignments() {
                     </View>
 
                     {assignment.description ? (
-                      <Text className="mt-3 leading-6 text-[#374151]">{assignment.description}</Text>
+                      <Text className="mt-3 leading-6 text-app-text-secondary">{assignment.description}</Text>
                     ) : (
-                      <Text className="mt-3 text-[#9ca3af]">No description provided.</Text>
+                      <Text className="mt-3 text-app-placeholder">No description provided.</Text>
                     )}
 
-                    <Text className="mt-3 text-[12px] text-[#9ca3af]">Created {formatReadableDate(assignment.createdAt)}</Text>
+                    <Text className="mt-3 text-[12px] text-app-placeholder">Created {formatReadableDate(assignment.createdAt)}</Text>
 
                     <View className="mt-3 flex-row gap-2">
-                      <View className="rounded-full bg-[#eff6ff] px-3 py-2">
-                        <Text className="text-[12px] font-semibold text-[#1d4ed8]">
+                      <View className="rounded-full bg-app-primary-bg px-3 py-2">
+                        <Text className="text-[12px] font-semibold text-app-primary-dark">
                           {assignment.submissionCount || 0} submitted
                         </Text>
                       </View>
-                      <View className="rounded-full bg-[#ecfdf5] px-3 py-2">
-                        <Text className="text-[12px] font-semibold text-[#047857]">
+                      <View className="rounded-full bg-app-success-bg-subtle px-3 py-2">
+                        <Text className="text-[12px] font-semibold text-app-success">
                           {assignment.reviewedCount || 0} reviewed
                         </Text>
                       </View>
                     </View>
 
                     <TouchableOpacity
-                      className="mt-4 items-center rounded-lg bg-[#e5e7eb] p-[14px]"
+                      className="mt-4 items-center rounded-lg bg-app-border-light p-[14px]"
                       onPress={() => (isSelectedAssignment ? setSelectedAssignmentDetail(null) : openAssignmentSubmissions(assignment.id))}
                       disabled={loadingAssignmentId === assignment.id}
                     >
-                      <Text className="font-semibold text-[#374151]">
+                      <Text className="font-semibold text-app-text-secondary">
                         {loadingAssignmentId === assignment.id
                           ? "Loading..."
                           : isSelectedAssignment
@@ -477,47 +477,47 @@ export default function Assignments() {
                     </TouchableOpacity>
 
                     {isSelectedAssignment ? (
-                      <View className="mt-4 rounded-lg bg-[#f9fafb] p-4">
-                        <Text className="text-[16px] font-semibold text-[#111827]">Submissions</Text>
+                      <View className="mt-4 rounded-lg bg-app-bg-subtle p-4">
+                        <Text className="text-[16px] font-semibold text-app-text">Submissions</Text>
                         <Text className="mt-1 text-app-muted">Review student uploads, add scores, and publish feedback.</Text>
 
                         {selectedAssignmentDetail?.submissions.length ? (
                           selectedAssignmentDetail.submissions.map((submission) => (
-                            <View key={submission.id} className="mt-4 rounded-lg border border-[#e5e7eb] bg-white p-4">
+                            <View key={submission.id} className="mt-4 rounded-lg border border-app-border-light bg-app-surface p-4">
                               <View className="flex-row items-start justify-between gap-3">
                                 <View className="flex-1">
-                                  <Text className="text-[15px] font-semibold text-[#111827]">{submission.student.name}</Text>
+                                  <Text className="text-[15px] font-semibold text-app-text">{submission.student.name}</Text>
                                   <Text className="mt-1 text-app-muted">{submission.student.email}</Text>
-                                  <Text className="mt-1 text-[#9ca3af]">
+                                  <Text className="mt-1 text-app-placeholder">
                                     {submission.student.program || "Program not set"}
                                     {submission.student.yearLevel ? ` � Year ${submission.student.yearLevel}` : ""}
                                   </Text>
                                 </View>
-                                <View className="rounded-full bg-[#eff6ff] px-3 py-2">
-                                  <Text className="text-[12px] font-semibold text-[#1d4ed8]">
+                                <View className="rounded-full bg-app-primary-bg px-3 py-2">
+                                  <Text className="text-[12px] font-semibold text-app-primary-dark">
                                     Submitted {formatReadableDate(submission.submittedAt)}
                                   </Text>
                                 </View>
                               </View>
 
                               {submission.notes ? (
-                                <View className="mt-3 rounded-lg bg-[#f9fafb] p-3">
+                                <View className="mt-3 rounded-lg bg-app-bg-subtle p-3">
                                   <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Student Notes</Text>
-                                  <Text className="mt-2 text-[#374151]">{submission.notes}</Text>
+                                  <Text className="mt-2 text-app-text-secondary">{submission.notes}</Text>
                                 </View>
                               ) : null}
 
                               {submission.fileUrl ? (
                                 <TouchableOpacity
                                   onPress={() => openFile(submission.id, submission.fileUrl || "", submission.fileName)}
-                                  className="mt-3 self-start rounded-full bg-[#eff6ff] px-3 py-2"
+                                  className="mt-3 self-start rounded-full bg-app-primary-bg px-3 py-2"
                                 >
-                                  <Text className="text-[12px] font-semibold text-[#2563eb]">
+                                  <Text className="text-[12px] font-semibold text-app-primary">
                                     {submission.fileName || "Download uploaded file"}
                                   </Text>
                                 </TouchableOpacity>
                               ) : (
-                                <Text className="mt-3 text-[#9ca3af]">No file attached.</Text>
+                                <Text className="mt-3 text-app-placeholder">No file attached.</Text>
                               )}
 
                               <View className="mt-4">
@@ -527,7 +527,7 @@ export default function Assignments() {
                                   value={draftScores[submission.id] || ""}
                                   onChangeText={(value) => setDraftScores((current) => ({ ...current, [submission.id]: value }))}
                                   placeholder={`0 - ${assignment.maxPoints}`}
-                                  className="rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                                 />
                               </View>
 
@@ -538,7 +538,7 @@ export default function Assignments() {
                                   value={draftFeedback[submission.id] || ""}
                                   onChangeText={(value) => setDraftFeedback((current) => ({ ...current, [submission.id]: value }))}
                                   placeholder="Share grading notes or revision guidance."
-                                  className="min-h-[84px] rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                                  className="min-h-[84px] rounded-lg border border-app-border px-4 py-3 text-app-text"
                                   textAlignVertical="top"
                                 />
                               </View>
@@ -549,7 +549,7 @@ export default function Assignments() {
                                   {submission.score !== null ? ` � Score ${submission.score}/${assignment.maxPoints}` : ""}
                                 </Text>
                               ) : (
-                                <Text className="mt-3 text-[12px] text-[#9ca3af]">Not reviewed yet</Text>
+                                <Text className="mt-3 text-[12px] text-app-placeholder">Not reviewed yet</Text>
                               )}
 
                               <TouchableOpacity
@@ -564,7 +564,7 @@ export default function Assignments() {
                             </View>
                           ))
                         ) : (
-                          <View className="mt-4 rounded-lg bg-white p-4">
+                          <View className="mt-4 rounded-lg bg-app-surface p-4">
                             <Text className="text-app-muted">No student submissions yet.</Text>
                           </View>
                         )}
@@ -572,7 +572,7 @@ export default function Assignments() {
                     ) : null}
 
                     <TouchableOpacity
-                      className="mt-4 items-center rounded-lg bg-[#ef4444] p-[14px]"
+                      className="mt-4 items-center rounded-lg bg-app-danger p-[14px]"
                       onPress={() => confirmDelete(assignment)}
                       disabled={deletingAssignmentId === assignment.id}
                     >

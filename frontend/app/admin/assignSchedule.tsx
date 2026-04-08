@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Modal, Pressable } from "react-native";
 import {
   assignSchedule,
@@ -145,27 +145,27 @@ export default function AssignScheduleScreen() {
             Link a student to a class schedule or remove an existing assignment.
           </Text>
 
-          <Text className="mb-1 text-[13px] font-semibold text-[#374151]">Student</Text>
+          <Text className="mb-1 text-[13px] font-semibold text-app-text-secondary">Student</Text>
           <TouchableOpacity
             className="mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border border-app-border bg-app-surface px-3"
             onPress={() => setActiveSelector("student")}
           >
             <Text className={studentId ? "text-app-text" : "text-app-muted"}>{selectedStudentLabel}</Text>
-            <Text className="text-[18px] text-app-muted">▾</Text>
+            <Text className="text-[18px] text-app-muted">?</Text>
           </TouchableOpacity>
 
-          <Text className="mb-1 text-[13px] font-semibold text-[#374151]">Schedule</Text>
+          <Text className="mb-1 text-[13px] font-semibold text-app-text-secondary">Schedule</Text>
           <TouchableOpacity
             className="mb-4 min-h-[50px] flex-row items-center justify-between rounded-xl border border-app-border bg-app-surface px-3"
             onPress={() => setActiveSelector("schedule")}
           >
             <Text className={scheduleId ? "text-app-text" : "text-app-muted"}>{selectedScheduleLabel}</Text>
-            <Text className="text-[18px] text-app-muted">▾</Text>
+            <Text className="text-[18px] text-app-muted">?</Text>
           </TouchableOpacity>
 
           <View className="gap-2">
             <TouchableOpacity
-              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-[#93c5fd]" : "bg-blue-500"}`}
+              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-blue-500"}`}
               onPress={handleAssign}
               disabled={loading}
             >
@@ -173,7 +173,7 @@ export default function AssignScheduleScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-[#fca5a5]" : "bg-red-500"}`}
+              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-error-loading" : "bg-red-500"}`}
               onPress={handleUnassign}
               disabled={loading}
             >
@@ -181,7 +181,7 @@ export default function AssignScheduleScreen() {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
+              className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
               onPress={() => router.push("/admin/dashboard")}
             >
               <Text className="font-semibold text-app-text">Back to Dashboard</Text>
@@ -197,16 +197,16 @@ export default function AssignScheduleScreen() {
 
       <Modal transparent visible={activeSelector !== null} animationType="fade" onRequestClose={() => setActiveSelector(null)}>
         <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setActiveSelector(null)}>
-          <Pressable className="max-h-[70%] w-full rounded-2xl bg-white p-4" onPress={() => {}}>
+          <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
             <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-[17px] font-bold text-[#0f172a]">{selectorTitle}</Text>
+              <Text className="text-[17px] font-bold text-app-text">{selectorTitle}</Text>
               <TouchableOpacity onPress={() => setActiveSelector(null)}>
-                <Text className="text-[14px] font-semibold text-[#2563eb]">{selectorCloseLabel}</Text>
+                <Text className="text-[14px] font-semibold text-app-primary">{selectorCloseLabel}</Text>
               </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               {selectorOptions.length === 0 ? (
-                <Text className="py-3 text-[#64748b]">{emptySelectorMessage}</Text>
+                <Text className="py-3 text-app-text-subtle">{emptySelectorMessage}</Text>
               ) : (
                 selectorOptions.map((option) => {
                   const active =
@@ -216,11 +216,11 @@ export default function AssignScheduleScreen() {
                     <TouchableOpacity
                       key={option.value}
                       className={`mb-2 rounded-lg border px-3 py-3 ${
-                        active ? "border-[#2563eb] bg-[#eff6ff]" : "border-[#e5e7eb] bg-white"
+                        active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
                       }`}
                       onPress={() => handleSelectOption(option.value)}
                     >
-                      <Text className={`font-medium ${active ? "text-[#1d4ed8]" : "text-[#111827]"}`}>
+                      <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
                         {option.label}
                       </Text>
                     </TouchableOpacity>

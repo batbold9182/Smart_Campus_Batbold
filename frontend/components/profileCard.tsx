@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { View, Text, StyleSheet, Image, TouchableOpacity, Platform } from "react-native";
+import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
 import type * as ImagePicker from "expo-image-picker";
 import { updateMyProfilePicture, type AppUserProfile } from "../services/userService";
-import { theme } from "../styles/theme";
+import { useTheme } from "../contexts/ThemeContext";
+import { getProfileCardStyles } from "../styles/components_style/profileCardStyles";
 
 const isRenderableImageUri = (value: string) => {
   const uri = value.trim().toLowerCase();
@@ -48,6 +49,9 @@ type ProfileCardProps = {
 };
 
 export default function ProfileCard({ user }: ProfileCardProps) {
+  const { isDark, t } = useTheme();
+  const s = getProfileCardStyles(t, isDark);
+
   const [profileValue, setProfileValue] = useState(user?.profile || "defaultProfile.png");
   const [saving, setSaving] = useState(false);
   const [statusMessage, setStatusMessage] = useState("");
@@ -159,8 +163,8 @@ export default function ProfileCard({ user }: ProfileCardProps) {
   };
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.title}>👤 Profile</Text>
+    <View style={s.card}>
+      <Text style={s.title}>👤 Profile</Text>
       <TouchableOpacity onPress={() => setShowPickerActions((prev) => !prev)}>
         <Image
           source={
@@ -168,129 +172,55 @@ export default function ProfileCard({ user }: ProfileCardProps) {
               ? { uri: profileValue }
               : require("../assets/images/defaultProfile.png")
           }
-          style={styles.avatar}
+          style={s.avatar}
           resizeMode="cover"
         />
       </TouchableOpacity>
-      <Text style={styles.helperText}>Change photo</Text>
-      <Text style={styles.fieldText}>Name: {displayValue(user.name)}</Text>
-      <Text style={styles.fieldText}>Email: {displayValue(user.email)}</Text>
-      <Text style={styles.fieldText}>Role: {displayValue(user.role)}</Text>
-      <Text style={styles.fieldText}>Status: {user.isActive ? "Active" : "Disabled"}</Text>
+      <Text style={s.helperText}>Change photo</Text>
+      <Text style={s.fieldText}>Name: {displayValue(user.name)}</Text>
+      <Text style={s.fieldText}>Email: {displayValue(user.email)}</Text>
+      <Text style={s.fieldText}>Role: {displayValue(user.role)}</Text>
+      <Text style={s.fieldText}>Status: {user.isActive ? "Active" : "Disabled"}</Text>
 
       {user.role === "faculty" ? (
-        <View style={styles.sectionWrap}>
-          <Text style={styles.sectionTitle}>Faculty Info</Text>
-          <Text style={styles.fieldText}>School: {displayValue(user.school)}</Text>
-          <Text style={styles.fieldText}>Department: {displayValue(user.department)}</Text>
-          <Text style={styles.fieldText}>Title: {displayValue(user.title)}</Text>
-          <Text style={styles.fieldText}>Employee ID: {displayValue(user.employeeId)}</Text>
+        <View style={s.sectionWrap}>
+          <Text style={s.sectionTitle}>Faculty Info</Text>
+          <Text style={s.fieldText}>School: {displayValue(user.school)}</Text>
+          <Text style={s.fieldText}>Department: {displayValue(user.department)}</Text>
+          <Text style={s.fieldText}>Title: {displayValue(user.title)}</Text>
+          <Text style={s.fieldText}>Employee ID: {displayValue(user.employeeId)}</Text>
         </View>
       ) : null}
 
       {user.role === "student" ? (
-        <View style={styles.sectionWrap}>
-          <Text style={styles.sectionTitle}>Student Info</Text>
-          <Text style={styles.fieldText}>Program: {displayValue(user.program)}</Text>
-          <Text style={styles.fieldText}>Year Level: {displayValue(user.yearLevel)}</Text>
-          <Text style={styles.fieldText}>Student ID: {displayValue(user.studentId)}</Text>
-          <Text style={styles.fieldText}>School: {displayValue(user.school)}</Text>
-          <Text style={styles.fieldText}>Department: {displayValue(user.department)}</Text>
+        <View style={s.sectionWrap}>
+          <Text style={s.sectionTitle}>Student Info</Text>
+          <Text style={s.fieldText}>Program: {displayValue(user.program)}</Text>
+          <Text style={s.fieldText}>Year Level: {displayValue(user.yearLevel)}</Text>
+          <Text style={s.fieldText}>Student ID: {displayValue(user.studentId)}</Text>
+          <Text style={s.fieldText}>School: {displayValue(user.school)}</Text>
+          <Text style={s.fieldText}>Department: {displayValue(user.department)}</Text>
         </View>
       ) : null}
 
       {showPickerActions ? (
-        <View style={styles.actionsBox}>
-          <TouchableOpacity style={styles.button} onPress={chooseFromCamera} disabled={saving}>
-            <Text style={styles.buttonText}>{saving ? "Saving..." : "Take Photo"}</Text>
+        <View style={s.actionsBox}>
+          <TouchableOpacity style={s.button} onPress={chooseFromCamera} disabled={saving}>
+            <Text style={s.buttonText}>{saving ? "Saving..." : "Take Photo"}</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={chooseFromGallery} disabled={saving}>
-            <Text style={styles.buttonText}>{saving ? "Saving..." : "Upload From Gallery"}</Text>
+          <TouchableOpacity style={s.button} onPress={chooseFromGallery} disabled={saving}>
+            <Text style={s.buttonText}>{saving ? "Saving..." : "Upload From Gallery"}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            style={styles.secondaryButton}
+            style={s.secondaryButton}
             onPress={() => handleSaveProfilePicture("defaultProfile.png")}
             disabled={saving}
           >
-            <Text style={styles.secondaryButtonText}>Use Default Picture</Text>
+            <Text style={s.secondaryButtonText}>Use Default Picture</Text>
           </TouchableOpacity>
         </View>
       ) : null}
-      {!!statusMessage && <Text style={styles.message}>{statusMessage}</Text>}
+      {!!statusMessage && <Text style={s.message}>{statusMessage}</Text>}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    padding: 20,
-    borderRadius: 8,
-    backgroundColor: theme.colors.appBg,
-    marginTop: 20,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: "bold",
-    marginBottom: 10,
-  },
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    marginBottom: 10,
-    alignSelf: "center",
-  },
-  helperText: {
-    marginBottom: 10,
-    textAlign: "center",
-    color: theme.colors.muted,
-    fontSize: 12,
-  },
-  fieldText: {
-    color: theme.colors.text,
-    marginBottom: 2,
-  },
-  sectionWrap: {
-    marginTop: 10,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: theme.colors.border,
-  },
-  sectionTitle: {
-    fontWeight: "700",
-    marginBottom: 4,
-    color: theme.colors.text,
-  },
-  actionsBox: {
-    marginTop: 8,
-  },
-  button: {
-    marginTop: 8,
-    backgroundColor: theme.colors.primary,
-    borderRadius: 8,
-    alignItems: "center",
-    paddingVertical: 10,
-  },
-  buttonText: {
-    color: theme.colors.surface,
-    fontWeight: "600",
-  },
-  message: {
-    marginTop: 8,
-    color: theme.colors.muted,
-    textAlign: "center",
-  },
-  secondaryButton: {
-    marginTop: 8,
-    borderWidth: 1,
-    borderColor: theme.colors.border,
-    borderRadius: 8,
-    alignItems: "center",
-    paddingVertical: 10,
-    backgroundColor: theme.colors.surface,
-  },
-  secondaryButtonText: {
-    color: theme.colors.text,
-    fontWeight: "600",
-  },
-});

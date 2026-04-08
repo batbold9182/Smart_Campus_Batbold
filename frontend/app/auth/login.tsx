@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -36,7 +36,7 @@ export default function LoginScreen() {
     setEmailError(nextEmailError);
     setPasswordError(nextPasswordError);
     if (nextEmailError || nextPasswordError) {
-      setMessage("❌ Please fix the errors below.");
+      setMessage("? Please fix the errors below.");
       return;
     }
 
@@ -45,11 +45,11 @@ export default function LoginScreen() {
     try {
       const data = await login(trimmedEmail, password);
       if (data?.user?.isActive === false) {
-        setMessage("❌ Your account is deactivated. Please contact admin.");
+        setMessage("? Your account is deactivated. Please contact admin.");
         return;
       }
       if (!data?.token || !data?.user?.role) {
-        setMessage("❌ Login failed. Please try again.");
+        setMessage("? Login failed. Please try again.");
         return;
       }
 
@@ -66,15 +66,15 @@ export default function LoginScreen() {
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.message;
       if (status === 403 && serverMessage) {
-        setMessage(`❌ ${serverMessage}`);
+        setMessage(`? ${serverMessage}`);
       } else if (status === 404) {
-        setMessage("❌ User does not exist.");
+        setMessage("? User does not exist.");
       } else if (status === 401) {
-        setMessage("❌ Wrong password. Please try again.");
+        setMessage("? Wrong password. Please try again.");
       } else if (!err?.response) {
-        setMessage("❌ Network error. Check your connection and try again.");
+        setMessage("? Network error. Check your connection and try again.");
       } else {
-        setMessage("❌ Login failed");
+        setMessage("? Login failed");
       }
       console.error(err?.response?.data || err?.message || err);
     } finally {
@@ -127,7 +127,7 @@ export default function LoginScreen() {
               textContentType="emailAddress"
               autoComplete="email"
             />
-            {emailError ? <Text className="text-[#B00020] -mt-1.5 mb-[10px]">{emailError}</Text> : null}
+            {emailError ? <Text className="text-app-error -mt-1.5 mb-[10px]">{emailError}</Text> : null}
 
             <TextInput
               placeholder="Password"
@@ -148,7 +148,7 @@ export default function LoginScreen() {
               textContentType="password"
               autoComplete="password"
             />
-            {passwordError ? <Text className="text-[#B00020] -mt-1.5 mb-[10px]">{passwordError}</Text> : null}
+            {passwordError ? <Text className="text-app-error -mt-1.5 mb-[10px]">{passwordError}</Text> : null}
 
             <TouchableOpacity
               className="self-end mb-2"
@@ -170,7 +170,7 @@ export default function LoginScreen() {
               )}
             </TouchableOpacity>
 
-            {message ? <Text className="mt-[14px] text-center text-[#b91c1c]">{message}</Text> : null}
+            {message ? <Text className="mt-[14px] text-center text-app-error">{message}</Text> : null}
 
             <TouchableOpacity
               className="mt-3 items-center"

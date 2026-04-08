@@ -188,7 +188,7 @@ export default function AdminCreateCourse() {
           renderItem={({ item }) => (
             <Pressable
               className={`mb-2 rounded-xl border p-3 ${
-                selectedFacultyId === item._id ? "border-blue-400 bg-blue-50" : "border-app-border bg-white"
+                selectedFacultyId === item._id ? "border-blue-400 bg-blue-50" : "border-app-border bg-app-surface"
               }`}
               onPress={() => setSelectedFacultyId(item._id)}
             >
@@ -200,7 +200,7 @@ export default function AdminCreateCourse() {
 
         <View className="mt-2 mb-3">
           <TouchableOpacity
-            className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-[#93c5fd]" : "bg-blue-500"}`}
+            className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-blue-500"}`}
             onPress={handleCreate}
             disabled={loading}
           >
@@ -217,7 +217,7 @@ export default function AdminCreateCourse() {
           scrollEnabled={false}
           ListEmptyComponent={<Text className="text-app-muted">No courses found</Text>}
           renderItem={({ item }) => (
-            <View className="mb-2 rounded-xl border border-app-border bg-white p-3">
+            <View className="mb-2 rounded-xl border border-app-border bg-app-surface p-3">
               <View className="mb-2">
                 <Text className="font-semibold text-app-text">{item.title}</Text>
                 <Text className="text-app-muted">{item.code}</Text>
@@ -227,14 +227,14 @@ export default function AdminCreateCourse() {
               </View>
               <View className="gap-2">
                 <TouchableOpacity
-                  className={`items-center rounded-lg px-3 py-2 ${assigningId === item._id ? "bg-[#93c5fd]" : "bg-blue-500"}`}
+                  className={`items-center rounded-lg px-3 py-2 ${assigningId === item._id ? "bg-app-primary-loading" : "bg-blue-500"}`}
                   onPress={() => handleAssign(item._id)}
                   disabled={assigningId === item._id}
                 >
                   <Text className="font-semibold text-white">{assigningId === item._id ? "Assigning..." : "Assign"}</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className={`items-center rounded-lg px-3 py-2 ${deletingId === item._id ? "bg-[#fca5a5]" : "bg-red-500"}`}
+                  className={`items-center rounded-lg px-3 py-2 ${deletingId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
                   onPress={() => handleDelete(item._id)}
                   disabled={deletingId === item._id}
                 >
@@ -246,7 +246,7 @@ export default function AdminCreateCourse() {
         />
 
         <TouchableOpacity
-          className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
+          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
           onPress={() => router.push("/admin/dashboard")}
         >
           <Text className="font-semibold text-app-text">Back to Dashboard</Text>

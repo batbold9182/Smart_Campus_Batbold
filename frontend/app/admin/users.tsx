@@ -195,7 +195,7 @@ export default function AdminUsersScreen() {
             <TouchableOpacity
               key={role}
               className={`flex-1 items-center rounded-xl border px-3 py-3 ${
-                activeTab === role ? "border-blue-300 bg-blue-50" : "border-app-border bg-white"
+                activeTab === role ? "border-blue-300 bg-blue-50" : "border-app-border bg-app-surface"
               }`}
               onPress={() => {
                 setActiveTab(role as any);
@@ -228,7 +228,7 @@ export default function AdminUsersScreen() {
 
         <View className="mb-3 flex-row items-center justify-between">
           <TouchableOpacity
-            className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
+            className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-blue-500"}`}
             disabled={page === 1}
             onPress={() => setPage(page - 1)}
           >
@@ -236,7 +236,7 @@ export default function AdminUsersScreen() {
           </TouchableOpacity>
           <Text className="text-[13px] text-app-text">Page {page} / {pagination?.totalPages || 1}</Text>
           <TouchableOpacity
-            className={`rounded-lg px-4 py-2 ${page === pagination?.totalPages ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
+            className={`rounded-lg px-4 py-2 ${page === pagination?.totalPages ? "bg-app-disabled" : "bg-blue-500"}`}
             disabled={page === pagination?.totalPages}
             onPress={() => setPage(page + 1)}
           >
@@ -257,7 +257,7 @@ export default function AdminUsersScreen() {
           keyExtractor={(item) => item._id}
           scrollEnabled={false}
           renderItem={({ item }) => (
-            <View className="mb-3 rounded-xl border border-app-border bg-white p-3">
+            <View className="mb-3 rounded-xl border border-app-border bg-app-surface p-3">
               <TouchableOpacity
                 activeOpacity={0.8}
                 onPress={() =>
@@ -265,22 +265,22 @@ export default function AdminUsersScreen() {
                 }
               >
                 <Text className="mb-1 text-[16px] font-semibold text-app-text">{item.name}</Text>
-                <Text className="mb-1 text-[13px] text-[#4b5563]">{item.email}</Text>
+                <Text className="mb-1 text-[13px] text-app-muted">{item.email}</Text>
                 {activeTab === "faculty" ? (
                   <View className="mb-2 gap-1">
-                    <Text className="text-[12px] text-[#374151]">School: {item.school || "-"}</Text>
-                    <Text className="text-[12px] text-[#374151]">Department: {item.department || "-"}</Text>
-                    <Text className="text-[12px] text-[#374151]">Title: {item.title || "-"}</Text>
-                    <Text className="text-[12px] text-[#374151]">Employee ID: {item.employeeId || "-"}</Text>
+                    <Text className="text-[12px] text-app-text-secondary">School: {item.school || "-"}</Text>
+                    <Text className="text-[12px] text-app-text-secondary">Department: {item.department || "-"}</Text>
+                    <Text className="text-[12px] text-app-text-secondary">Title: {item.title || "-"}</Text>
+                    <Text className="text-[12px] text-app-text-secondary">Employee ID: {item.employeeId || "-"}</Text>
                   </View>
                 ) : (
                   <View className="mb-2 gap-1">
-                    <Text className="text-[12px] text-[#374151]">Program: {item.program || "-"}</Text>
-                    <Text className="text-[12px] text-[#374151]">Year: {item.yearLevel || "-"}</Text>
-                    <Text className="text-[12px] text-[#374151]">Student ID: {item.studentId || "-"}</Text>
+                    <Text className="text-[12px] text-app-text-secondary">Program: {item.program || "-"}</Text>
+                    <Text className="text-[12px] text-app-text-secondary">Year: {item.yearLevel || "-"}</Text>
+                    <Text className="text-[12px] text-app-text-secondary">Student ID: {item.studentId || "-"}</Text>
                   </View>
                 )}
-                <Text className="mb-2 text-[12px] font-medium text-[#2563eb]">
+                <Text className="mb-2 text-[12px] font-medium text-app-primary">
                   {expandedUserId === item._id ? "Hide actions" : "Show actions"}
                 </Text>
               </TouchableOpacity>
@@ -312,7 +312,7 @@ export default function AdminUsersScreen() {
         />
 
         <TouchableOpacity
-          className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
+          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
           onPress={() => router.push("/admin/dashboard")}
         >
           <Text className="font-semibold text-app-text">Back to Dashboard</Text>
@@ -329,7 +329,7 @@ export default function AdminUsersScreen() {
     >
       <View className="relative flex-1 items-center justify-center bg-black/50">
         <SafeAreaView className="w-[90%] max-w-sm">
-          <ScrollView className="rounded-2xl bg-white p-5">
+          <ScrollView className="rounded-2xl bg-app-surface p-5">
             <View className="mb-4">
               <Text className="text-[20px] font-bold text-app-text">Edit User</Text>
               <Text className="mt-1 text-[13px] text-app-muted">{editingUser?.name}</Text>
@@ -369,7 +369,7 @@ export default function AdminUsersScreen() {
                   closePicker();
                 })}
               >
-                <Text className={editForm.school ? "text-app-text" : "text-[#9ca3af]"}>
+                <Text className={editForm.school ? "text-app-text" : "text-app-placeholder"}>
                   {editForm.school || "Select school"}
                 </Text>
                 <Text className="text-[16px] text-app-muted">▾</Text>
@@ -383,17 +383,17 @@ export default function AdminUsersScreen() {
                 activeOpacity={editForm.school ? 0.7 : 0.5}
                 disabled={!editForm.school}
                 className={`min-h-[48px] flex-row items-center justify-between rounded-lg border px-3 py-2 ${
-                  editForm.school ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f9fafb]"
+                  editForm.school ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-subtle"
                 }`}
                 onPress={() => openPicker("Department", departmentOptions, editForm.department, (value) => {
                   setEditForm({ ...editForm, department: value, program: "" });
                   closePicker();
                 })}
               >
-                <Text className={editForm.department ? "text-app-text" : "text-[#9ca3af]"}>
+                <Text className={editForm.department ? "text-app-text" : "text-app-placeholder"}>
                   {editForm.department || "Select department"}
                 </Text>
-                <Text className={`text-[16px] ${editForm.school ? "text-app-muted" : "text-[#d1d5db]"}`}>▾</Text>
+                <Text className={`text-[16px] ${editForm.school ? "text-app-muted" : "text-app-border"}`}>▾</Text>
               </TouchableOpacity>
             </View>
 
@@ -440,17 +440,17 @@ export default function AdminUsersScreen() {
                     activeOpacity={editForm.school && editForm.department ? 0.7 : 0.5}
                     disabled={!editForm.school || !editForm.department}
                     className={`min-h-[48px] flex-row items-center justify-between rounded-lg border px-3 py-2 ${
-                      editForm.school && editForm.department ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f9fafb]"
+                      editForm.school && editForm.department ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-subtle"
                     }`}
                     onPress={() => openPicker("Program", programOptions, editForm.program, (value) => {
                       setEditForm({ ...editForm, program: value });
                       closePicker();
                     })}
                   >
-                    <Text className={editForm.program ? "text-app-text" : "text-[#9ca3af]"}>
+                    <Text className={editForm.program ? "text-app-text" : "text-app-placeholder"}>
                       {editForm.program || "Select program"}
                     </Text>
-                    <Text className={`text-[16px] ${editForm.school && editForm.department ? "text-app-muted" : "text-[#d1d5db]"}`}>▾</Text>
+                    <Text className={`text-[16px] ${editForm.school && editForm.department ? "text-app-muted" : "text-app-border"}`}>▾</Text>
                   </TouchableOpacity>
                 </View>
 
@@ -496,7 +496,7 @@ export default function AdminUsersScreen() {
               activeOpacity={1}
               onPress={closePicker}
             />
-            <View className="max-h-[60%] rounded-t-3xl bg-white p-5">
+            <View className="max-h-[60%] rounded-t-3xl bg-app-surface p-5">
               <View className="mb-4 flex-row items-center justify-between">
                 <Text className="text-[18px] font-bold text-app-text">{pickerState.title}</Text>
                 <TouchableOpacity onPress={closePicker}>
@@ -509,7 +509,7 @@ export default function AdminUsersScreen() {
                   <TouchableOpacity
                     key={option}
                     className={`border-b border-app-border px-4 py-3 ${
-                      pickerState.selectedValue === option ? "bg-blue-50" : "bg-white"
+                      pickerState.selectedValue === option ? "bg-blue-50" : "bg-app-surface"
                     }`}
                     onPress={() => {
                       pickerState.onSelect(option);

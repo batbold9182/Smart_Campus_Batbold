@@ -21,16 +21,16 @@ export default function StudentScheduleScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <View className="flex-1 px-5 pb-4">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">My Schedule</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">My Schedule</Text>
 
         {loading ? (
-          <View className="rounded-xl bg-white p-4 shadow">
+          <View className="rounded-xl bg-app-surface p-4 shadow">
             <Text className="text-center text-app-muted">Loading schedule...</Text>
           </View>
         ) : schedule.length === 0 ? (
-          <View className="rounded-xl bg-white p-4 shadow">
+          <View className="rounded-xl bg-app-surface p-4 shadow">
             <Text className="text-center text-app-muted">No schedule assigned yet</Text>
           </View>
         ) : (
@@ -38,8 +38,8 @@ export default function StudentScheduleScreen() {
             data={schedule}
             keyExtractor={(item) => item._id}
             renderItem={({ item }) => (
-              <View className="mb-3 rounded-xl bg-white p-4 shadow">
-                <Text className="text-[16px] font-bold text-[#111827]">{item.course?.title || item.course?.name || "Untitled Course"}</Text>
+              <View className="mb-3 rounded-xl bg-app-surface p-4 shadow">
+                <Text className="text-[16px] font-bold text-app-text">{item.course?.title || item.course?.name || "Untitled Course"}</Text>
                 <Text className="mt-1 text-app-muted">Day: {item.day}</Text>
                 <Text className="text-app-muted">Time: {item.startTime} - {item.endTime}</Text>
                 <Text className="text-app-muted">Room: {item.room}</Text>

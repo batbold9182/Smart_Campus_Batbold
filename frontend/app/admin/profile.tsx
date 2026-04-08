@@ -5,10 +5,13 @@ import ProfileCard from "../../components/profileCard";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function AdminProfile() {
   const { loading } = useAuthGuard("admin");
   const [user, setUser] = useState<AppUserProfile | null>(null);
+  const { isDark, t, toggleTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
@@ -17,27 +20,33 @@ export default function AdminProfile() {
 
   if (loading || !user) {
     return (
-      <View className="flex-1 items-center justify-center bg-app-bg">
+      <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: t.bg }}>
         <ActivityIndicator size="large" />
-        <Text className="mt-2 text-app-muted">Loading profile...</Text>
+        <Text style={{ marginTop: 8, color: t.muted }}>Loading profile...</Text>
       </View>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-app-text">My Profile</Text>
-
-        <View className="rounded-xl bg-app-surface p-4 shadow">
-          <ProfileCard user={user} />
+    <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }} edges={["top"]}>
+      <ScrollView style={{ flex: 1, paddingHorizontal: 20 }} contentContainerStyle={{ paddingBottom: 20 }}>
+        <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+          <Text style={{ fontSize: 22, fontWeight: "bold", color: t.text }}>My Profile</Text>
+          <TouchableOpacity
+            onPress={toggleTheme}
+            style={{ width: 36, height: 36, borderRadius: 18, backgroundColor: t.avatarBg, alignItems: "center", justifyContent: "center", borderWidth: 1, borderColor: t.cardBorder }}
+          >
+            <Ionicons name={isDark ? "sunny" : "moon"} size={18} color={isDark ? "#facc15" : "#6b21a8"} />
+          </TouchableOpacity>
         </View>
 
+        <ProfileCard user={user} />
+
         <TouchableOpacity
-          className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
+          style={{ marginTop: 16, alignItems: "center", borderRadius: 8, backgroundColor: t.accentBar, padding: 14 }}
           onPress={() => router.push("/admin/dashboard")}
         >
-          <Text className="font-semibold text-white">Back to Dashboard</Text>
+          <Text style={{ fontWeight: "600", color: "#ffffff" }}>Back to Dashboard</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

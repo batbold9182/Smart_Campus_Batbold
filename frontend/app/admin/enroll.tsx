@@ -260,7 +260,7 @@ export default function AdminEnrollScreen() {
     return (
       <View className="flex-1 items-center justify-center bg-app-bg p-5">
         <Text className="mb-4 text-2xl font-bold text-app-text">Enroll Student</Text>
-        <Text className="mb-3 text-[#c62828]">{loadError}</Text>
+        <Text className="mb-3 text-app-error">{loadError}</Text>
         <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2" onPress={loadData}>
           <Text className="font-semibold text-white">Retry</Text>
         </TouchableOpacity>
@@ -278,13 +278,13 @@ export default function AdminEnrollScreen() {
           Assign students to courses and manage active enrollments.
         </Text>
 
-      {!!enrollError && <Text className="mb-3 text-[#c62828]">{enrollError}</Text>}
-      {!!enrollSuccess && <Text className="mb-3 text-[#2e7d32]">{enrollSuccess}</Text>}
+      {!!enrollError && <Text className="mb-3 text-app-error">{enrollError}</Text>}
+      {!!enrollSuccess && <Text className="mb-3 text-app-success">{enrollSuccess}</Text>}
 
       <Text className="mb-2 text-[14px] font-semibold text-app-text">Select Student</Text>
       <TouchableOpacity
         className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
-          !loading && students.length > 0 ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f3f4f6]"
+          !loading && students.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
         }`}
         onPress={() => setActiveSelector("student")}
         disabled={loading || students.length === 0}
@@ -296,7 +296,7 @@ export default function AdminEnrollScreen() {
       <Text className="mb-2 text-[14px] font-semibold text-app-text">Select Course</Text>
       <TouchableOpacity
         className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
-          !loading && courses.length > 0 ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f3f4f6]"
+          !loading && courses.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
         }`}
         onPress={() => setActiveSelector("course")}
         disabled={loading || courses.length === 0}
@@ -310,7 +310,7 @@ export default function AdminEnrollScreen() {
       ) : (
         <>
           <TouchableOpacity
-            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-[#93c5fd]" : "bg-blue-500"}`}
+            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-app-primary-loading" : "bg-blue-500"}`}
             onPress={handleEnroll}
             disabled={students.length === 0 || courses.length === 0}
           >
@@ -318,7 +318,7 @@ export default function AdminEnrollScreen() {
           </TouchableOpacity>
           <View className="h-[10px]" />
           <TouchableOpacity
-            className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
+            className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
             onPress={() => {
               setShowEnrollments((prev) => !prev);
             }}
@@ -336,7 +336,7 @@ export default function AdminEnrollScreen() {
           <Text className="mb-2 text-[14px] font-semibold text-app-text">View by Course</Text>
           <TouchableOpacity
             className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
-              courses.length > 0 ? "border-app-border bg-app-surface" : "border-[#e5e7eb] bg-[#f3f4f6]"
+              courses.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
             }`}
             onPress={() => setActiveSelector("filterCourse")}
             disabled={courses.length === 0}
@@ -349,7 +349,7 @@ export default function AdminEnrollScreen() {
             <Text className="mb-3 text-app-muted">No enrollments found</Text>
           ) : (
             filteredEnrollments.map((enrollment) => (
-              <View key={enrollment._id} className="mb-3 gap-2 rounded-xl border border-app-border bg-white p-[10px]">
+              <View key={enrollment._id} className="mb-3 gap-2 rounded-xl border border-app-border bg-app-surface p-[10px]">
                 <Text className="text-[14px]">
                   {enrollment.student?.name || "Unknown Student"} → {enrollment.course?.title || "Unknown Course"}
                 </Text>
@@ -366,7 +366,7 @@ export default function AdminEnrollScreen() {
 
           <View className="mb-3 mt-2 flex-row items-center justify-between">
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage <= 1 ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
+              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage <= 1 ? "bg-app-disabled" : "bg-blue-500"}`}
               onPress={() => loadEnrollments(enrollmentsPage - 1)}
               disabled={loading || enrollmentsPage <= 1}
             >
@@ -374,7 +374,7 @@ export default function AdminEnrollScreen() {
             </TouchableOpacity>
             <Text className="text-[13px] text-app-text">Page {enrollmentsPage} / {enrollmentsTotalPages}</Text>
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage >= enrollmentsTotalPages ? "bg-[#cbd5e1]" : "bg-blue-500"}`}
+              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage >= enrollmentsTotalPages ? "bg-app-disabled" : "bg-blue-500"}`}
               onPress={() => loadEnrollments(enrollmentsPage + 1)}
               disabled={loading || enrollmentsPage >= enrollmentsTotalPages}
             >
@@ -385,7 +385,7 @@ export default function AdminEnrollScreen() {
       )}
 
       <TouchableOpacity
-         className="items-center rounded-xl border border-app-border bg-white px-4 py-3"
+         className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
          onPress={() => router.push("../dashboard")}
       >
         <Text className="font-semibold text-app-text">Back to Dashboard</Text>
@@ -395,16 +395,16 @@ export default function AdminEnrollScreen() {
 
     <Modal transparent visible={activeSelector !== null} animationType="fade" onRequestClose={() => setActiveSelector(null)}>
       <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setActiveSelector(null)}>
-        <Pressable className="max-h-[70%] w-full rounded-2xl bg-white p-4" onPress={() => {}}>
+        <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
           <View className="mb-2 flex-row items-center justify-between">
-            <Text className="text-[17px] font-bold text-[#0f172a]">{selectorTitle}</Text>
+            <Text className="text-[17px] font-bold text-app-text">{selectorTitle}</Text>
             <TouchableOpacity onPress={() => setActiveSelector(null)}>
-              <Text className="text-[14px] font-semibold text-[#2563eb]">{selectorCloseLabel}</Text>
+              <Text className="text-[14px] font-semibold text-app-primary">{selectorCloseLabel}</Text>
             </TouchableOpacity>
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>
             {selectorOptions.length === 0 ? (
-              <Text className="py-3 text-[#64748b]">{emptySelectorMessage}</Text>
+              <Text className="py-3 text-app-text-subtle">{emptySelectorMessage}</Text>
             ) : (
               selectorOptions.map((option) => {
                 const active =
@@ -415,11 +415,11 @@ export default function AdminEnrollScreen() {
                   <TouchableOpacity
                     key={`${option.value || "all"}-${option.label}`}
                     className={`mb-2 rounded-lg border px-3 py-3 ${
-                      active ? "border-[#2563eb] bg-[#eff6ff]" : "border-[#e5e7eb] bg-white"
+                      active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
                     }`}
                     onPress={() => handleSelectorPick(option.value)}
                   >
-                    <Text className={`font-medium ${active ? "text-[#1d4ed8]" : "text-[#111827]"}`}>
+                    <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
                       {option.label}
                     </Text>
                   </TouchableOpacity>

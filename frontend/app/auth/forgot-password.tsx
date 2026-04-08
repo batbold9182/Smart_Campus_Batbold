@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import {
   View,
   Text,
@@ -71,9 +71,9 @@ export default function ForgotPasswordScreen() {
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
           {devOtp ? (
-            <View className="mt-[14px] border border-app-border rounded-[10px] p-3 bg-[#f8fafc]">
+            <View className="mt-[14px] border border-app-border rounded-[10px] p-3 bg-app-bg">
               <Text className="font-bold text-app-text mb-[6px]">Development OTP</Text>
-              <Text selectable className="text-[#374151] text-2xl tracking-[8px] text-center mb-[10px]">{devOtp}</Text>
+              <Text selectable className="text-app-text-secondary text-2xl tracking-[8px] text-center mb-[10px]">{devOtp}</Text>
               <TouchableOpacity
                 className="items-center justify-center rounded-lg border border-blue-600 py-[10px]"
                 onPress={() => router.push({ pathname: "/auth/reset-password", params: { email: email.trim() } })}

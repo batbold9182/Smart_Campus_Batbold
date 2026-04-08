@@ -39,7 +39,7 @@ const buddySections: {
     title: "Lunch Buddy",
     icon: "??",
     description: "Find students who are free to eat now and chat in real time.",
-    accentClassName: "bg-[#dbeafe]",
+    accentClassName: "bg-app-primary-light",
     badgeLabel: "Live",
   },
   {
@@ -47,7 +47,7 @@ const buddySections: {
     title: "Learning Buddy",
     icon: "??",
     description: "Meet classmates for review sessions, study groups, and exam prep.",
-    accentClassName: "bg-[#dcfce7]",
+    accentClassName: "bg-app-success-light",
     badgeLabel: "Live",
   },
   {
@@ -55,7 +55,7 @@ const buddySections: {
     title: "Party Buddy",
     icon: "??",
     description: "Plan events, invite friends, and discover social hangouts on campus.",
-    accentClassName: "bg-[#fee2e2]",
+    accentClassName: "bg-app-error-bg",
     badgeLabel: "Live",
   },
 ];
@@ -293,7 +293,7 @@ export default function VizjaFriends() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
+      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text className="mt-3 text-[15px] text-app-muted">Loading Vizja Friends...</Text>
       </SafeAreaView>
@@ -308,22 +308,22 @@ export default function VizjaFriends() {
   const selectedSectionMeta = buddySections.find((section) => section.key === selectedSection);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <KeyboardAvoidingView
         className="flex-1"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="border-b border-[#e5e7eb] bg-white px-5 pb-4 pt-2">
+        <View className="border-b border-app-border-light bg-app-surface px-5 pb-4 pt-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
-              <Text className="text-[22px] font-bold text-[#111827]">{headerTitle}</Text>
+              <Text className="text-[22px] font-bold text-app-text">{headerTitle}</Text>
               <Text className="mt-1 text-[13px] text-app-muted">
                 {headerDescription}
               </Text>
             </View>
 
             <TouchableOpacity
-              className="rounded-full bg-[#e0ecff] px-4 py-2"
+              className="rounded-full bg-app-primary-light px-4 py-2"
               onPress={() => {
                 if (selectedSection === "hub") {
                   router.push("/student/dashboard");
@@ -333,36 +333,36 @@ export default function VizjaFriends() {
                 setSelectedSection("hub");
               }}
             >
-              <Text className="font-semibold text-[#1d4ed8]">{selectedSection === "hub" ? "Back" : "Sections"}</Text>
+              <Text className="font-semibold text-app-primary-dark">{selectedSection === "hub" ? "Back" : "Sections"}</Text>
             </TouchableOpacity>
           </View>
 
           <View className="mt-4 flex-row flex-wrap gap-2">
             {selectedSectionMeta ? (
               <View className={`rounded-full px-3 py-2 ${selectedSectionMeta.accentClassName}`}>
-                <Text className="text-[12px] font-semibold text-[#1f2937]">{selectedSectionMeta.badgeLabel}</Text>
+                <Text className="text-[12px] font-semibold text-app-text">{selectedSectionMeta.badgeLabel}</Text>
               </View>
             ) : null}
-            <View className="rounded-full bg-[#dcfce7] px-3 py-2">
-              <Text className="text-[12px] font-semibold text-[#166534]">{statusLabel}</Text>
+            <View className="rounded-full bg-app-success-light px-3 py-2">
+              <Text className="text-[12px] font-semibold text-app-success-dark">{statusLabel}</Text>
             </View>
             {selectedSection === "lunch" ? (
-              <View className="rounded-full bg-[#e0ecff] px-3 py-2">
-                <Text className="text-[12px] font-semibold text-[#1d4ed8]">{onlineCount} students online</Text>
+              <View className="rounded-full bg-app-primary-light px-3 py-2">
+                <Text className="text-[12px] font-semibold text-app-primary-dark">{onlineCount} students online</Text>
               </View>
             ) : null}
             {currentUser?.program ? (
-              <View className="rounded-full bg-[#f3f4f6] px-3 py-2">
-                <Text className="text-[12px] font-semibold text-[#374151]">{currentUser.program}</Text>
+              <View className="rounded-full bg-app-bg-muted px-3 py-2">
+                <Text className="text-[12px] font-semibold text-app-text-secondary">{currentUser.program}</Text>
               </View>
             ) : null}
           </View>
         </View>
 
         {error ? (
-          <View className="mx-5 mt-4 rounded-xl border border-[#fecaca] bg-[#fef2f2] p-4">
-            <Text className="font-semibold text-[#991b1b]">Connection issue</Text>
-            <Text className="mt-1 text-[#b91c1c]">{error}</Text>
+          <View className="mx-5 mt-4 rounded-xl border border-app-error-light bg-app-error-bg-subtle p-4">
+            <Text className="font-semibold text-app-error-dark">Connection issue</Text>
+            <Text className="mt-1 text-app-error">{error}</Text>
           </View>
         ) : null}
 
@@ -372,10 +372,10 @@ export default function VizjaFriends() {
             contentContainerClassName="gap-4 pb-8 pt-5"
             showsVerticalScrollIndicator={false}
           >
-            <View className="rounded-[28px] bg-[#111827] p-5">
-              <Text className="text-[12px] font-semibold uppercase tracking-[1px] text-[#93c5fd]">Student spaces</Text>
+            <View className="rounded-[28px] bg-app-text p-5">
+              <Text className="text-[12px] font-semibold uppercase tracking-[1px] text-app-primary-loading">Student spaces</Text>
               <Text className="mt-2 text-[24px] font-bold text-white">Choose your vibe</Text>
-              <Text className="mt-2 leading-6 text-[#d1d5db]">
+              <Text className="mt-2 leading-6 text-app-border">
                 Vizja Friends separates social chat into focused sections, so students can join the right conversation instead of one noisy room.
               </Text>
             </View>
@@ -383,7 +383,7 @@ export default function VizjaFriends() {
             {buddySections.map((section) => (
               <TouchableOpacity
                 key={section.key}
-                className="rounded-[26px] bg-white p-5 shadow-sm"
+                className="rounded-[26px] bg-app-surface p-5 shadow-sm"
                 onPress={() => {
                   if (section.key === "lunch") {
                     setSelectedSection("lunch");
@@ -397,17 +397,17 @@ export default function VizjaFriends() {
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1 pr-4">
                     <Text className="text-[28px]">{section.icon}</Text>
-                    <Text className="mt-3 text-[20px] font-bold text-[#111827]">{section.title}</Text>
+                    <Text className="mt-3 text-[20px] font-bold text-app-text">{section.title}</Text>
                     <Text className="mt-2 leading-6 text-app-muted">{section.description}</Text>
                   </View>
                   <View className={`rounded-full px-3 py-2 ${section.accentClassName}`}>
-                    <Text className="text-[12px] font-semibold text-[#1f2937]">{section.badgeLabel}</Text>
+                    <Text className="text-[12px] font-semibold text-app-text">{section.badgeLabel}</Text>
                   </View>
                 </View>
 
-                <View className="mt-5 flex-row items-center justify-between border-t border-[#f3f4f6] pt-4">
-                  <Text className="text-[13px] font-semibold text-[#1d4ed8]">Open section</Text>
-                  <Text className="text-[18px] text-[#9ca3af]">?</Text>
+                <View className="mt-5 flex-row items-center justify-between border-t border-app-bg-muted pt-4">
+                  <Text className="text-[13px] font-semibold text-app-primary-dark">Open section</Text>
+                  <Text className="text-[18px] text-app-placeholder">?</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -429,8 +429,8 @@ export default function VizjaFriends() {
                   onContentSizeChange={scrollToEnd}
                 >
                   {messages.length === 0 ? (
-                    <View className="mt-10 rounded-2xl bg-white p-5 shadow-sm">
-                      <Text className="text-[16px] font-semibold text-[#111827]">Start the conversation</Text>
+                    <View className="mt-10 rounded-2xl bg-app-surface p-5 shadow-sm">
+                      <Text className="text-[16px] font-semibold text-app-text">Start the conversation</Text>
                       <Text className="mt-2 leading-6 text-app-muted">
                         Ask who is free for lunch, suggest a cafe, or find classmates nearby.
                       </Text>
@@ -444,21 +444,21 @@ export default function VizjaFriends() {
                       <View
                         key={message.id}
                         className={`max-w-[88%] rounded-2xl px-4 py-3 ${
-                          isMine ? "self-end bg-[#2563eb]" : "self-start bg-white"
+                          isMine ? "self-end bg-app-primary" : "self-start bg-app-surface"
                         }`}
                       >
                         {!isMine ? (
-                          <Text className="mb-1 text-[12px] font-semibold text-[#1d4ed8]">
+                          <Text className="mb-1 text-[12px] font-semibold text-app-primary-dark">
                             {message.sender.name}
                             {message.sender.program ? ` • ${message.sender.program}` : ""}
                           </Text>
                         ) : null}
 
-                        <Text className={isMine ? "text-[15px] leading-6 text-white" : "text-[15px] leading-6 text-[#111827]"}>
+                        <Text className={isMine ? "text-[15px] leading-6 text-white" : "text-[15px] leading-6 text-app-text"}>
                           {message.text}
                         </Text>
 
-                        <Text className={`mt-2 text-[11px] ${isMine ? "text-[#dbeafe]" : "text-[#9ca3af]"}`}>
+                        <Text className={`mt-2 text-[11px] ${isMine ? "text-app-primary-light" : "text-app-placeholder"}`}>
                           {formatMessageTime(message.createdAt)}
                         </Text>
                       </View>
@@ -466,8 +466,8 @@ export default function VizjaFriends() {
                   })}
                 </ScrollView>
 
-                <View className="border-t border-[#e5e7eb] bg-white px-5 pb-5 pt-4">
-                  <View className="rounded-2xl border border-[#d1d5db] bg-[#f9fafb] px-4 py-3">
+                <View className="border-t border-app-border-light bg-app-surface px-5 pb-5 pt-4">
+                  <View className="rounded-2xl border border-app-border bg-app-bg-subtle px-4 py-3">
                     <TextInput
                       multiline
                       maxLength={400}
@@ -475,7 +475,7 @@ export default function VizjaFriends() {
                       placeholderTextColor="#9ca3af"
                       value={draft}
                       onChangeText={setDraft}
-                      className="min-h-[44px] text-[15px] leading-6 text-[#111827]"
+                      className="min-h-[44px] text-[15px] leading-6 text-app-text"
                       textAlignVertical="top"
                     />
                   </View>
@@ -486,8 +486,8 @@ export default function VizjaFriends() {
                     <TouchableOpacity
                       className={`rounded-full px-5 py-3 ${
                         draft.trim() && !sending && socketRef.current?.connected
-                          ? "bg-[#2563eb]"
-                          : "bg-[#bfdbfe]"
+                          ? "bg-app-primary"
+                          : "bg-app-primary-muted"
                       }`}
                       disabled={!draft.trim() || sending || !socketRef.current?.connected}
                       onPress={handleSend}

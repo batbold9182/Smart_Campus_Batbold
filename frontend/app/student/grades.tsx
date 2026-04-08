@@ -24,7 +24,7 @@ export default function Grades() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
+      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text className="mt-3 text-app-muted">Loading grades...</Text>
       </SafeAreaView>
@@ -32,28 +32,28 @@ export default function Grades() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">Grades</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">Grades</Text>
 
         <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.courseCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.courseCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Courses</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.gradedCount || 0}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.gradedCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Published Grades</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-white p-4 shadow">
-            <Text className="text-[20px] font-bold text-[#111827]">{data?.summary.averageGrade ?? "-"}</Text>
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-[20px] font-bold text-app-text">{data?.summary.averageGrade ?? "-"}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Average</Text>
           </View>
         </View>
 
         {!data?.items.length ? (
-          <View className="mb-4 rounded-xl bg-white p-4 shadow">
-            <Text className="mb-2 text-[16px] font-semibold text-[#111827]">No Grades Yet</Text>
+          <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="mb-2 text-[16px] font-semibold text-app-text">No Grades Yet</Text>
             <Text className="text-app-muted">Your published course grades will appear here once faculty submit them.</Text>
           </View>
         ) : (
@@ -68,24 +68,24 @@ export default function Grades() {
                   : "bg-amber-100";
 
             return (
-              <View key={item.course.id} className="mb-4 rounded-xl bg-white p-4 shadow">
+              <View key={item.course.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                 <View className="flex-row items-start justify-between gap-3">
                   <View className="flex-1">
-                    <Text className="text-[16px] font-semibold text-[#111827]">{item.course.title}</Text>
+                    <Text className="text-[16px] font-semibold text-app-text">{item.course.title}</Text>
                     <Text className="mt-1 text-app-muted">{item.course.code} • {item.course.credits} credits</Text>
-                    <Text className="mt-1 text-[#9ca3af]">Faculty: {item.course.facultyName}</Text>
+                    <Text className="mt-1 text-app-placeholder">Faculty: {item.course.facultyName}</Text>
                   </View>
                   <View className={`rounded-full px-3 py-2 ${badgeClassName}`}>
-                    <Text className="text-[12px] font-semibold text-[#1f2937]">
+                    <Text className="text-[12px] font-semibold text-app-text">
                       {gradeValue ?? "Pending"}
                     </Text>
                   </View>
                 </View>
 
                 {item.grade?.remarks ? (
-                  <View className="mt-4 rounded-lg bg-[#f9fafb] p-3">
+                  <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
                     <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Remarks</Text>
-                    <Text className="mt-2 text-[#374151]">{item.grade.remarks}</Text>
+                    <Text className="mt-2 text-app-text-secondary">{item.grade.remarks}</Text>
                   </View>
                 ) : null}
               </View>

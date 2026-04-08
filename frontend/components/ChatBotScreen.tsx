@@ -8,9 +8,13 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { useRouter } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import faqData from "../services/faq.json";
+import { useTheme } from "../contexts/ThemeContext";
+import { getChatBotStyles } from "../styles/components_style/chatBotStyles";
 
 interface FaqEntry {
   id: number;
@@ -84,7 +88,10 @@ export default function ChatBotScreen() {
     { id: "welcome", role: "bot", text: WELCOME_MESSAGE },
   ]);
   const [inputText, setInputText] = useState("");
+  const { isDark, t, toggleTheme } = useTheme();
   const listRef = useRef<FlatList>(null);
+
+  const s = getChatBotStyles(t, isDark);
 
   const sendMessage = useCallback(
     (text: string) => {
@@ -112,14 +119,8 @@ export default function ChatBotScreen() {
   const renderMessage = ({ item }: { item: Message }) => {
     const isUser = item.role === "user";
     return (
-      <View
-        className={`my-1 max-w-[80%] rounded-2xl px-4 py-3 ${
-          isUser
-            ? "self-end rounded-br-sm bg-blue-500"
-            : "self-start rounded-bl-sm bg-white border border-gray-200"
-        }`}
-      >
-        <Text className={`text-[15px] leading-5 ${isUser ? "text-white" : "text-gray-800"}`}>
+      <View style={isUser ? s.messageBubbleUser : s.messageBubbleBot}>
+        <Text style={isUser ? s.messageTextUser : s.messageTextBot}>
           {item.text}
         </Text>
       </View>
@@ -129,22 +130,25 @@ export default function ChatBotScreen() {
   const suggestions = buildSuggestions();
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f0f4f8]">
+    <SafeAreaView style={s.safeArea}>
+      <StatusBar barStyle={isDark ? "light-content" : "dark-content"} />
       <KeyboardAvoidingView
-        className="flex-1"
+        style={s.keyboardView}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 20}
       >
         {/* Header */}
-        <View className="bg-blue-600 px-4 py-4 shadow-sm">
-          <TouchableOpacity
-            onPress={() => router.back()}
-            className="mb-2 flex-row items-center"
-          >
-            <Text className="text-blue-200 text-[13px]">← Back to Dashboard</Text>
-          </TouchableOpacity>
-          <Text className="text-xl font-bold text-white">Smart Campus Bot</Text>
-          <Text className="text-blue-100 text-[13px]">Ask me anything about campus</Text>
+        <View style={s.header}>
+          <View style={s.headerRow}>
+            <TouchableOpacity onPress={() => router.back()}>
+              <Text style={s.headerBackText}>← Back to Dashboard</Text>
+            </TouchableOpacity>
+            <TouchableOpacity onPress={toggleTheme} style={s.themeToggle}>
+              <Ionicons name={isDark ? "sunny" : "moon"} size={18} color={isDark ? "#facc15" : "#6b21a8"} />
+            </TouchableOpacity>
+          </View>
+          <Text style={s.headerTitle}>Smart Campus Bot</Text>
+          <Text style={s.headerSubtitle}>Ask me anything about campus</Text>
         </View>
 
         {/* Messages */}
@@ -161,16 +165,16 @@ export default function ChatBotScreen() {
 
         {/* Suggestion chips — only show when only the welcome message exists */}
         {messages.length === 1 && (
-          <View className="px-4 pb-2">
-            <Text className="text-[12px] text-gray-500 mb-2">Suggested questions:</Text>
-            <View className="flex-row flex-wrap gap-2">
-              {suggestions.map((s) => (
+          <View style={s.suggestionsWrap}>
+            <Text style={s.suggestionsLabel}>Suggested questions:</Text>
+            <View style={s.suggestionsRow}>
+              {suggestions.map((q) => (
                 <TouchableOpacity
-                  key={s}
-                  onPress={() => sendMessage(s)}
-                  className="rounded-full border border-blue-400 bg-white px-3 py-1"
+                  key={q}
+                  onPress={() => sendMessage(q)}
+                  style={s.suggestionChip}
                 >
-                  <Text className="text-blue-600 text-[12px]">{s}</Text>
+                  <Text style={s.suggestionChipText}>{q}</Text>
                 </TouchableOpacity>
               ))}
             </View>
@@ -178,11 +182,11 @@ export default function ChatBotScreen() {
         )}
 
         {/* Input bar */}
-        <View className="flex-row items-center bg-white border-t border-gray-200 px-3 py-2">
+        <View style={s.inputBar}>
           <TextInput
-            className="flex-1 rounded-full border border-gray-300 bg-gray-50 px-4 py-2 text-[15px] text-gray-800"
+            style={s.textInput}
             placeholder="Type your question..."
-            placeholderTextColor="#9ca3af"
+            placeholderTextColor={t.muted}
             value={inputText}
             onChangeText={setInputText}
             onSubmitEditing={() => sendMessage(inputText)}
@@ -191,9 +195,9 @@ export default function ChatBotScreen() {
           />
           <TouchableOpacity
             onPress={() => sendMessage(inputText)}
-            className="ml-2 h-10 w-10 items-center justify-center rounded-full bg-blue-500"
+            style={s.sendButton}
           >
-            <Text className="font-bold text-white text-lg">↑</Text>
+            <Text style={s.sendButtonText}>↑</Text>
           </TouchableOpacity>
         </View>
       </KeyboardAvoidingView>

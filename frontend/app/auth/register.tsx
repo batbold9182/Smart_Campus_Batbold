@@ -1,4 +1,4 @@
-﻿import { useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   KeyboardAvoidingView,
@@ -153,7 +153,7 @@ export default function RegisterScreen() {
               )}
             </TouchableOpacity>
 
-            {message ? <Text className="mt-[14px] text-center text-[#b91c1c]">{message}</Text> : null}
+            {message ? <Text className="mt-[14px] text-center text-app-error">{message}</Text> : null}
 
             <TouchableOpacity
               className="mt-[10px] items-center justify-center min-h-[42px]"

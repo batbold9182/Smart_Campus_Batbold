@@ -9,8 +9,8 @@ import { getStudentSchedule } from "../../services/scheduleService";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
-import { getTheme } from "../../styles/theme";
 import { getDashboardStyles } from "../../styles/dashboardStyles";
+import { useTheme } from "../../contexts/ThemeContext";
 
 export default function StudentDashboard() {
   const router = useRouter();
@@ -20,9 +20,8 @@ export default function StudentDashboard() {
   const [user, setUser] = useState<any>(null);
   const [time, setTime] = useState(new Date());
   const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
-  const [isDark, setIsDark] = useState(true);
+  const { isDark, t, toggleTheme } = useTheme();
 
-  const t = getTheme(isDark);
   const s = getDashboardStyles(t, width, isDark);
 
   const getScheduleStatus = (startTime: string, endTime: string) => {
@@ -144,7 +143,7 @@ export default function StudentDashboard() {
               </View>
 
               <View style={s.headerActions}>
-                <TouchableOpacity onPress={() => setIsDark(!isDark)} style={s.themeToggle}>
+                <TouchableOpacity onPress={toggleTheme} style={s.themeToggle}>
                   <Ionicons name={isDark ? "sunny" : "moon"} size={20} color={isDark ? "#facc15" : "#6b21a8"} />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={() => router.push("/student/notifications")}>

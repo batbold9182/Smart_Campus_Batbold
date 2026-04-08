@@ -300,7 +300,7 @@ export default function NotificationsScreen() {
                 key={option.value}
                 className={`min-w-[48%] flex-1 rounded-xl border px-3 py-3 ${
                   isActive
-                    ? "border-blue-500 bg-[#dbeafe]"
+                    ? "border-blue-500 bg-app-primary-light"
                     : "border-app-border bg-app-surface"
                 }`}
                 onPress={() => setAudience(option.value)}
@@ -402,11 +402,11 @@ export default function NotificationsScreen() {
           className="flex-1 items-center justify-end bg-black/40 px-4 pb-6"
           onPress={() => setActiveSelector(null)}
         >
-          <Pressable className="max-h-[70%] w-full rounded-2xl bg-white p-4" onPress={() => {}}>
+          <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
             <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-[17px] font-bold text-[#0f172a]">Select Recipient</Text>
+              <Text className="text-[17px] font-bold text-app-text">Select Recipient</Text>
               <TouchableOpacity onPress={() => setActiveSelector(null)}>
-                <Text className="text-[14px] font-semibold text-[#2563eb]">Done</Text>
+                <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
               </TouchableOpacity>
             </View>
             <TextInput
@@ -432,21 +432,21 @@ export default function NotificationsScreen() {
                   <TouchableOpacity
                     key={recipient.id}
                     className={`mb-2 rounded-lg border px-3 py-3 ${
-                      active ? "border-[#2563eb] bg-[#eff6ff]" : "border-[#e5e7eb] bg-white"
+                      active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
                     }`}
                     onPress={() => {
                       setSelectedRecipientId(recipient.id);
                       setActiveSelector(null);
                     }}
                   >
-                    <Text className={`font-medium ${active ? "text-[#1d4ed8]" : "text-[#111827]"}`}>
+                    <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
                       {recipient.name}
                     </Text>
-                    <Text className={`mt-1 text-[13px] ${active ? "text-[#1d4ed8]" : "text-[#64748b]"}`}>
+                    <Text className={`mt-1 text-[13px] ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
                       {recipient.email}
                     </Text>
                     {recipient.identifier ? (
-                      <Text className={`mt-1 text-[12px] ${active ? "text-[#1d4ed8]" : "text-[#64748b]"}`}>
+                      <Text className={`mt-1 text-[12px] ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
                         ID: {recipient.identifier}
                       </Text>
                     ) : null}

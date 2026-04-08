@@ -76,7 +76,7 @@ export default function Grades() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-[#f5f7fb]" edges={["top"]}>
+      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
         <ActivityIndicator size="large" color="#2563eb" />
         <Text className="mt-3 text-app-muted">Loading grades...</Text>
       </SafeAreaView>
@@ -84,41 +84,41 @@ export default function Grades() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-[#f5f7fb]" edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-[#111827]">Grades</Text>
+        <Text className="mb-4 text-[22px] font-bold text-app-text">Grades</Text>
 
         {!selectedCourse ? (
           <>
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
-              <Text className="mb-2 text-[16px] font-semibold text-[#111827]">Assigned Courses</Text>
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <Text className="mb-2 text-[16px] font-semibold text-app-text">Assigned Courses</Text>
               <Text className="text-app-muted">Select a course to publish or update student grades.</Text>
             </View>
 
             {courses.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-white p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                 <Text className="text-app-muted">No courses assigned yet.</Text>
               </View>
             ) : (
               courses.map((course) => (
                 <TouchableOpacity
                   key={course.id}
-                  className="mb-4 rounded-xl bg-white p-4 shadow"
+                  className="mb-4 rounded-xl bg-app-surface p-4 shadow"
                   onPress={() => loadCourseDetail(course.id)}
                 >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
-                      <Text className="text-[16px] font-semibold text-[#111827]">{course.title}</Text>
+                      <Text className="text-[16px] font-semibold text-app-text">{course.title}</Text>
                       <Text className="mt-1 text-app-muted">{course.code} • {course.credits} credits</Text>
                     </View>
-                    <Text className="text-[12px] font-semibold text-[#2563eb]">Open</Text>
+                    <Text className="text-[12px] font-semibold text-app-primary">Open</Text>
                   </View>
                   <View className="mt-3 flex-row gap-2">
-                    <View className="rounded-full bg-[#eff6ff] px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-[#1d4ed8]">{course.enrolledCount} enrolled</Text>
+                    <View className="rounded-full bg-app-primary-bg px-3 py-2">
+                      <Text className="text-[12px] font-semibold text-app-primary-dark">{course.enrolledCount} enrolled</Text>
                     </View>
-                    <View className="rounded-full bg-[#ecfdf5] px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-[#047857]">{course.gradedCount} graded</Text>
+                    <View className="rounded-full bg-app-success-bg-subtle px-3 py-2">
+                      <Text className="text-[12px] font-semibold text-app-success">{course.gradedCount} graded</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -127,28 +127,28 @@ export default function Grades() {
           </>
         ) : (
           <>
-            <View className="mb-4 rounded-xl bg-white p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
-                  <Text className="text-[18px] font-semibold text-[#111827]">{selectedCourse.course.title}</Text>
+                  <Text className="text-[18px] font-semibold text-app-text">{selectedCourse.course.title}</Text>
                   <Text className="mt-1 text-app-muted">{selectedCourse.course.code} • {selectedCourse.course.credits} credits</Text>
                 </View>
-                <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-[#eff6ff] px-3 py-2">
-                  <Text className="font-semibold text-[#2563eb]">Courses</Text>
+                <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-app-primary-bg px-3 py-2">
+                  <Text className="font-semibold text-app-primary">Courses</Text>
                 </TouchableOpacity>
               </View>
             </View>
 
             {selectedCourse.students.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-white p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
                 <Text className="text-app-muted">No enrolled students in this course yet.</Text>
               </View>
             ) : (
               selectedCourse.students.map((item) => (
-                <View key={item.student.id} className="mb-4 rounded-xl bg-white p-4 shadow">
-                  <Text className="text-[16px] font-semibold text-[#111827]">{item.student.name}</Text>
+                <View key={item.student.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+                  <Text className="text-[16px] font-semibold text-app-text">{item.student.name}</Text>
                   <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` • Year ${item.student.yearLevel}` : ""}</Text>
-                  <Text className="mt-1 text-[#9ca3af]">{item.student.email}</Text>
+                  <Text className="mt-1 text-app-placeholder">{item.student.email}</Text>
 
                   <View className="mt-4">
                     <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Grade</Text>
@@ -157,7 +157,7 @@ export default function Grades() {
                       value={draftGrades[item.student.id] || ""}
                       onChangeText={(value) => setDraftGrades((current) => ({ ...current, [item.student.id]: value }))}
                       placeholder="0 - 6"
-                      className="rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                      className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                     />
                   </View>
 
@@ -168,7 +168,7 @@ export default function Grades() {
                       value={draftRemarks[item.student.id] || ""}
                       onChangeText={(value) => setDraftRemarks((current) => ({ ...current, [item.student.id]: value }))}
                       placeholder="Optional feedback"
-                      className="min-h-[84px] rounded-lg border border-[#d1d5db] px-4 py-3 text-[#111827]"
+                      className="min-h-[84px] rounded-lg border border-app-border px-4 py-3 text-app-text"
                       textAlignVertical="top"
                     />
                   </View>
@@ -176,7 +176,7 @@ export default function Grades() {
                   {item.grade ? (
                     <Text className="mt-3 text-[12px] text-app-muted">Current saved grade: {item.grade.value}</Text>
                   ) : (
-                    <Text className="mt-3 text-[12px] text-[#9ca3af]">No grade published yet</Text>
+                    <Text className="mt-3 text-[12px] text-app-placeholder">No grade published yet</Text>
                   )}
 
                   <TouchableOpacity
