@@ -20,3 +20,14 @@
 | SEO             | 91 ✅  | 91 ✅   |
 
 ---
+
+### audit 3 after adding splash screens and animations
+
+| Metric           | Mobile | Desktop |
+|-----------------|--------|---------|
+| Performance     | 60 ⚠️  | 95 ✅   |
+| Accessibility   | 90 ✅  | 90 ✅   |
+| Best Practices  | 73 ⚠️  | 73 ⚠️   |
+| SEO             | 83 ⚠️  | 83 ⚠️   |
+
+---

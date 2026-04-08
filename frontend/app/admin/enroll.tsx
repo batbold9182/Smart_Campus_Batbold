@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Alert,
-  ActivityIndicator,
   ScrollView,
   TouchableOpacity,
   Modal,
@@ -13,6 +12,7 @@ import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { SkeletonList } from "../../components/Skeleton";
 
 export default function AdminEnrollScreen() {
   const ENROLLMENTS_LIMIT = 20;
@@ -249,9 +249,9 @@ export default function AdminEnrollScreen() {
 
   if (initialLoading) {
     return (
-      <View className="flex-1 items-center justify-center bg-app-bg p-5">
+      <View className="flex-1 bg-app-bg p-5">
         <Text className="mb-4 text-2xl font-bold text-app-text">🎓 Enroll Student</Text>
-        <ActivityIndicator size="large" />
+        <SkeletonList rows={4} />
       </View>
     );
   }
@@ -306,7 +306,9 @@ export default function AdminEnrollScreen() {
       </TouchableOpacity>
 
       {loading ? (
-        <ActivityIndicator size="large" />
+        <View className="items-center py-4">
+          <Text className="text-app-muted">Processing...</Text>
+        </View>
       ) : (
         <>
           <TouchableOpacity

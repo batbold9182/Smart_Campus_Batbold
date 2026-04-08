@@ -4,9 +4,9 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
 } from "react-native";
+import { SkeletonList } from "./Skeleton";
 
 export type NotificationItem = {
   _id: string;
@@ -66,7 +66,7 @@ export default function NotificationFeed({
     return (
       <View className={styles.loadingScreen}>
         <Text className={`mb-3 ${styles.title}`}>{title}</Text>
-        <ActivityIndicator size="large" />
+        <SkeletonList rows={4} />
       </View>
     );
   }

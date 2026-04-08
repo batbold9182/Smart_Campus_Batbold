@@ -59,7 +59,10 @@ module.exports = {
         "dark-muted": "#a78bfa",
       },
       boxShadow: {
+        "card-sm": "0 1px 3px rgba(15, 23, 42, 0.06)",
         card: "0 2px 6px rgba(15, 23, 42, 0.08)",
+        "card-md": "0 4px 12px rgba(15, 23, 42, 0.10)",
+        "card-lg": "0 8px 24px rgba(15, 23, 42, 0.12)",
       },
     },
   },

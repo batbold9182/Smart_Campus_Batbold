@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import AnimatedScreen from "../../components/AnimatedScreen";
+import { SkeletonList } from "../../components/Skeleton";
 import {
   getFacultyCourseGrades,
   getFacultyGradeCourses,
@@ -76,40 +79,47 @@ export default function Grades() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-app-muted">Loading grades...</Text>
+      <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
+        <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+          <Text className="text-[22px] font-bold text-white">Grades</Text>
+        </LinearGradient>
+        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+          <SkeletonList rows={4} />
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-app-text">Grades</Text>
+      <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+        <Text className="text-[22px] font-bold text-white">Grades</Text>
+      </LinearGradient>
+      <AnimatedScreen>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
 
         {!selectedCourse ? (
           <>
-            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <Text className="mb-2 text-[16px] font-semibold text-app-text">Assigned Courses</Text>
               <Text className="text-app-muted">Select a course to publish or update student grades.</Text>
             </View>
 
             {courses.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                 <Text className="text-app-muted">No courses assigned yet.</Text>
               </View>
             ) : (
               courses.map((course) => (
                 <TouchableOpacity
                   key={course.id}
-                  className="mb-4 rounded-xl bg-app-surface p-4 shadow"
+                  className="mb-4 rounded-xl bg-app-surface p-4 shadow-card"
                   onPress={() => loadCourseDetail(course.id)}
                 >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
                       <Text className="text-[16px] font-semibold text-app-text">{course.title}</Text>
-                      <Text className="mt-1 text-app-muted">{course.code} • {course.credits} credits</Text>
+                      <Text className="mt-1 text-app-muted">{course.code} ï¿½ {course.credits} credits</Text>
                     </View>
                     <Text className="text-[12px] font-semibold text-app-primary">Open</Text>
                   </View>
@@ -127,11 +137,11 @@ export default function Grades() {
           </>
         ) : (
           <>
-            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
                   <Text className="text-[18px] font-semibold text-app-text">{selectedCourse.course.title}</Text>
-                  <Text className="mt-1 text-app-muted">{selectedCourse.course.code} • {selectedCourse.course.credits} credits</Text>
+                  <Text className="mt-1 text-app-muted">{selectedCourse.course.code} ï¿½ {selectedCourse.course.credits} credits</Text>
                 </View>
                 <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-app-primary-bg px-3 py-2">
                   <Text className="font-semibold text-app-primary">Courses</Text>
@@ -140,14 +150,14 @@ export default function Grades() {
             </View>
 
             {selectedCourse.students.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                 <Text className="text-app-muted">No enrolled students in this course yet.</Text>
               </View>
             ) : (
               selectedCourse.students.map((item) => (
-                <View key={item.student.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+                <View key={item.student.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                   <Text className="text-[16px] font-semibold text-app-text">{item.student.name}</Text>
-                  <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` • Year ${item.student.yearLevel}` : ""}</Text>
+                  <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` ï¿½ Year ${item.student.yearLevel}` : ""}</Text>
                   <Text className="mt-1 text-app-placeholder">{item.student.email}</Text>
 
                   <View className="mt-4">
@@ -199,6 +209,7 @@ export default function Grades() {
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>
       </ScrollView>
+      </AnimatedScreen>
     </SafeAreaView>
   );
 }

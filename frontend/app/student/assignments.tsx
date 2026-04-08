@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { Alert, ActivityIndicator, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import AnimatedScreen from "../../components/AnimatedScreen";
+import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
 import type { DocumentPickerAsset } from "expo-document-picker";
 import {
   downloadAssignmentSubmission,
@@ -219,65 +222,74 @@ export default function StudentAssignments() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-app-muted">Loading assignments...</Text>
+      <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
+        <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+          <Text className="text-[22px] font-bold text-white">Assignments</Text>
+        </LinearGradient>
+        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+          <SkeletonStatRow count={3} />
+          <SkeletonStatRow count={2} />
+          <SkeletonList rows={3} />
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-app-text">Assignments</Text>
+      <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+        <Text className="text-[22px] font-bold text-white">Assignments</Text>
+      </LinearGradient>
+      <AnimatedScreen>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
 
         <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="text-[20px] font-bold text-app-text">{data?.summary.courseCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Courses</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="text-[20px] font-bold text-app-text">{data?.summary.assignmentCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Assignments</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="text-[20px] font-bold text-app-text">{data?.summary.dueTodayCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Due Today</Text>
           </View>
         </View>
 
         <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="text-[20px] font-bold text-app-text">{data?.summary.upcomingCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Upcoming</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="text-[20px] font-bold text-app-text">{data?.summary.submittedCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Submitted</Text>
           </View>
         </View>
 
         <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="text-[20px] font-bold text-app-text">{data?.summary.pendingCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Pending</Text>
           </View>
-          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+          <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="text-[20px] font-bold text-app-text">{data?.summary.overdueCount || 0}</Text>
             <Text className="mt-1 text-[12px] text-app-muted">Overdue</Text>
           </View>
         </View>
 
         {!data?.items.length ? (
-          <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+          <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
             <Text className="mb-2 text-[16px] font-semibold text-app-text">No Assignments Yet</Text>
             <Text className="text-app-muted">Assignments from your enrolled courses will appear here once faculty publish them.</Text>
           </View>
         ) : (
           data.items.map((item) => (
-            <View key={item.course.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <View key={item.course.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <Text className="text-[16px] font-semibold text-app-text">{item.course.title}</Text>
-              <Text className="mt-1 text-app-muted">{item.course.code} • {item.course.credits} credits</Text>
+              <Text className="mt-1 text-app-muted">{item.course.code} ï¿½ {item.course.credits} credits</Text>
               <Text className="mt-1 text-app-placeholder">Faculty: {item.course.facultyName}</Text>
 
               {item.assignments.length === 0 ? (
@@ -296,7 +308,7 @@ export default function StudentAssignments() {
                         <View className="flex-1">
                           <Text className="text-[15px] font-semibold text-app-text">{assignment.title}</Text>
                           <Text className="mt-1 text-app-muted">
-                            Due {formatReadableDate(assignment.dueDate)} • {assignment.maxPoints} points
+                            Due {formatReadableDate(assignment.dueDate)} ï¿½ {assignment.maxPoints} points
                           </Text>
                         </View>
                         <View className={`rounded-full px-3 py-2 ${status.chip}`}>
@@ -356,7 +368,7 @@ export default function StudentAssignments() {
                         <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">File Upload</Text>
                         <Text className="mt-2 text-app-muted">
                           {chosenFile
-                            ? `${chosenFile.name}${chosenFile.size ? ` • ${Math.ceil(chosenFile.size / 1024)} KB` : ""}`
+                            ? `${chosenFile.name}${chosenFile.size ? ` ï¿½ ${Math.ceil(chosenFile.size / 1024)} KB` : ""}`
                             : "Choose a PDF, DOC, DOCX, TXT, JPG, PNG, WEBP, or GIF file up to 10 MB."}
                         </Text>
 
@@ -403,6 +415,7 @@ export default function StudentAssignments() {
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>
       </ScrollView>
+      </AnimatedScreen>
     </SafeAreaView>
   );
 }

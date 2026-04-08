@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   Linking,
   Platform,
@@ -12,6 +11,9 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import AnimatedScreen from "../../components/AnimatedScreen";
+import { SkeletonList } from "../../components/Skeleton";
 import {
   createCourseAssignment,
   deleteCourseAssignment,
@@ -287,34 +289,41 @@ export default function Assignments() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-app-muted">Loading assignments...</Text>
+      <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
+        <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+          <Text className="text-[22px] font-bold text-white">Assignments</Text>
+        </LinearGradient>
+        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+          <SkeletonList rows={4} />
+        </View>
       </SafeAreaView>
     );
   }
 
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-        <Text className="mb-4 text-[22px] font-bold text-app-text">Assignments</Text>
+      <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+        <Text className="text-[22px] font-bold text-white">Assignments</Text>
+      </LinearGradient>
+      <AnimatedScreen>
+      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
 
         {!selectedCourse ? (
           <>
-            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <Text className="mb-2 text-[16px] font-semibold text-app-text">Assigned Courses</Text>
               <Text className="text-app-muted">Select a course to create, review, and manage assignments.</Text>
             </View>
 
             {courses.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                 <Text className="text-app-muted">No courses assigned yet.</Text>
               </View>
             ) : (
               courses.map((course) => (
                 <TouchableOpacity
                   key={course.id}
-                  className="mb-4 rounded-xl bg-app-surface p-4 shadow"
+                  className="mb-4 rounded-xl bg-app-surface p-4 shadow-card"
                   onPress={() => openCourse(course.id)}
                   disabled={loadingCourseId === course.id}
                 >
@@ -342,7 +351,7 @@ export default function Assignments() {
           </>
         ) : (
           <>
-            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
                   <Text className="text-[18px] font-semibold text-app-text">{selectedCourse.course.title}</Text>
@@ -356,7 +365,7 @@ export default function Assignments() {
               </View>
             </View>
 
-            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <Text className="mb-3 text-[16px] font-semibold text-app-text">Create Assignment</Text>
 
               <View className="mb-3">
@@ -413,13 +422,13 @@ export default function Assignments() {
               </TouchableOpacity>
             </View>
 
-            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <Text className="mb-2 text-[16px] font-semibold text-app-text">Published Assignments</Text>
               <Text className="text-app-muted">Track due dates and remove outdated work items when needed.</Text>
             </View>
 
             {selectedCourse.assignments.length === 0 ? (
-              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                 <Text className="text-app-muted">No assignments posted for this course yet.</Text>
               </View>
             ) : (
@@ -428,7 +437,7 @@ export default function Assignments() {
                 const isSelectedAssignment = selectedAssignmentDetail?.assignment.id === assignment.id;
 
                 return (
-                  <View key={assignment.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+                  <View key={assignment.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                     <View className="flex-row items-start justify-between gap-3">
                       <View className="flex-1">
                         <Text className="text-[16px] font-semibold text-app-text">{assignment.title}</Text>
@@ -594,6 +603,7 @@ export default function Assignments() {
           <Text className="font-semibold text-white">Back to Dashboard</Text>
         </TouchableOpacity>
       </ScrollView>
+      </AnimatedScreen>
     </SafeAreaView>
   );
 }

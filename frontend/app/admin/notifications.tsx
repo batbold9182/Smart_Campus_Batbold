@@ -12,7 +12,10 @@ import {
 } from "react-native";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
 import { adminStyles } from "../../styles/adminStyles";
+import AnimatedScreen from "../../components/AnimatedScreen";
+import { SkeletonList } from "../../components/Skeleton";
 import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
 
 type Audience = "students" | "faculty" | "all" | "specificStudent" | "specificFaculty";
@@ -245,8 +248,12 @@ export default function NotificationsScreen() {
   if (loading) {
     return (
       <View className={adminStyles.loadingScreen}>
-        <Text className={`mb-3 ${adminStyles.title}`}>Notifications</Text>
-        <ActivityIndicator size="large" />
+        <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, marginHorizontal: -20, marginTop: -20 }}>
+          <Text className="text-[22px] font-bold text-white">Notifications</Text>
+        </LinearGradient>
+        <View style={{ paddingTop: 16 }}>
+          <SkeletonList rows={4} />
+        </View>
       </View>
     );
   }
@@ -387,7 +394,7 @@ export default function NotificationsScreen() {
         onMarkAsRead={markAsRead}
         onPrevious={() => loadNotifications(page - 1)}
         onNext={() => loadNotifications(page + 1)}
-        onBack={() => router.push("../dashboard")}
+        onBack={() => router.push("/admin/dashboard")}
         backLabel="Back to Dashboard"
         topContent={sendForm}
       />

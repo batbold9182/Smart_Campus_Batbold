@@ -1,7 +1,10 @@
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, TextInput, ActivityIndicator } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, TextInput } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
+import { LinearGradient } from "expo-linear-gradient";
+import AnimatedScreen from "../../components/AnimatedScreen";
+import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
 import {
 	getStudentAttendanceSummary,
 	getStudentScheduleAttendance,
@@ -79,34 +82,42 @@ export default function StudentAttendance() {
 
 	if (loading) {
 		return (
-			<SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-				<ActivityIndicator size="large" color="#2563eb" />
-				<Text className="mt-3 text-app-muted">Loading attendance...</Text>
+			<SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
+				<LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+					<Text className="text-[22px] font-bold text-white">Attendance</Text>
+				</LinearGradient>
+				<View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+					<SkeletonStatRow count={3} />
+					<SkeletonList rows={3} />
+				</View>
 			</SafeAreaView>
 		);
 	}
 
 	return (
 		<SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-			<ScrollView className="flex-1 px-5" contentContainerClassName="pb-5">
-				<Text className="mb-4 text-[22px] font-bold text-app-text">Attendance</Text>
+			<LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
+				<Text className="text-[22px] font-bold text-white">Attendance</Text>
+			</LinearGradient>
+			<AnimatedScreen>
+			<ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
 
 				<View className="mb-4 flex-row justify-between gap-2">
-					<View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+					<View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
 						<Text className="text-[20px] font-bold text-app-text">{summaryData?.summary.totalMarked || 0}</Text>
 						<Text className="mt-1 text-[12px] text-app-muted">Marked Days</Text>
 					</View>
-					<View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+					<View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
 						<Text className="text-[20px] font-bold text-app-text">{summaryData?.summary.presentCount || 0}</Text>
 						<Text className="mt-1 text-[12px] text-app-muted">Present</Text>
 					</View>
-					<View className="flex-1 rounded-xl bg-app-surface p-4 shadow">
+					<View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
 						<Text className="text-[20px] font-bold text-app-text">{summaryData?.summary.absentCount || 0}</Text>
 						<Text className="mt-1 text-[12px] text-app-muted">Absent</Text>
 					</View>
 				</View>
 
-				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
 					<Text className="mb-2 text-[16px] font-semibold text-app-text">Check By Date</Text>
 					<TextInput
 						value={selectedDate}
@@ -125,9 +136,9 @@ export default function StudentAttendance() {
 					</TouchableOpacity>
 				</View>
 
-				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
 					<Text className="mb-2 text-[16px] font-semibold text-app-text">
-						Schedule Attendance{scheduleData?.day ? ` • ${scheduleData.day}` : ""}
+						Schedule Attendance{scheduleData?.day ? ` ï¿½ ${scheduleData.day}` : ""}
 					</Text>
 
 					{!scheduleData?.items.length ? (
@@ -139,9 +150,9 @@ export default function StudentAttendance() {
 									<View className="flex-1">
 										<Text className="text-[15px] font-semibold text-app-text">{item.course?.title || "Untitled Course"}</Text>
 										<Text className="mt-1 text-app-muted">
-											{item.course?.code || "No code"} • {item.schedule.startTime} - {item.schedule.endTime}
+											{item.course?.code || "No code"} ï¿½ {item.schedule.startTime} - {item.schedule.endTime}
 										</Text>
-										<Text className="mt-1 text-app-placeholder">Room {item.schedule.room} • Faculty: {item.facultyName}</Text>
+										<Text className="mt-1 text-app-placeholder">Room {item.schedule.room} ï¿½ Faculty: {item.facultyName}</Text>
 									</View>
 									<View className={`rounded-full px-3 py-2 ${getBadgeClassName(item.attendance?.status || null)}`}>
 										<Text className="text-[12px] font-semibold text-app-text">
@@ -161,7 +172,7 @@ export default function StudentAttendance() {
 					)}
 				</View>
 
-				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow">
+				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
 					<Text className="mb-2 text-[16px] font-semibold text-app-text">Course Attendance Summary</Text>
 
 					{!summaryData?.items.length ? (
@@ -172,7 +183,7 @@ export default function StudentAttendance() {
 								<View className="flex-row items-start justify-between gap-3">
 									<View className="flex-1">
 										<Text className="text-[15px] font-semibold text-app-text">{item.course.title}</Text>
-										<Text className="mt-1 text-app-muted">{item.course.code} • Faculty: {item.course.facultyName}</Text>
+										<Text className="mt-1 text-app-muted">{item.course.code} ï¿½ Faculty: {item.course.facultyName}</Text>
 									</View>
 									<View className="rounded-full bg-app-primary-bg px-3 py-2">
 										<Text className="text-[12px] font-semibold text-app-primary-dark">{item.summary.totalMarked} records</Text>
@@ -213,6 +224,7 @@ export default function StudentAttendance() {
 					<Text className="font-semibold text-white">Back to Dashboard</Text>
 				</TouchableOpacity>
 			</ScrollView>
+			</AnimatedScreen>
 		</SafeAreaView>
 	);
 }
