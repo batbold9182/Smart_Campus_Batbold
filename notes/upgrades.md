@@ -14,15 +14,15 @@
 - [ ] **Reduce long main-thread tasks** (11 found) — code-split heavy admin/faculty screens with React.lazy + Suspense
 
 ## Style — Medium Effort - done
-- [] **Entrance animations** — add fade-in / slide-up on screen mount using `Animated` API or `react-native-reanimated` (already installed)
+- [x] **Entrance animations** — add fade-in / slide-up on screen mount using `Animated` API or `react-native-reanimated` (already installed)
     *Entrance animations student: grades, attendance, assignments, profile · faculty: grades, attendance, assignments, profile · admin: profile*
-- [] **Gradient headers on more screens** — extend `LinearGradient` header pattern (used in dashboards) to profile, assignments, attendance screens
+- [x] **Gradient headers on more screens** — extend `LinearGradient` header pattern (used in dashboards) to profile, assignments, attendance screens
     *Gradient headers Same 9 screens above — all now have LinearGradient blue→purple header matching dashboard pattern*
-- [] **Consistent card elevation** — standardise shadow/elevation values across all card components (currently mixed between `shadow-md`, `shadow-lg`, inline `elevation`)
+- [x] **Consistent card elevation** — standardise shadow/elevation values across all card components (currently mixed between `shadow-md`, `shadow-lg`, inline `elevation`)
     *Consistent shadow-card	tailwind.config.js (added card-sm, card-md, card-lg tokens) · all shadow" → shadow-card" in grades, attendance, assignments, onlineLibrary (student + faculty)*
-- [] **Responsive breakpoints** — use `useWindowDimensions` to adjust grid columns and font sizes on tablet/desktop (currently only buildingMap uses `isWide`)
+- [x] **Responsive breakpoints** — use `useWindowDimensions` to adjust grid columns and font sizes on tablet/desktop (currently only buildingMap uses `isWide`)
     *Responsive hook Created and wired into student/grades (available for other screens to import)*
-- [] **Loading skeleton screens** — replace `ActivityIndicator` spinners with shimmer/skeleton placeholders for perceived performance
+- [x] **Loading skeleton screens** — replace `ActivityIndicator` spinners with shimmer/skeleton placeholders for perceived performance
     *Skeleton loading Replaced ActivityIndicator full-screen spinners with skeleton placeholders in all 9 screens + notificationFeed.tsx + admin/enroll.tsx + admin/notifications.tsx + student/onlineLibrary.tsx*
 
 ## Style — Bigger Lifts
