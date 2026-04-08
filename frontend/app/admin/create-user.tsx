@@ -345,7 +345,7 @@ export default function CreateUserScreen() {
 
             <TouchableOpacity
               className="items-center rounded-xl border border-app-disabled bg-app-surface px-4 py-3"
-              onPress={() => router.push("../dashboard")}
+              onPress={() => router.push("/admin/dashboard")}
             >
               <Text className="text-[15px] font-semibold text-app-text">Back to Dashboard</Text>
             </TouchableOpacity>

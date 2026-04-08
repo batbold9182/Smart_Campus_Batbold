@@ -98,7 +98,7 @@ export default function AdminDashboard() {
     { label: "Manage Courses", subtitle: "Create & edit", icon: <MaterialIcons name="menu-book" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/admin/create-course" as const },
     { label: "Create Schedule", subtitle: "Add timetable", icon: <Ionicons name="calendar" size={24} color="#fff" />, gradient: ["#16a34a", "#4ade80"] as const, route: "/admin/create-schedule" as const },
     { label: "Assign Schedule", subtitle: "Link to students", icon: <MaterialIcons name="assignment-ind" size={24} color="#fff" />, gradient: ["#ea580c", "#f97316"] as const, route: "/admin/assignSchedule" as const },
-    { label: "Create User", subtitle: "Add accounts", icon: <Ionicons name="person-add" size={24} color="#fff" />, gradient: ["#0d9488", "#2dd4bf"] as const, route: "../create-user" as const },
+    { label: "Create User", subtitle: "Add accounts", icon: <Ionicons name="person-add" size={24} color="#fff" />, gradient: ["#0d9488", "#2dd4bf"] as const, route: "/admin/create-user" as const },
     { label: "Users List", subtitle: "Manage accounts", icon: <Ionicons name="people" size={24} color="#fff" />, gradient: ["#2563eb", "#60a5fa"] as const, route: "/admin/users" as const },
     { label: "Enroll Students", subtitle: "Course enrollment", icon: <MaterialCommunityIcons name="school" size={24} color="#fff" />, gradient: ["#6d28d9", "#8b5cf6"] as const, route: "/admin/enroll" as const },
     { label: "Campus Map", subtitle: "Navigate campus", icon: <Ionicons name="location" size={24} color="#fff" />, gradient: ["#0891b2", "#22d3ee"] as const, route: "/admin/buildingMap" as const },
