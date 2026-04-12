@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import { getTheme, type ThemeMode } from "../styles/theme";
+import { haptic } from "../utils/haptics";
 
 type ThemeContextValue = {
   isDark: boolean;
@@ -11,7 +12,10 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [isDark, setIsDark] = useState(true);
-  const toggleTheme = useCallback(() => setIsDark((prev) => !prev), []);
+  const toggleTheme = useCallback(() => {
+    haptic.selection();
+    setIsDark((prev) => !prev);
+  }, []);
   const t = getTheme(isDark);
 
   return (

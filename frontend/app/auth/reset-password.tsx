@@ -2,16 +2,14 @@
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
 import { resetPassword } from "../../services/authService";
-import { rootStyles } from "../../styles/rootStyles";
+import { AppButton, AppInput, AppCard } from "../../components/ui";
 
 export default function ResetPasswordScreen() {
   const params = useLocalSearchParams<{ email?: string }>();
@@ -63,66 +61,70 @@ export default function ResetPasswordScreen() {
   return (
     <SafeAreaView className="flex-1 bg-app-bg">
       <ScrollView contentContainerClassName="flex-grow justify-center p-5" keyboardShouldPersistTaps="handled">
-        <View className="bg-app-surface rounded-2xl p-5 elevation-3">
+        <AppCard className="bg-app-surface rounded-2xl p-5 elevation-3">
           <Text className="text-[24px] font-bold text-app-text mb-[6px]">Reset Password</Text>
           <Text className="text-app-muted mb-4">Enter the 6-digit OTP sent to your email and set a new password.</Text>
 
-          <TextInput
-            className={rootStyles.input + " mb-3"}
+          <AppInput
+            className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
             placeholder="Email"
-            placeholderTextColor="#6b7280"
             autoCapitalize="none"
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
           />
 
-          <TextInput
-            className={rootStyles.input + " mb-3 text-center text-xl tracking-[8px]"}
+          <AppInput
+            className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3 text-center text-xl tracking-[8px]"
             placeholder="000000"
-            placeholderTextColor="#6b7280"
             keyboardType="number-pad"
             maxLength={6}
             value={otp}
             onChangeText={setOtp}
           />
 
-          <TextInput
-            className={rootStyles.input + " mb-3"}
+          <AppInput
+            className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
             placeholder="New password"
-            placeholderTextColor="#6b7280"
             secureTextEntry
             value={newPassword}
             onChangeText={setNewPassword}
           />
 
-          <TextInput
-            className={rootStyles.input + " mb-3"}
+          <AppInput
+            className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
             placeholder="Confirm new password"
-            placeholderTextColor="#6b7280"
             secureTextEntry
             value={confirmPassword}
             onChangeText={setConfirmPassword}
           />
 
-          <TouchableOpacity
-            className={`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center${loading ? " opacity-75" : ""}`}
+          <AppButton
+            title="Reset Password"
+            loading={loading}
             onPress={handleReset}
-            disabled={loading}
-          >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-[15px] font-bold">Reset Password</Text>}
-          </TouchableOpacity>
+            className={`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center${loading ? " opacity-75" : ""}`}
+            textClassName="text-white text-[15px] font-bold"
+          />
 
-          <TouchableOpacity className="`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center" onPress={() => router.replace("/auth/forgot-password")}>
-            <Text className="text-blue-600 font-semibold">Get one time password</Text>
-          </TouchableOpacity>
+          <AppButton
+            title="Get one time password"
+            variant="ghost"
+            onPress={() => router.replace("/auth/forgot-password")}
+            className="bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center"
+            textClassName="text-blue-600 font-semibold"
+          />
 
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
-          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/auth/login")}>
-            <Text className="text-blue-600 font-semibold">Back to login</Text>
-          </TouchableOpacity>
-        </View>
+          <AppButton
+            title="Back to login"
+            variant="ghost"
+            onPress={() => router.replace("/auth/login")}
+            className="mt-[14px] items-center"
+            textClassName="text-blue-600 font-semibold"
+          />
+        </AppCard>
       </ScrollView>
     </SafeAreaView>
   );

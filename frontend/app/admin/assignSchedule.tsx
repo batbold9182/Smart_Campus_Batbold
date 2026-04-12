@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Modal, Pressable } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import {
   assignSchedule,
   getStudents,
@@ -7,8 +7,8 @@ import {
 } from "../../services/adminServices/adminScheduleService";
 import { useRouter } from "expo-router";
 import { unassignSchedule } from "@/services/scheduleService";
-import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppButton, AppCard, AppModal } from "../../components/ui";
 
 export default function AssignScheduleScreen() {
   const [students, setStudents] = useState<any[]>([]);
@@ -137,9 +137,9 @@ export default function AssignScheduleScreen() {
   };
 
   return (
-    <SafeAreaView className={adminStyles.screen} edges={["top"]}>
+    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6" showsVerticalScrollIndicator={false}>
-        <View className={adminStyles.card}>
+        <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
           <Text className="text-[24px] font-bold text-app-text">Assign Schedule</Text>
           <Text className="mb-4 mt-1 text-[13px] text-app-muted">
             Link a student to a class schedule or remove an existing assignment.
@@ -164,30 +164,32 @@ export default function AssignScheduleScreen() {
           </TouchableOpacity>
 
           <View className="gap-2">
-            <TouchableOpacity
-              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-blue-500"}`}
+            <AppButton
+              title={loading ? "Please wait..." : "Assign Schedule"}
+              loading={loading}
               onPress={handleAssign}
-              disabled={loading}
-            >
-              <Text className="font-semibold text-white">{loading ? "Please wait..." : "Assign Schedule"}</Text>
-            </TouchableOpacity>
+              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-blue-500"}`}
+              textClassName="font-semibold text-white"
+            />
 
-            <TouchableOpacity
-              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-error-loading" : "bg-red-500"}`}
+            <AppButton
+              title="Unassign Schedule"
+              variant="danger"
+              loading={loading}
               onPress={handleUnassign}
-              disabled={loading}
-            >
-              <Text className="font-semibold text-white">Unassign Schedule</Text>
-            </TouchableOpacity>
+              className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-error-loading" : "bg-red-500"}`}
+              textClassName="font-semibold text-white"
+            />
 
-            <TouchableOpacity
-              className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+            <AppButton
+              title="Back to Dashboard"
+              variant="outline"
               onPress={() => router.push("/admin/dashboard")}
-            >
-              <Text className="font-semibold text-app-text">Back to Dashboard</Text>
-            </TouchableOpacity>
+              className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+              textClassName="font-semibold text-app-text"
+            />
           </View>
-        </View>
+        </AppCard>
         <View className="mt-3 rounded-xl bg-app-surface p-4 shadow-sm">
           <Text className="text-[16px] font-semibold text-app-text">Quick Tips</Text>
           <Text className="mt-2 text-[13px] text-app-muted">1. Select a student first, then select a schedule slot.</Text>
@@ -195,42 +197,38 @@ export default function AssignScheduleScreen() {
         </View>
       </ScrollView>
 
-      <Modal transparent visible={activeSelector !== null} animationType="fade" onRequestClose={() => setActiveSelector(null)}>
-        <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setActiveSelector(null)}>
-          <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
-            <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-[17px] font-bold text-app-text">{selectorTitle}</Text>
-              <TouchableOpacity onPress={() => setActiveSelector(null)}>
-                <Text className="text-[14px] font-semibold text-app-primary">{selectorCloseLabel}</Text>
-              </TouchableOpacity>
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {selectorOptions.length === 0 ? (
-                <Text className="py-3 text-app-text-subtle">{emptySelectorMessage}</Text>
-              ) : (
-                selectorOptions.map((option) => {
-                  const active =
-                    (selectorType === "student" && studentId === option.value) ||
-                    (selectorType === "schedule" && scheduleId === option.value);
-                  return (
-                    <TouchableOpacity
-                      key={option.value}
-                      className={`mb-2 rounded-lg border px-3 py-3 ${
-                        active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
-                      }`}
-                      onPress={() => handleSelectOption(option.value)}
-                    >
-                      <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
-                        {option.label}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })
-              )}
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      <AppModal open={activeSelector !== null} onClose={() => setActiveSelector(null)} layout="bottom">
+        <View className="mb-2 flex-row items-center justify-between">
+          <Text className="text-[17px] font-bold text-app-text">{selectorTitle}</Text>
+          <TouchableOpacity onPress={() => setActiveSelector(null)}>
+            <Text className="text-[14px] font-semibold text-app-primary">{selectorCloseLabel}</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {selectorOptions.length === 0 ? (
+            <Text className="py-3 text-app-text-subtle">{emptySelectorMessage}</Text>
+          ) : (
+            selectorOptions.map((option) => {
+              const active =
+                (selectorType === "student" && studentId === option.value) ||
+                (selectorType === "schedule" && scheduleId === option.value);
+              return (
+                <TouchableOpacity
+                  key={option.value}
+                  className={`mb-2 rounded-lg border px-3 py-3 ${
+                    active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
+                  }`}
+                  onPress={() => handleSelectOption(option.value)}
+                >
+                  <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
+                    {option.label}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </ScrollView>
+      </AppModal>
     </SafeAreaView>
   );
 }

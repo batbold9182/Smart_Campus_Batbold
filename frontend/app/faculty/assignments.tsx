@@ -5,7 +5,6 @@ import {
   Platform,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -14,6 +13,7 @@ import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonList } from "../../components/Skeleton";
+import { AppButton, AppInput } from "../../components/ui";
 import {
   createCourseAssignment,
   deleteCourseAssignment,
@@ -370,7 +370,7 @@ export default function Assignments() {
 
               <View className="mb-3">
                 <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Title</Text>
-                <TextInput
+                <AppInput
                   value={draftTitle}
                   onChangeText={setDraftTitle}
                   placeholder="Midterm reflection"
@@ -380,7 +380,7 @@ export default function Assignments() {
 
               <View className="mb-3">
                 <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Description</Text>
-                <TextInput
+                <AppInput
                   multiline
                   value={draftDescription}
                   onChangeText={setDraftDescription}
@@ -392,7 +392,7 @@ export default function Assignments() {
 
               <View className="mb-3">
                 <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Due Date</Text>
-                <TextInput
+                <AppInput
                   value={draftDueDate}
                   onChangeText={setDraftDueDate}
                   placeholder="YYYY-MM-DD"
@@ -404,7 +404,7 @@ export default function Assignments() {
 
               <View>
                 <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Max Points</Text>
-                <TextInput
+                <AppInput
                   keyboardType="numeric"
                   value={draftMaxPoints}
                   onChangeText={setDraftMaxPoints}
@@ -413,13 +413,13 @@ export default function Assignments() {
                 />
               </View>
 
-              <TouchableOpacity
-                className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
+              <AppButton
+                className="mt-4"
                 onPress={handleCreate}
-                disabled={creating}
+                loading={creating}
               >
-                <Text className="font-semibold text-white">{creating ? "Creating..." : "Create Assignment"}</Text>
-              </TouchableOpacity>
+                Create Assignment
+              </AppButton>
             </View>
 
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
@@ -471,19 +471,14 @@ export default function Assignments() {
                       </View>
                     </View>
 
-                    <TouchableOpacity
-                      className="mt-4 items-center rounded-lg bg-app-border-light p-[14px]"
+                    <AppButton
+                      variant="outline"
+                      className="mt-4"
                       onPress={() => (isSelectedAssignment ? setSelectedAssignmentDetail(null) : openAssignmentSubmissions(assignment.id))}
-                      disabled={loadingAssignmentId === assignment.id}
+                      loading={loadingAssignmentId === assignment.id}
                     >
-                      <Text className="font-semibold text-app-text-secondary">
-                        {loadingAssignmentId === assignment.id
-                          ? "Loading..."
-                          : isSelectedAssignment
-                            ? "Hide Submissions"
-                            : "View Submissions"}
-                      </Text>
-                    </TouchableOpacity>
+                      {isSelectedAssignment ? "Hide Submissions" : "View Submissions"}
+                    </AppButton>
 
                     {isSelectedAssignment ? (
                       <View className="mt-4 rounded-lg bg-app-bg-subtle p-4">
@@ -531,7 +526,7 @@ export default function Assignments() {
 
                               <View className="mt-4">
                                 <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Score</Text>
-                                <TextInput
+                                <AppInput
                                   keyboardType="numeric"
                                   value={draftScores[submission.id] || ""}
                                   onChangeText={(value) => setDraftScores((current) => ({ ...current, [submission.id]: value }))}
@@ -542,7 +537,7 @@ export default function Assignments() {
 
                               <View className="mt-4">
                                 <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Feedback</Text>
-                                <TextInput
+                                <AppInput
                                   multiline
                                   value={draftFeedback[submission.id] || ""}
                                   onChangeText={(value) => setDraftFeedback((current) => ({ ...current, [submission.id]: value }))}
@@ -561,15 +556,13 @@ export default function Assignments() {
                                 <Text className="mt-3 text-[12px] text-app-placeholder">Not reviewed yet</Text>
                               )}
 
-                              <TouchableOpacity
-                                className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
+                              <AppButton
+                                className="mt-4"
                                 onPress={() => handleSaveReview(assignment, submission.id)}
-                                disabled={savingSubmissionId === submission.id}
+                                loading={savingSubmissionId === submission.id}
                               >
-                                <Text className="font-semibold text-white">
-                                  {savingSubmissionId === submission.id ? "Saving..." : "Save Review"}
-                                </Text>
-                              </TouchableOpacity>
+                                Save Review
+                              </AppButton>
                             </View>
                           ))
                         ) : (
@@ -580,15 +573,14 @@ export default function Assignments() {
                       </View>
                     ) : null}
 
-                    <TouchableOpacity
-                      className="mt-4 items-center rounded-lg bg-app-danger p-[14px]"
+                    <AppButton
+                      variant="danger"
+                      className="mt-4"
                       onPress={() => confirmDelete(assignment)}
-                      disabled={deletingAssignmentId === assignment.id}
+                      loading={deletingAssignmentId === assignment.id}
                     >
-                      <Text className="font-semibold text-white">
-                        {deletingAssignmentId === assignment.id ? "Deleting..." : "Delete Assignment"}
-                      </Text>
-                    </TouchableOpacity>
+                      Delete Assignment
+                    </AppButton>
                   </View>
                 );
               })
@@ -596,12 +588,9 @@ export default function Assignments() {
           </>
         )}
 
-        <TouchableOpacity
-          className="items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/faculty/dashboard")}
-        >
-          <Text className="font-semibold text-white">Back to Dashboard</Text>
-        </TouchableOpacity>
+        <AppButton onPress={() => router.push("/faculty/dashboard")}>
+          Back to Dashboard
+        </AppButton>
       </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>

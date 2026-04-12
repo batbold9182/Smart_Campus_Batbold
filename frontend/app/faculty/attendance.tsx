@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, TextInput, Alert } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonList } from "../../components/Skeleton";
+import { AppButton, AppInput } from "../../components/ui";
 import {
   getFacultyAttendanceCourses,
   getFacultyCourseAttendance,
@@ -186,7 +187,7 @@ export default function Attendance() {
 
         <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
           <Text className="mb-2 text-[16px] font-semibold text-app-text">Attendance Date</Text>
-          <TextInput
+          <AppInput
             value={selectedDate}
             onChangeText={setSelectedDate}
             placeholder="YYYY-MM-DD"
@@ -318,7 +319,7 @@ export default function Attendance() {
 
                   <View className="mt-4">
                     <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Remarks</Text>
-                    <TextInput
+                    <AppInput
                       multiline
                       value={draftRemarks[item.student.id] || ""}
                       onChangeText={(value) => setDraftRemarks((current) => ({ ...current, [item.student.id]: value }))}
@@ -336,27 +337,22 @@ export default function Attendance() {
                     <Text className="mt-3 text-[12px] text-app-placeholder">No attendance saved for this date</Text>
                   )}
 
-                  <TouchableOpacity
-                    className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
+                  <AppButton
+                    className="mt-4"
                     onPress={() => handleSave(item.student.id)}
-                    disabled={savingStudentId === item.student.id}
+                    loading={savingStudentId === item.student.id}
                   >
-                    <Text className="font-semibold text-white">
-                      {savingStudentId === item.student.id ? "Saving..." : "Save Attendance"}
-                    </Text>
-                  </TouchableOpacity>
+                    Save Attendance
+                  </AppButton>
                 </View>
               ))
             )}
           </>
         )}
 
-        <TouchableOpacity
-          className="items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/faculty/dashboard")}
-        >
-          <Text className="font-semibold text-white">Back to Dashboard</Text>
-        </TouchableOpacity>
+        <AppButton onPress={() => router.push("/faculty/dashboard")}>
+          Back to Dashboard
+        </AppButton>
       </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>

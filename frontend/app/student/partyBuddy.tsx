@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,6 +19,7 @@ import {
   type PartyBuddyPresencePayload,
   type PartyBuddySendAck,
 } from "../../services/studentServices/partyBuddyService";
+import { AppButton, AppInput } from "../../components/ui";
 
 export default function PartyBuddy() {
   const router = useRouter();
@@ -176,8 +174,7 @@ export default function PartyBuddy() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <ActivityIndicator size="large" color="#dc2626" />
-        <Text className="mt-3 text-[15px] text-app-muted">Loading Party Buddy...</Text>
+        <AppButton title="Loading Party Buddy..." loading={true} className="bg-transparent" textClassName="mt-3 text-[15px] text-app-muted" onPress={() => {}} />
       </SafeAreaView>
     );
   }
@@ -197,12 +194,13 @@ export default function PartyBuddy() {
               </Text>
             </View>
 
-            <TouchableOpacity
-              className="rounded-full bg-app-error-bg px-4 py-2"
+            <AppButton
+              title="Sections"
+              variant="ghost"
               onPress={() => router.back()}
-            >
-              <Text className="font-semibold text-app-danger">Sections</Text>
-            </TouchableOpacity>
+              className="rounded-full bg-app-error-bg px-4 py-2"
+              textClassName="font-semibold text-app-danger"
+            />
           </View>
 
           <View className="mt-4 flex-row flex-wrap gap-2">
@@ -274,11 +272,10 @@ export default function PartyBuddy() {
 
         <View className="border-t border-app-border-light bg-app-surface px-5 pb-5 pt-4">
           <View className="rounded-2xl border border-app-border bg-app-bg-subtle px-4 py-3">
-            <TextInput
+            <AppInput
               multiline
               maxLength={400}
               placeholder="Share plans, suggest a hangout spot..."
-              placeholderTextColor="#9ca3af"
               value={draft}
               onChangeText={setDraft}
               className="min-h-[44px] text-[15px] leading-6 text-app-text"
@@ -289,17 +286,17 @@ export default function PartyBuddy() {
           <View className="mt-3 flex-row items-center justify-between">
             <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
 
-            <TouchableOpacity
+            <AppButton
+              title={sending ? "Sending..." : "Send"}
+              loading={sending}
+              onPress={handleSend}
               className={`rounded-full px-5 py-3 ${
                 draft.trim() && !sending && socketRef.current?.connected
                   ? "bg-app-danger"
                   : "bg-app-error-light"
               }`}
-              disabled={!draft.trim() || sending || !socketRef.current?.connected}
-              onPress={handleSend}
-            >
-              <Text className="font-semibold text-white">{sending ? "Sending..." : "Send"}</Text>
-            </TouchableOpacity>
+              textClassName="font-semibold text-white"
+            />
           </View>
         </View>
       </KeyboardAvoidingView>

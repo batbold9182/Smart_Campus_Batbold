@@ -11,6 +11,7 @@ import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-ic
 import { StatusBar } from "expo-status-bar";
 import { getDashboardStyles } from "../../styles/dashboardStyles";
 import { useTheme } from "../../contexts/ThemeContext";
+import { haptic } from "../../utils/haptics";
 
 export default function StudentDashboard() {
   const router = useRouter();
@@ -237,7 +238,7 @@ export default function StudentDashboard() {
                   <View key={action.label} style={s.quickActionCardWrap}>
                     <Pressable
                       style={({ pressed }) => s.quickActionPressable(pressed, action.gradient[0])}
-                      onPress={() => router.push(action.route)}
+                      onPress={() => { haptic.light(); router.push(action.route); }}
                     >
                       <LinearGradient
                         colors={action.gradient}
@@ -273,7 +274,7 @@ export default function StudentDashboard() {
               end={{ x: 1, y: 0 }}
               style={s.logoutGradient}
             >
-              <TouchableOpacity style={s.logoutButton} onPress={handleLogout}>
+              <TouchableOpacity style={s.logoutButton} onPress={() => { haptic.medium(); handleLogout(); }}>
                 <Ionicons name="log-out-outline" size={20} color="#fff" style={{ marginRight: 8 }} />
                 <Text style={s.logoutText}>Logout</Text>
               </TouchableOpacity>

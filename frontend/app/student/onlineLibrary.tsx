@@ -4,7 +4,6 @@ import {
   Text,
   TouchableOpacity,
   ScrollView,
-  TextInput,
   Image,
   Linking,
   Alert,
@@ -13,6 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { SkeletonList } from "../../components/Skeleton";
 import { searchOnlineLibrary, type LibrarySearchItem } from "../../services/studentServices/onlineLibraryService";
+import { AppButton, AppInput } from "../../components/ui";
 
 const LIBRARY_CATEGORIES = [
   { label: "All", value: "" },
@@ -131,7 +131,7 @@ export default function OnlineLibrary() {
             </View>
           </ScrollView>
 
-          <TextInput
+          <AppInput
             placeholder="Try: algorithms, physics, psychology"
             value={query}
             onChangeText={setQuery}
@@ -140,9 +140,12 @@ export default function OnlineLibrary() {
             returnKeyType="search"
           />
 
-          <TouchableOpacity className="mt-3 items-center rounded-lg bg-blue-500 p-[12px]" onPress={() => onSearch(1)}>
-            <Text className="font-semibold text-white">Search Books</Text>
-          </TouchableOpacity>
+          <AppButton
+            title="Search Books"
+            onPress={() => onSearch(1)}
+            className="mt-3 items-center rounded-lg bg-blue-500 p-[12px]"
+            textClassName="font-semibold text-white"
+          />
         </View>
 
         {loading ? (
@@ -221,12 +224,12 @@ export default function OnlineLibrary() {
           </View>
         ) : null}
 
-        <TouchableOpacity
-          className="items-center rounded-lg bg-blue-500 p-[14px]"
+        <AppButton
+          title="Back to Dashboard"
           onPress={() => router.push("/student/dashboard")}
-        >
-          <Text className="font-semibold text-white">Back to Dashboard</Text>
-        </TouchableOpacity>
+          className="items-center rounded-lg bg-blue-500 p-[14px]"
+          textClassName="font-semibold text-white"
+        />
       </ScrollView>
     </SafeAreaView>
   );

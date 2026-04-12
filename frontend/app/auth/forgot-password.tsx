@@ -2,16 +2,14 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   ScrollView,
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 import { forgotPassword } from "../../services/authService";
-import { rootStyles } from "../../styles/rootStyles";
+import { AppButton, AppInput, AppCard } from "../../components/ui";
 
 export default function ForgotPasswordScreen() {
   const [email, setEmail] = useState("");
@@ -46,27 +44,26 @@ export default function ForgotPasswordScreen() {
   return (
     <SafeAreaView className="flex-1 bg-app-bg">
       <ScrollView contentContainerClassName="flex-grow justify-center p-5" keyboardShouldPersistTaps="handled">
-        <View className="bg-app-surface rounded-2xl p-5 elevation-3">
+        <AppCard className="bg-app-surface rounded-2xl p-5 elevation-3">
           <Text className="text-[24px] font-bold text-app-text mb-[6px]">Forgot Password</Text>
           <Text className="text-app-muted mb-4">Enter your account email to receive a 6-digit OTP.</Text>
 
-          <TextInput
-            className={rootStyles.input + " mb-3"}
+          <AppInput
+            className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
             placeholder="Email"
-            placeholderTextColor="#6b7280"
             autoCapitalize="none"
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
           />
 
-          <TouchableOpacity
-            className={`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center${loading ? " opacity-75" : ""}`}
+          <AppButton
+            title="Send OTP"
+            loading={loading}
             onPress={handleRequestReset}
-            disabled={loading}
-          >
-            {loading ? <ActivityIndicator color="#fff" /> : <Text className="text-white text-[15px] font-bold">Send OTP</Text>}
-          </TouchableOpacity>
+            className={`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center${loading ? " opacity-75" : ""}`}
+            textClassName="text-white text-[15px] font-bold"
+          />
 
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
@@ -74,19 +71,24 @@ export default function ForgotPasswordScreen() {
             <View className="mt-[14px] border border-app-border rounded-[10px] p-3 bg-app-bg">
               <Text className="font-bold text-app-text mb-[6px]">Development OTP</Text>
               <Text selectable className="text-app-text-secondary text-2xl tracking-[8px] text-center mb-[10px]">{devOtp}</Text>
-              <TouchableOpacity
-                className="items-center justify-center rounded-lg border border-blue-600 py-[10px]"
+              <AppButton
+                title="Continue to Reset Password"
+                variant="outline"
                 onPress={() => router.push({ pathname: "/auth/reset-password", params: { email: email.trim() } })}
-              >
-                <Text className="text-blue-600 font-bold">Continue to Reset Password</Text>
-              </TouchableOpacity>
+                className="items-center justify-center rounded-lg border border-blue-600 py-[10px]"
+                textClassName="text-blue-600 font-bold"
+              />
             </View>
           ) : null}
 
-          <TouchableOpacity className="mt-[14px] items-center" onPress={() => router.replace("/auth/reset-password")}>
-            <Text className="text-blue-600 font-semibold">Back</Text>
-          </TouchableOpacity>
-        </View>
+          <AppButton
+            title="Back"
+            variant="ghost"
+            onPress={() => router.replace("/auth/reset-password")}
+            className="mt-[14px] items-center"
+            textClassName="text-blue-600 font-semibold"
+          />
+        </AppCard>
       </ScrollView>
     </SafeAreaView>
   );

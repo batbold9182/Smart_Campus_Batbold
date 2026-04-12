@@ -2,9 +2,7 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Image,
@@ -15,7 +13,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { login } from "../../services/authService";
 import { router } from "expo-router";
 import { setToken } from "../../services/tokenStorage";
-import { rootStyles } from "../../styles/rootStyles";
+import { haptic } from "../../utils/haptics";
+import { AppButton, AppInput, AppCard } from "../../components/ui";
 
 
 export default function LoginScreen() {
@@ -36,6 +35,7 @@ export default function LoginScreen() {
     setEmailError(nextEmailError);
     setPasswordError(nextPasswordError);
     if (nextEmailError || nextPasswordError) {
+      haptic.error();
       setMessage("? Please fix the errors below.");
       return;
     }
@@ -45,14 +45,17 @@ export default function LoginScreen() {
     try {
       const data = await login(trimmedEmail, password);
       if (data?.user?.isActive === false) {
+        haptic.error();
         setMessage("? Your account is deactivated. Please contact admin.");
         return;
       }
       if (!data?.token || !data?.user?.role) {
+        haptic.error();
         setMessage("? Login failed. Please try again.");
         return;
       }
 
+      haptic.success();
       await setToken(data.token);
 
       if (data.user.role === "admin") {
@@ -63,6 +66,7 @@ export default function LoginScreen() {
         router.replace("/student/dashboard");
       }
     } catch (err: any) {
+      haptic.error();
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.message;
       if (status === 403 && serverMessage) {
@@ -97,7 +101,7 @@ export default function LoginScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="bg-app-surface rounded-[18px] p-5 shadow-card elevation-4">
+          <AppCard className="bg-app-surface rounded-[18px] p-5 shadow-card elevation-4">
             <Image
               source={require("../../assets/images/Logo_VIZJA.png")}
               style={{ width: logoSize, height: logoSize, alignSelf: "center", marginBottom: 8 }}
@@ -107,9 +111,8 @@ export default function LoginScreen() {
             <Text className="text-[28px] font-bold text-app-text text-center">Welcome Back</Text>
             <Text className="mt-1 mb-[18px] text-app-muted text-center">Sign in to continue to your dashboard</Text>
 
-            <TextInput
+            <AppInput
               placeholder="Email"
-              placeholderTextColor="#6b7280"
               value={email}
               onChangeText={(value) => {
                 setEmail(value);
@@ -120,7 +123,7 @@ export default function LoginScreen() {
                   setMessage("");
                 }
               }}
-              className={rootStyles.input + " mb-3"}
+              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCapitalize="none"
               keyboardType="email-address"
               autoCorrect={false}
@@ -129,9 +132,8 @@ export default function LoginScreen() {
             />
             {emailError ? <Text className="text-app-error -mt-1.5 mb-[10px]">{emailError}</Text> : null}
 
-            <TextInput
+            <AppInput
               placeholder="Password"
-              placeholderTextColor="#6b7280"
               value={password}
               onChangeText={(value) => {
                 setPassword(value);
@@ -143,7 +145,7 @@ export default function LoginScreen() {
                 }
               }}
               secureTextEntry
-              className={rootStyles.input + " mb-3"}
+              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCorrect={false}
               textContentType="password"
               autoComplete="password"
@@ -158,28 +160,25 @@ export default function LoginScreen() {
               <Text className="text-blue-600 font-semibold">Reset password?</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
+            <AppButton
+              title="Login"
+              loading={isLoading}
               onPress={handleLogin}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#ffffff" />
-              ) : (
-                <Text className="text-white text-[16px] font-bold">Login</Text>
-              )}
-            </TouchableOpacity>
+              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
+              textClassName="text-white text-[16px] font-bold"
+            />
 
             {message ? <Text className="mt-[14px] text-center text-app-error">{message}</Text> : null}
 
-            <TouchableOpacity
-              className="mt-3 items-center"
+            <AppButton
+              title="Don't have an account? Register"
+              variant="ghost"
               onPress={() => router.push("/auth/register")}
               disabled={isLoading}
-            >
-              <Text className="text-blue-600 font-semibold">Don&apos;t have an account? Register</Text>
-            </TouchableOpacity>
-          </View>
+              className="mt-3 items-center"
+              textClassName="text-blue-600 font-semibold"
+            />
+          </AppCard>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

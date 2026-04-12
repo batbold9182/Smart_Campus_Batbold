@@ -1,13 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -22,6 +19,7 @@ import {
   type LearningBuddyPresencePayload,
   type LearningBuddySendAck,
 } from "../../services/studentServices/learningBuddyService";
+import { AppButton, AppInput } from "../../components/ui";
 
 export default function LearningBuddy() {
   const router = useRouter();
@@ -172,8 +170,7 @@ export default function LearningBuddy() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <ActivityIndicator size="large" color="#16a34a" />
-        <Text className="mt-3 text-[15px] text-app-muted">Loading Learning Buddy...</Text>
+        <AppButton title="Loading Learning Buddy..." loading={true} className="bg-transparent" textClassName="mt-3 text-[15px] text-app-muted" onPress={() => {}} />
       </SafeAreaView>
     );
   }
@@ -193,12 +190,13 @@ export default function LearningBuddy() {
               </Text>
             </View>
 
-            <TouchableOpacity
-              className="rounded-full bg-app-success-light px-4 py-2"
+            <AppButton
+              title="Sections"
+              variant="ghost"
               onPress={() => router.back()}
-            >
-              <Text className="font-semibold text-app-success-dark">Sections</Text>
-            </TouchableOpacity>
+              className="rounded-full bg-app-success-light px-4 py-2"
+              textClassName="font-semibold text-app-success-dark"
+            />
           </View>
 
           <View className="mt-4 flex-row flex-wrap gap-2">
@@ -270,11 +268,10 @@ export default function LearningBuddy() {
 
         <View className="border-t border-app-border-light bg-app-surface px-5 pb-5 pt-4">
           <View className="rounded-2xl border border-app-border bg-app-bg-subtle px-4 py-3">
-            <TextInput
+            <AppInput
               multiline
               maxLength={400}
               placeholder="Ask about a topic, form a study group..."
-              placeholderTextColor="#9ca3af"
               value={draft}
               onChangeText={setDraft}
               className="min-h-[44px] text-[15px] leading-6 text-app-text"
@@ -285,17 +282,17 @@ export default function LearningBuddy() {
           <View className="mt-3 flex-row items-center justify-between">
             <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
 
-            <TouchableOpacity
+            <AppButton
+              title={sending ? "Sending..." : "Send"}
+              loading={sending}
+              onPress={handleSend}
               className={`rounded-full px-5 py-3 ${
                 draft.trim() && !sending && socketRef.current?.connected
                   ? "bg-app-success-accent"
                   : "bg-app-success-timestamp"
               }`}
-              disabled={!draft.trim() || sending || !socketRef.current?.connected}
-              onPress={handleSend}
-            >
-              <Text className="font-semibold text-white">{sending ? "Sending..." : "Send"}</Text>
-            </TouchableOpacity>
+              textClassName="font-semibold text-white"
+            />
           </View>
         </View>
       </KeyboardAvoidingView>

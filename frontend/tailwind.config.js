@@ -1,3 +1,5 @@
+const { palette } = require("./styles/tokens");
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -5,58 +7,67 @@ module.exports = {
     "./components/**/*.{js,jsx,ts,tsx}",
     "./styles/**/*.{js,jsx,ts,tsx}",
   ],
+  darkMode: "class",
   presets: [require("nativewind/preset")],
   theme: {
     extend: {
       colors: {
-        "app-bg": "#f5f7fb",
-        "app-surface": "#ffffff",
-        "app-text": "#111827",
-        "app-muted": "#4b5563",
-        "app-border": "#d1d5db",
-        // Grays & neutrals
-        "app-border-light": "#e5e7eb",
-        "app-bg-muted": "#f3f4f6",
-        "app-bg-subtle": "#f9fafb",
-        "app-placeholder": "#9ca3af",
-        "app-text-secondary": "#374151",
-        "app-text-subtle": "#64748b",
-        // Primary blue
-        "app-primary": "#2563eb",
-        "app-primary-dark": "#1d4ed8",
-        "app-primary-bg": "#eff6ff",
-        "app-primary-light": "#dbeafe",
-        "app-primary-muted": "#bfdbfe",
-        "app-primary-loading": "#93c5fd",
-        // Error / danger red
-        "app-error": "#b91c1c",
-        "app-danger": "#dc2626",
-        "app-error-dark": "#991b1b",
-        "app-error-bg": "#fee2e2",
-        "app-error-bg-subtle": "#fef2f2",
-        "app-error-light": "#fecaca",
-        "app-error-loading": "#fca5a5",
-        // Success green
-        "app-success": "#047857",
-        "app-success-dark": "#166534",
-        "app-success-bg": "#d1fae5",
-        "app-success-bg-subtle": "#ecfdf5",
-        "app-success-light": "#dcfce7",
-        "app-success-accent": "#16a34a",
-        "app-success-timestamp": "#bbf7d0",
-        // Warning amber
-        "app-warning": "#b45309",
-        "app-warning-dark": "#92400e",
-        "app-warning-bg": "#fef3c7",
-        // Disabled
-        "app-disabled": "#cbd5e1",
-        // Dark purple theme (student dashboard)
-        "dark-bg": "#0d0221",
-        "dark-surface": "#1a0a3e",
-        "dark-card": "#231152",
-        "dark-border": "#6b21a8",
-        "dark-text": "#ffffff",
-        "dark-muted": "#a78bfa",
+        /* ── Mode-switching tokens (CSS variables from global.css) ── */
+        "app-bg": "var(--color-app-bg)",
+        "app-surface": "var(--color-app-surface)",
+        "app-bg-muted": "var(--color-app-bg-muted)",
+        "app-bg-subtle": "var(--color-app-bg-subtle)",
+
+        "app-text": "var(--color-app-text)",
+        "app-muted": "var(--color-app-muted)",
+        "app-text-secondary": "var(--color-app-text-secondary)",
+        "app-text-subtle": "var(--color-app-text-subtle)",
+        "app-placeholder": "var(--color-app-placeholder)",
+
+        "app-border": "var(--color-app-border)",
+        "app-border-light": "var(--color-app-border-light)",
+
+        "app-primary-bg": "var(--color-app-primary-bg)",
+        "app-primary-light": "var(--color-app-primary-light)",
+        "app-primary-muted": "var(--color-app-primary-muted)",
+        "app-primary-loading": "var(--color-app-primary-loading)",
+
+        "app-error-bg": "var(--color-app-error-bg)",
+        "app-error-bg-subtle": "var(--color-app-error-bg-subtle)",
+        "app-error-light": "var(--color-app-error-light)",
+        "app-error-loading": "var(--color-app-error-loading)",
+
+        "app-success-bg": "var(--color-app-success-bg)",
+        "app-success-bg-subtle": "var(--color-app-success-bg-subtle)",
+        "app-success-light": "var(--color-app-success-light)",
+        "app-success-timestamp": "var(--color-app-success-timestamp)",
+
+        "app-warning-bg": "var(--color-app-warning-bg)",
+
+        "app-disabled": "var(--color-app-disabled)",
+
+        /* ── Static accent colours (same in light & dark) ── */
+        "app-primary": palette.blue600,
+        "app-primary-dark": palette.blue700,
+
+        "app-error": palette.red700,
+        "app-danger": palette.red600,
+        "app-error-dark": palette.red800,
+
+        "app-success": palette.green700,
+        "app-success-dark": palette.green800,
+        "app-success-accent": palette.green600,
+
+        "app-warning": palette.amber700,
+        "app-warning-dark": palette.amber800,
+
+        /* ── Dark-theme palette (explicit, for StyleSheet-hybrid pages) ── */
+        "dark-bg": palette.purple950,
+        "dark-surface": palette.purple900,
+        "dark-card": palette.purple800,
+        "dark-border": palette.purple700,
+        "dark-text": palette.white,
+        "dark-muted": palette.purple400,
       },
       boxShadow: {
         "card-sm": "0 1px 3px rgba(15, 23, 42, 0.06)",

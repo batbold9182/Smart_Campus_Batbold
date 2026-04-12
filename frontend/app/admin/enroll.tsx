@@ -5,14 +5,12 @@ import {
   Alert,
   ScrollView,
   TouchableOpacity,
-  Modal,
-  Pressable,
 } from "react-native";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
-import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SkeletonList } from "../../components/Skeleton";
+import { AppButton, AppCard, AppModal } from "../../components/ui";
 
 export default function AdminEnrollScreen() {
   const ENROLLMENTS_LIMIT = 20;
@@ -272,7 +270,7 @@ export default function AdminEnrollScreen() {
     
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6">
-        <View className={adminStyles.card}>
+        <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
         <Text className="text-[24px] font-bold text-app-text">Enroll Student</Text>
         <Text className="mb-5 mt-1 text-[13px] text-app-muted">
           Assign students to courses and manage active enrollments.
@@ -311,24 +309,23 @@ export default function AdminEnrollScreen() {
         </View>
       ) : (
         <>
-          <TouchableOpacity
-            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-app-primary-loading" : "bg-blue-500"}`}
+          <AppButton
+            title="Enroll Student"
             onPress={handleEnroll}
-            disabled={students.length === 0 || courses.length === 0}
-          >
-            <Text className="font-semibold text-white">Enroll Student</Text>
-          </TouchableOpacity>
+            loading={loading}
+            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-app-primary-loading" : "bg-blue-500"}`}
+            textClassName="font-semibold text-white"
+          />
           <View className="h-[10px]" />
-          <TouchableOpacity
-            className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+          <AppButton
+            title={showEnrollments ? "Hide Enrollments List" : "Show Enrollments List"}
+            variant="outline"
             onPress={() => {
               setShowEnrollments((prev) => !prev);
             }}
-          >
-            <Text className="font-semibold text-app-text">
-              {showEnrollments ? "Hide Enrollments List" : "Show Enrollments List"}
-            </Text>
-          </TouchableOpacity>
+            className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+            textClassName="font-semibold text-app-text"
+          />
         </>
       )}
 
@@ -351,18 +348,19 @@ export default function AdminEnrollScreen() {
             <Text className="mb-3 text-app-muted">No enrollments found</Text>
           ) : (
             filteredEnrollments.map((enrollment) => (
-              <View key={enrollment._id} className="mb-3 gap-2 rounded-xl border border-app-border bg-app-surface p-[10px]">
+              <AppCard key={enrollment._id} variant="bordered" className="mb-3 gap-2 rounded-xl border border-app-border bg-app-surface p-[10px]">
                 <Text className="text-[14px]">
                   {enrollment.student?.name || "Unknown Student"} → {enrollment.course?.title || "Unknown Course"}
                 </Text>
-                <TouchableOpacity
-                  className="items-center rounded-lg bg-red-500 px-3 py-2"
+                <AppButton
+                  title="Unenroll"
+                  variant="danger"
+                  loading={loading}
                   onPress={() => handleUnenroll(enrollment._id)}
-                  disabled={loading}
-                >
-                  <Text className="font-semibold text-white">Unenroll</Text>
-                </TouchableOpacity>
-              </View>
+                  className="items-center rounded-lg bg-red-500 px-3 py-2"
+                  textClassName="font-semibold text-white"
+                />
+              </AppCard>
             ))
           )}
 
@@ -386,52 +384,49 @@ export default function AdminEnrollScreen() {
         </>
       )}
 
-      <TouchableOpacity
-         className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
-         onPress={() => router.push("/admin/dashboard")}
-      >
-        <Text className="font-semibold text-app-text">Back to Dashboard</Text>
-      </TouchableOpacity>
-      </View>
+      <AppButton
+        title="Back to Dashboard"
+        variant="outline"
+        onPress={() => router.push("/admin/dashboard")}
+        className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+        textClassName="font-semibold text-app-text"
+      />
+      </AppCard>
     </ScrollView>
 
-    <Modal transparent visible={activeSelector !== null} animationType="fade" onRequestClose={() => setActiveSelector(null)}>
-      <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setActiveSelector(null)}>
-        <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
-          <View className="mb-2 flex-row items-center justify-between">
-            <Text className="text-[17px] font-bold text-app-text">{selectorTitle}</Text>
-            <TouchableOpacity onPress={() => setActiveSelector(null)}>
-              <Text className="text-[14px] font-semibold text-app-primary">{selectorCloseLabel}</Text>
-            </TouchableOpacity>
-          </View>
-          <ScrollView showsVerticalScrollIndicator={false}>
-            {selectorOptions.length === 0 ? (
-              <Text className="py-3 text-app-text-subtle">{emptySelectorMessage}</Text>
-            ) : (
-              selectorOptions.map((option) => {
-                const active =
-                  (activeSelector === "student" && studentId === option.value) ||
-                  (activeSelector === "course" && courseId === option.value) ||
-                  (activeSelector === "filterCourse" && viewCourseId === option.value);
-                return (
-                  <TouchableOpacity
-                    key={`${option.value || "all"}-${option.label}`}
-                    className={`mb-2 rounded-lg border px-3 py-3 ${
-                      active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
-                    }`}
-                    onPress={() => handleSelectorPick(option.value)}
-                  >
-                    <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
-                      {option.label}
-                    </Text>
-                  </TouchableOpacity>
-                );
-              })
-            )}
-          </ScrollView>
-        </Pressable>
-      </Pressable>
-    </Modal>
+    <AppModal open={activeSelector !== null} onClose={() => setActiveSelector(null)} layout="bottom">
+      <View className="mb-2 flex-row items-center justify-between">
+        <Text className="text-[17px] font-bold text-app-text">{selectorTitle}</Text>
+        <TouchableOpacity onPress={() => setActiveSelector(null)}>
+          <Text className="text-[14px] font-semibold text-app-primary">{selectorCloseLabel}</Text>
+        </TouchableOpacity>
+      </View>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {selectorOptions.length === 0 ? (
+          <Text className="py-3 text-app-text-subtle">{emptySelectorMessage}</Text>
+        ) : (
+          selectorOptions.map((option) => {
+            const active =
+              (activeSelector === "student" && studentId === option.value) ||
+              (activeSelector === "course" && courseId === option.value) ||
+              (activeSelector === "filterCourse" && viewCourseId === option.value);
+            return (
+              <TouchableOpacity
+                key={`${option.value || "all"}-${option.label}`}
+                className={`mb-2 rounded-lg border px-3 py-3 ${
+                  active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
+                }`}
+                onPress={() => handleSelectorPick(option.value)}
+              >
+                <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
+                  {option.label}
+                </Text>
+              </TouchableOpacity>
+            );
+          })
+        )}
+      </ScrollView>
+    </AppModal>
     </SafeAreaView>
   );
 }

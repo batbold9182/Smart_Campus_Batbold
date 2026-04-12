@@ -1,18 +1,16 @@
 import { useState } from "react";
 import {
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
   ScrollView,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { router } from "expo-router";
 import { register } from "../../services/authService";
-import { rootStyles } from "../../styles/rootStyles";
+import { haptic } from "../../utils/haptics";
+import { AppButton, AppInput, AppCard } from "../../components/ui";
 
 export default function RegisterScreen() {
   const [name, setName] = useState("");
@@ -27,16 +25,19 @@ export default function RegisterScreen() {
     const cleanEmail = email.trim().toLowerCase();
 
     if (!cleanName || !cleanEmail || !password || !confirmPassword) {
+      haptic.error();
       setMessage("Please fill all fields.");
       return;
     }
 
     if (password.length < 6) {
+      haptic.error();
       setMessage("Password must be at least 6 characters.");
       return;
     }
 
     if (password !== confirmPassword) {
+      haptic.error();
       setMessage("Passwords do not match.");
       return;
     }
@@ -45,11 +46,13 @@ export default function RegisterScreen() {
       setIsLoading(true);
       setMessage("");
       await register(cleanName, cleanEmail, password);
+      haptic.success();
       setMessage("Account created. You can now log in.");
       setTimeout(() => {
         router.replace("/auth/login");
       }, 900);
     } catch (err: any) {
+      haptic.error();
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.message;
 
@@ -76,13 +79,12 @@ export default function RegisterScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <View className="bg-app-surface rounded-[18px] p-5 elevation-4">
+          <AppCard className="bg-app-surface rounded-[18px] p-5 elevation-4">
             <Text className="text-[28px] font-bold text-app-text text-center">Create Account</Text>
             <Text className="mt-1 mb-[18px] text-app-muted text-center">Register to access Vizja Smart Campus</Text>
 
-            <TextInput
+            <AppInput
               placeholder="Full name"
-              placeholderTextColor="#6b7280"
               value={name}
               onChangeText={(value) => {
                 setName(value);
@@ -90,14 +92,13 @@ export default function RegisterScreen() {
                   setMessage("");
                 }
               }}
-              className={rootStyles.input + " mb-3"}
+              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCapitalize="words"
               autoCorrect={false}
             />
 
-            <TextInput
+            <AppInput
               placeholder="Email"
-              placeholderTextColor="#6b7280"
               value={email}
               onChangeText={(value) => {
                 setEmail(value);
@@ -105,15 +106,14 @@ export default function RegisterScreen() {
                   setMessage("");
                 }
               }}
-              className={rootStyles.input + " mb-3"}
+              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCapitalize="none"
               keyboardType="email-address"
               autoCorrect={false}
             />
 
-            <TextInput
+            <AppInput
               placeholder="Password"
-              placeholderTextColor="#6b7280"
               value={password}
               onChangeText={(value) => {
                 setPassword(value);
@@ -122,13 +122,12 @@ export default function RegisterScreen() {
                 }
               }}
               secureTextEntry
-              className={rootStyles.input + " mb-3"}
+              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCorrect={false}
             />
 
-            <TextInput
+            <AppInput
               placeholder="Confirm password"
-              placeholderTextColor="#6b7280"
               value={confirmPassword}
               onChangeText={(value) => {
                 setConfirmPassword(value);
@@ -137,32 +136,29 @@ export default function RegisterScreen() {
                 }
               }}
               secureTextEntry
-              className={rootStyles.input + " mb-3"}
+              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCorrect={false}
             />
 
-            <TouchableOpacity
-              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
+            <AppButton
+              title="Register"
+              loading={isLoading}
               onPress={handleRegister}
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <ActivityIndicator color="#ffffff" />
-              ) : (
-                <Text className="text-white text-[16px] font-bold">Register</Text>
-              )}
-            </TouchableOpacity>
+              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
+              textClassName="text-white text-[16px] font-bold"
+            />
 
             {message ? <Text className="mt-[14px] text-center text-app-error">{message}</Text> : null}
 
-            <TouchableOpacity
-              className="mt-[10px] items-center justify-center min-h-[42px]"
+            <AppButton
+              title="Back to Login"
+              variant="ghost"
               onPress={() => router.replace("/auth/login")}
               disabled={isLoading}
-            >
-              <Text className="text-blue-600 text-[14px] font-semibold">Back to Login</Text>
-            </TouchableOpacity>
-          </View>
+              className="mt-[10px] items-center justify-center min-h-[42px]"
+              textClassName="text-blue-600 text-[14px] font-semibold"
+            />
+          </AppCard>
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>

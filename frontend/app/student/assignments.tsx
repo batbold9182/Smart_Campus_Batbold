@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { Alert, Linking, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Linking, Platform, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
+import { AppButton, AppInput } from "../../components/ui";
 import type { DocumentPickerAsset } from "expo-document-picker";
 import {
   downloadAssignmentSubmission,
@@ -354,7 +355,7 @@ export default function StudentAssignments() {
 
                       <View className="mt-4">
                         <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Submission Notes</Text>
-                        <TextInput
+                        <AppInput
                           multiline
                           value={currentNotes}
                           onChangeText={(value) => setDraftNotes((current) => ({ ...current, [assignment.id]: value }))}
@@ -387,19 +388,17 @@ export default function StudentAssignments() {
                         </View>
                       </View>
 
-                      <TouchableOpacity
-                        className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
-                        onPress={() => handleSubmit(assignment)}
-                        disabled={submittingAssignmentId === assignment.id}
-                      >
-                        <Text className="font-semibold text-white">
-                          {submittingAssignmentId === assignment.id
+                      <AppButton
+                        title={submittingAssignmentId === assignment.id
                             ? "Submitting..."
                             : assignment.submission
                               ? "Resubmit Assignment"
                               : "Submit Assignment"}
-                        </Text>
-                      </TouchableOpacity>
+                        loading={submittingAssignmentId === assignment.id}
+                        onPress={() => handleSubmit(assignment)}
+                        className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
+                        textClassName="font-semibold text-white"
+                      />
                     </View>
                   );
                 })
@@ -408,12 +407,12 @@ export default function StudentAssignments() {
           ))
         )}
 
-        <TouchableOpacity
-          className="items-center rounded-lg bg-blue-500 p-[14px]"
+        <AppButton
+          title="Back to Dashboard"
           onPress={() => router.push("/student/dashboard")}
-        >
-          <Text className="font-semibold text-white">Back to Dashboard</Text>
-        </TouchableOpacity>
+          className="items-center rounded-lg bg-blue-500 p-[14px]"
+          textClassName="font-semibold text-white"
+        />
       </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>

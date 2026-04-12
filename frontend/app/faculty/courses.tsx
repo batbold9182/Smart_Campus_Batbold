@@ -1,9 +1,10 @@
 ﻿import { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import { getMyCourses } from "../../services/courseService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { facultyStyles } from "../../styles/facultyStyles";
+import { AppButton } from "../../components/ui";
 
 export default function FacultyCoursesScreen() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -43,12 +44,12 @@ export default function FacultyCoursesScreen() {
           )}
         />
 
-        <TouchableOpacity
-          className={`mt-3 ${facultyStyles.buttonPrimary}`}
+        <AppButton
+          className="mt-3"
           onPress={() => router.push("/faculty/dashboard")}
         >
-          <Text className={facultyStyles.buttonPrimaryText}>Back to Dashboard</Text>
-        </TouchableOpacity>
+          Back to Dashboard
+        </AppButton>
       </View>
     </SafeAreaView>
   );

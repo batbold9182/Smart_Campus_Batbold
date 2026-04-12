@@ -9,6 +9,7 @@ import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "../../contexts/ThemeContext";
 import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonRow, SkeletonCard } from "../../components/Skeleton";
+import { AppButton } from "../../components/ui";
 
 export default function FacultyProfile() {
   const [user, setUser] = useState<AppUserProfile | null>(null);
@@ -50,12 +51,12 @@ export default function FacultyProfile() {
 
         <ProfileCard user={user} />
 
-        <TouchableOpacity
-          style={{ marginTop: 16, alignItems: "center", borderRadius: 8, backgroundColor: t.accentBar, padding: 14 }}
+        <AppButton
+          className="mt-4"
           onPress={() => router.push("/faculty/dashboard")}
         >
-          <Text style={{ fontWeight: "600", color: "#ffffff" }}>Back to Dashboard</Text>
-        </TouchableOpacity>
+          Back to Dashboard
+        </AppButton>
       </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>

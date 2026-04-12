@@ -4,10 +4,7 @@ import {
   Text,
   TouchableOpacity,
   ActivityIndicator,
-  TextInput,
   Alert,
-  Modal,
-  Pressable,
   ScrollView,
 } from "react-native";
 import api from "../../config/clientAPI";
@@ -17,6 +14,7 @@ import { adminStyles } from "../../styles/adminStyles";
 import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonList } from "../../components/Skeleton";
 import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
+import { AppButton, AppCard, AppInput, AppModal } from "../../components/ui";
 
 type Audience = "students" | "faculty" | "all" | "specificStudent" | "specificFaculty";
 
@@ -271,7 +269,7 @@ export default function NotificationsScreen() {
   }
 
   const sendForm = (
-    <View className={adminStyles.card}>
+    <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
       <Text className="text-2xl font-bold text-app-text">Notifications</Text>
       <Text className="mb-5 mt-1 text-[13px] text-app-muted">
         Send announcements to all users or target a single faculty member or studentor ID.
@@ -280,19 +278,17 @@ export default function NotificationsScreen() {
       <View className="mb-[14px] rounded-lg border border-app-border bg-app-bg p-3">
         <Text className="mb-[10px] text-[16px] font-bold text-app-text">Send Notification</Text>
 
-        <TextInput
+        <AppInput
           value={title}
           onChangeText={setTitle}
           placeholder="Title"
-          placeholderTextColor="#6b7280"
           className="mb-[10px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
         />
 
-        <TextInput
+        <AppInput
           value={message}
           onChangeText={setMessage}
           placeholder="Message"
-          placeholderTextColor="#6b7280"
           className="mb-[10px] min-h-[80px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
           multiline
           textAlignVertical="top"
@@ -370,14 +366,23 @@ export default function NotificationsScreen() {
         ) : null}
 
         {sending ? (
-          <ActivityIndicator size="small" />
+          <AppButton
+            title="Sending..."
+            loading={true}
+            className={adminStyles.buttonPrimary}
+            textClassName={adminStyles.buttonPrimaryText}
+            onPress={() => {}}
+          />
         ) : (
-          <TouchableOpacity className={adminStyles.buttonPrimary} onPress={handleSendNotification}>
-            <Text className={adminStyles.buttonPrimaryText}>Send Notification</Text>
-          </TouchableOpacity>
+          <AppButton
+            title="Send Notification"
+            onPress={handleSendNotification}
+            className={adminStyles.buttonPrimary}
+            textClassName={adminStyles.buttonPrimaryText}
+          />
         )}
       </View>
-    </View>
+    </AppCard>
   );
 
   return (
@@ -399,30 +404,19 @@ export default function NotificationsScreen() {
         topContent={sendForm}
       />
 
-      <Modal
-        transparent
-        visible={activeSelector === "recipient"}
-        animationType="fade"
-        onRequestClose={() => setActiveSelector(null)}
-      >
-        <Pressable
-          className="flex-1 items-center justify-end bg-black/40 px-4 pb-6"
-          onPress={() => setActiveSelector(null)}
-        >
-          <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
-            <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-[17px] font-bold text-app-text">Select Recipient</Text>
-              <TouchableOpacity onPress={() => setActiveSelector(null)}>
-                <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
-              </TouchableOpacity>
-            </View>
-            <TextInput
-              value={recipientSearch}
-              onChangeText={setRecipientSearch}
-              placeholder="Search by name, email, ID"
-              placeholderTextColor="#6b7280"
-              className="mb-3 rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[15px] text-app-text"
-            />
+      <AppModal open={activeSelector === "recipient"} onClose={() => setActiveSelector(null)} layout="bottom">
+        <View className="mb-2 flex-row items-center justify-between">
+          <Text className="text-[17px] font-bold text-app-text">Select Recipient</Text>
+          <TouchableOpacity onPress={() => setActiveSelector(null)}>
+            <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
+          </TouchableOpacity>
+        </View>
+        <AppInput
+          value={recipientSearch}
+          onChangeText={setRecipientSearch}
+          placeholder="Search by name, email, ID"
+          className="mb-3 rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[15px] text-app-text"
+        />
             <Text className="mb-3 text-[12px] text-app-muted">
               {filteredRecipientOptions.length} result{filteredRecipientOptions.length === 1 ? "" : "s"}
             </Text>
@@ -461,9 +455,7 @@ export default function NotificationsScreen() {
                 );
               })}
             </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      </AppModal>
     </>
   );
 }

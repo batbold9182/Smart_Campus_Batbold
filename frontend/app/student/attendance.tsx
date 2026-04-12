@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, TextInput } from "react-native";
+import { View, Text, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
+import { AppButton, AppInput } from "../../components/ui";
 import {
 	getStudentAttendanceSummary,
 	getStudentScheduleAttendance,
@@ -119,7 +120,7 @@ export default function StudentAttendance() {
 
 				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
 					<Text className="mb-2 text-[16px] font-semibold text-app-text">Check By Date</Text>
-					<TextInput
+					<AppInput
 						value={selectedDate}
 						onChangeText={setSelectedDate}
 						placeholder="YYYY-MM-DD"
@@ -127,13 +128,13 @@ export default function StudentAttendance() {
 						autoCapitalize="none"
 						autoCorrect={false}
 					/>
-					<TouchableOpacity
-						className={`mt-3 items-center rounded-lg p-[14px] ${isValidDateKey(selectedDate) ? "bg-blue-500" : "bg-app-placeholder"}`}
+					<AppButton
+						title={reloadingSchedule ? "Loading..." : "Load Attendance For Date"}
+						loading={reloadingSchedule}
 						onPress={handleReloadForDate}
-						disabled={!isValidDateKey(selectedDate) || reloadingSchedule}
-					>
-						<Text className="font-semibold text-white">{reloadingSchedule ? "Loading..." : "Load Attendance For Date"}</Text>
-					</TouchableOpacity>
+						className={`mt-3 items-center rounded-lg p-[14px] ${isValidDateKey(selectedDate) ? "bg-blue-500" : "bg-app-placeholder"}`}
+						textClassName="font-semibold text-white"
+					/>
 				</View>
 
 				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
@@ -217,12 +218,12 @@ export default function StudentAttendance() {
 					)}
 				</View>
 
-				<TouchableOpacity
-					className="items-center rounded-lg bg-blue-500 p-[14px]"
+				<AppButton
+					title="Back to Dashboard"
 					onPress={() => router.push("/student/dashboard")}
-				>
-					<Text className="font-semibold text-white">Back to Dashboard</Text>
-				</TouchableOpacity>
+					className="items-center rounded-lg bg-blue-500 p-[14px]"
+					textClassName="font-semibold text-white"
+				/>
 			</ScrollView>
 			</AnimatedScreen>
 		</SafeAreaView>

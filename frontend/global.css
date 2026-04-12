@@ -1,3 +1,95 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* ------------------------------------------------------------------ */
+/*  Mode-switching colour tokens  (light = :root,  dark = .dark)      */
+/*  Consumed via  var(--color-xxx)  in tailwind.config.js              */
+/* ------------------------------------------------------------------ */
+@layer base {
+  :root {
+    /* Backgrounds */
+    --color-app-bg: #f5f7fb;
+    --color-app-surface: #ffffff;
+    --color-app-bg-muted: #f3f4f6;
+    --color-app-bg-subtle: #f9fafb;
+
+    /* Text */
+    --color-app-text: #111827;
+    --color-app-muted: #4b5563;
+    --color-app-text-secondary: #374151;
+    --color-app-text-subtle: #64748b;
+    --color-app-placeholder: #9ca3af;
+
+    /* Borders */
+    --color-app-border: #d1d5db;
+    --color-app-border-light: #e5e7eb;
+
+    /* Primary tinted areas */
+    --color-app-primary-bg: #eff6ff;
+    --color-app-primary-light: #dbeafe;
+    --color-app-primary-muted: #bfdbfe;
+    --color-app-primary-loading: #93c5fd;
+
+    /* Error tinted areas */
+    --color-app-error-bg: #fee2e2;
+    --color-app-error-bg-subtle: #fef2f2;
+    --color-app-error-light: #fecaca;
+    --color-app-error-loading: #fca5a5;
+
+    /* Success tinted areas */
+    --color-app-success-bg: #d1fae5;
+    --color-app-success-bg-subtle: #ecfdf5;
+    --color-app-success-light: #dcfce7;
+    --color-app-success-timestamp: #bbf7d0;
+
+    /* Warning tinted area */
+    --color-app-warning-bg: #fef3c7;
+
+    /* Disabled */
+    --color-app-disabled: #cbd5e1;
+  }
+
+  .dark {
+    /* Backgrounds — purple palette */
+    --color-app-bg: #0d0221;
+    --color-app-surface: #1a0a3e;
+    --color-app-bg-muted: #231152;
+    --color-app-bg-subtle: #1a0a3e;
+
+    /* Text */
+    --color-app-text: #ffffff;
+    --color-app-muted: #a78bfa;
+    --color-app-text-secondary: #c4b5fd;
+    --color-app-text-subtle: #a78bfa;
+    --color-app-placeholder: #a78bfa;
+
+    /* Borders */
+    --color-app-border: #6b21a8;
+    --color-app-border-light: #6b21a8;
+
+    /* Primary tinted areas — dark indigo */
+    --color-app-primary-bg: #231152;
+    --color-app-primary-light: #231152;
+    --color-app-primary-muted: #312e81;
+    --color-app-primary-loading: #4f46e5;
+
+    /* Error tinted areas — dark red */
+    --color-app-error-bg: #450a0a;
+    --color-app-error-bg-subtle: #2d0a0a;
+    --color-app-error-light: #7f1d1d;
+    --color-app-error-loading: #991b1b;
+
+    /* Success tinted areas — dark green */
+    --color-app-success-bg: #052e16;
+    --color-app-success-bg-subtle: #022c22;
+    --color-app-success-light: #14532d;
+    --color-app-success-timestamp: #166534;
+
+    /* Warning tinted area — dark amber */
+    --color-app-warning-bg: #451a03;
+
+    /* Disabled */
+    --color-app-disabled: #374151;
+  }
+}

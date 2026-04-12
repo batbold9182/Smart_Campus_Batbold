@@ -3,16 +3,14 @@ import {
   View,
   Text,
   FlatList,
-  TextInput,
   TouchableOpacity,
   ScrollView,
-  Modal,
   Alert,
 } from "react-native";
 import { getUsers, deleteUser, toggleUserStatus, updateUser, getAcademicOptions } from "../../services/adminServices/adminService";
 import { useRouter } from "expo-router";
-import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppButton, AppCard, AppInput, AppModal } from "../../components/ui";
 
 type AcademicOptions = Record<string, Record<string, string[]>>;
 
@@ -184,7 +182,7 @@ export default function AdminUsersScreen() {
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6">
-        <View className={adminStyles.card}>
+        <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
           <Text className="text-[24px] font-bold text-app-text">User Management</Text>
           <Text className="mb-4 mt-1 text-[13px] text-app-muted">
             Browse, filter, and manage faculty and student accounts.
@@ -244,7 +242,7 @@ export default function AdminUsersScreen() {
           </TouchableOpacity>
         </View>
 
-        <TextInput
+        <AppInput
           placeholder={`Search ${activeTab}`}
           value={search}
           onChangeText={setSearch}
@@ -311,24 +309,17 @@ export default function AdminUsersScreen() {
           )}
         />
 
-        <TouchableOpacity
-          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+        <AppButton
+          title="Back to Dashboard"
+          variant="outline"
           onPress={() => router.push("/admin/dashboard")}
-        >
-          <Text className="font-semibold text-app-text">Back to Dashboard</Text>
-        </TouchableOpacity>
-      </View>
+          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+          textClassName="font-semibold text-app-text"
+        />
+      </AppCard>
     </ScrollView>
 
-    {/* Edit Modal */}
-    <Modal 
-      visible={editingUserId !== null} 
-      transparent 
-      animationType="fade"
-      onRequestClose={handleEditClose}
-    >
-      <View className="relative flex-1 items-center justify-center bg-black/50">
-        <SafeAreaView className="w-[90%] max-w-sm">
+    <AppModal open={editingUserId !== null} onClose={handleEditClose} layout="center">
           <ScrollView className="rounded-2xl bg-app-surface p-5">
             <View className="mb-4">
               <Text className="text-[20px] font-bold text-app-text">Edit User</Text>
@@ -338,7 +329,7 @@ export default function AdminUsersScreen() {
             {/* Name Field */}
             <View className="mb-4">
               <Text className="mb-2 text-[12px] font-semibold text-app-text">Name *</Text>
-              <TextInput
+              <AppInput
                 value={editForm.name}
                 onChangeText={(text) => setEditForm({ ...editForm, name: text })}
                 placeholder="Enter name"
@@ -349,7 +340,7 @@ export default function AdminUsersScreen() {
             {/* Email Field */}
             <View className="mb-4">
               <Text className="mb-2 text-[12px] font-semibold text-app-text">Email *</Text>
-              <TextInput
+              <AppInput
                 value={editForm.email}
                 onChangeText={(text) => setEditForm({ ...editForm, email: text })}
                 placeholder="Enter email"
@@ -402,7 +393,7 @@ export default function AdminUsersScreen() {
               <>
                 <View className="mb-4">
                   <Text className="mb-2 text-[12px] font-semibold text-app-text">Title</Text>
-                  <TextInput
+                  <AppInput
                     value={editForm.title}
                     onChangeText={(text) => setEditForm({ ...editForm, title: text })}
                     placeholder="Enter title"
@@ -411,7 +402,7 @@ export default function AdminUsersScreen() {
                 </View>
                 <View className="mb-4">
                   <Text className="mb-2 text-[12px] font-semibold text-app-text">Employee ID</Text>
-                  <TextInput
+                  <AppInput
                     value={editForm.employeeId}
                     onChangeText={(text) => setEditForm({ ...editForm, employeeId: text })}
                     placeholder="Enter employee ID"
@@ -426,7 +417,7 @@ export default function AdminUsersScreen() {
               <>
                 <View className="mb-4">
                   <Text className="mb-2 text-[12px] font-semibold text-app-text">Student ID</Text>
-                  <TextInput
+                  <AppInput
                     value={editForm.studentId}
                     onChangeText={(text) => setEditForm({ ...editForm, studentId: text })}
                     placeholder="Enter student ID"
@@ -456,7 +447,7 @@ export default function AdminUsersScreen() {
 
                 <View className="mb-4">
                   <Text className="mb-2 text-[12px] font-semibold text-app-text">Year Level</Text>
-                  <TextInput
+                  <AppInput
                     value={editForm.yearLevel}
                     onChangeText={(text) => setEditForm({ ...editForm, yearLevel: text })}
                     placeholder="Enter year level"
@@ -467,27 +458,24 @@ export default function AdminUsersScreen() {
               </>
             )}
 
-            {/* Action Buttons */}
             <View className="mt-6 flex-row gap-3">
-              <TouchableOpacity
-                className="flex-1 items-center rounded-lg bg-gray-300 px-4 py-3"
+              <AppButton
+                title="Cancel"
+                variant="outline"
                 onPress={handleEditClose}
-                disabled={updating}
-              >
-                <Text className="font-semibold text-app-text">Cancel</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                className="flex-1 items-center rounded-lg bg-blue-500 px-4 py-3"
+                loading={updating}
+                className="flex-1 items-center rounded-lg bg-gray-300 px-4 py-3"
+                textClassName="font-semibold text-app-text"
+              />
+              <AppButton
+                title={updating ? "Saving..." : "Save"}
+                loading={updating}
                 onPress={handleUpdateUser}
-                disabled={updating}
-              >
-                <Text className="font-semibold text-white">
-                  {updating ? "Saving..." : "Save"}
-                </Text>
-              </TouchableOpacity>
+                className="flex-1 items-center rounded-lg bg-blue-500 px-4 py-3"
+                textClassName="font-semibold text-white"
+              />
             </View>
           </ScrollView>
-        </SafeAreaView>
 
         {pickerState.visible ? (
           <View className="absolute inset-0 justify-end">
@@ -531,8 +519,7 @@ export default function AdminUsersScreen() {
             </View>
           </View>
         ) : null}
-      </View>
-    </Modal>
+    </AppModal>
     </SafeAreaView>
   );
 }

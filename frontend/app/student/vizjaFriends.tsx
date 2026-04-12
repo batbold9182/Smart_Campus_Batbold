@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  ActivityIndicator,
   Alert,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -22,6 +20,7 @@ import {
   type LunchBuddyPresencePayload,
   type LunchBuddySendAck,
 } from "../../services/studentServices/lunchBuddyService";
+import { AppButton, AppInput } from "../../components/ui";
 
 type BuddySection = "hub" | "lunch";
 type BuddySectionKey = "lunch" | "learning" | "party";
@@ -294,8 +293,7 @@ export default function VizjaFriends() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text className="mt-3 text-[15px] text-app-muted">Loading Vizja Friends...</Text>
+        <AppButton title="Loading Vizja Friends..." loading={true} className="bg-transparent" textClassName="mt-3 text-[15px] text-app-muted" onPress={() => {}} />
       </SafeAreaView>
     );
   }
@@ -322,8 +320,9 @@ export default function VizjaFriends() {
               </Text>
             </View>
 
-            <TouchableOpacity
-              className="rounded-full bg-app-primary-light px-4 py-2"
+            <AppButton
+              title={selectedSection === "hub" ? "Back" : "Sections"}
+              variant="ghost"
               onPress={() => {
                 if (selectedSection === "hub") {
                   router.push("/student/dashboard");
@@ -332,9 +331,9 @@ export default function VizjaFriends() {
 
                 setSelectedSection("hub");
               }}
-            >
-              <Text className="font-semibold text-app-primary-dark">{selectedSection === "hub" ? "Back" : "Sections"}</Text>
-            </TouchableOpacity>
+              className="rounded-full bg-app-primary-light px-4 py-2"
+              textClassName="font-semibold text-app-primary-dark"
+            />
           </View>
 
           <View className="mt-4 flex-row flex-wrap gap-2">
@@ -416,8 +415,7 @@ export default function VizjaFriends() {
           <>
             {chatLoading ? (
               <View className="flex-1 items-center justify-center px-5">
-                <ActivityIndicator size="large" color="#2563eb" />
-                <Text className="mt-3 text-[15px] text-app-muted">Connecting to Lunch Buddy...</Text>
+                <AppButton title="Connecting to Lunch Buddy..." loading={true} className="bg-transparent" textClassName="mt-3 text-[15px] text-app-muted" onPress={() => {}} />
               </View>
             ) : (
               <>
@@ -450,7 +448,7 @@ export default function VizjaFriends() {
                         {!isMine ? (
                           <Text className="mb-1 text-[12px] font-semibold text-app-primary-dark">
                             {message.sender.name}
-                            {message.sender.program ? ` • ${message.sender.program}` : ""}
+                            {message.sender.program ? ` ï¿½ ${message.sender.program}` : ""}
                           </Text>
                         ) : null}
 
@@ -468,11 +466,10 @@ export default function VizjaFriends() {
 
                 <View className="border-t border-app-border-light bg-app-surface px-5 pb-5 pt-4">
                   <View className="rounded-2xl border border-app-border bg-app-bg-subtle px-4 py-3">
-                    <TextInput
+                    <AppInput
                       multiline
                       maxLength={400}
                       placeholder="Ask who wants to grab lunch..."
-                      placeholderTextColor="#9ca3af"
                       value={draft}
                       onChangeText={setDraft}
                       className="min-h-[44px] text-[15px] leading-6 text-app-text"
@@ -483,17 +480,17 @@ export default function VizjaFriends() {
                   <View className="mt-3 flex-row items-center justify-between">
                     <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
 
-                    <TouchableOpacity
+                    <AppButton
+                      title={sending ? "Sending..." : "Send"}
+                      loading={sending}
+                      onPress={handleSend}
                       className={`rounded-full px-5 py-3 ${
                         draft.trim() && !sending && socketRef.current?.connected
                           ? "bg-app-primary"
                           : "bg-app-primary-muted"
                       }`}
-                      disabled={!draft.trim() || sending || !socketRef.current?.connected}
-                      onPress={handleSend}
-                    >
-                      <Text className="font-semibold text-white">{sending ? "Sending..." : "Send"}</Text>
-                    </TouchableOpacity>
+                      textClassName="font-semibold text-white"
+                    />
                   </View>
                 </View>
               </>

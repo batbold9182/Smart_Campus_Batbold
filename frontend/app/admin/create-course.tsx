@@ -2,11 +2,9 @@ import { useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   FlatList,
   Pressable,
   ScrollView,
-  TouchableOpacity,
 } from "react-native";
 import { useRouter } from "expo-router";
 import {
@@ -16,8 +14,8 @@ import {
   getAllCourses,
 } from "../../services/courseService";
 import { getUsers } from "../../services/adminServices/adminService";
-import { adminStyles } from "../../styles/adminStyles";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppButton, AppInput, AppCard } from "../../components/ui";
 
 type Faculty = {
   _id: string;
@@ -147,36 +145,36 @@ export default function AdminCreateCourse() {
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
-      <View className={adminStyles.card}>
+      <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
         <Text className="text-[24px] font-bold text-app-text">Create Course</Text>
         <Text className="mb-4 mt-1 text-[13px] text-app-muted">
           Add new courses and assign responsible faculty members.
         </Text>
 
-        <TextInput
+        <AppInput
           placeholder="Title"
           value={title}
           onChangeText={setTitle}
-          className={`${adminStyles.input} mb-3`}
+          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
         />
-        <TextInput
+        <AppInput
           placeholder="Code (e.g. CS101)"
           value={code}
           onChangeText={setCode}
-          className={`${adminStyles.input} mb-3`}
+          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
         />
-        <TextInput
+        <AppInput
           placeholder="Description"
           value={description}
           onChangeText={setDescription}
-          className={`${adminStyles.input} mb-3`}
+          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
         />
-        <TextInput
+        <AppInput
           placeholder="Credits"
           value={credits}
           onChangeText={setCredits}
           keyboardType="numeric"
-          className={`${adminStyles.input} mb-4`}
+          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-4"
         />
 
         <Text className="mb-2 text-[16px] font-semibold text-app-text">Assign to Faculty</Text>
@@ -199,13 +197,13 @@ export default function AdminCreateCourse() {
         />
 
         <View className="mt-2 mb-3">
-          <TouchableOpacity
-            className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-blue-500"}`}
+          <AppButton
+            title={loading ? "Creating..." : "Create and Assign"}
+            loading={loading}
             onPress={handleCreate}
-            disabled={loading}
-          >
-            <Text className="font-semibold text-white">{loading ? "Creating..." : "Create and Assign"}</Text>
-          </TouchableOpacity>
+            className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-blue-500"}`}
+            textClassName="font-semibold text-white"
+          />
         </View>
 
         {message ? <Text className="mb-3 text-app-muted">{message}</Text> : null}
@@ -217,7 +215,7 @@ export default function AdminCreateCourse() {
           scrollEnabled={false}
           ListEmptyComponent={<Text className="text-app-muted">No courses found</Text>}
           renderItem={({ item }) => (
-            <View className="mb-2 rounded-xl border border-app-border bg-app-surface p-3">
+            <AppCard variant="bordered" className="mb-2 rounded-xl border border-app-border bg-app-surface p-3">
               <View className="mb-2">
                 <Text className="font-semibold text-app-text">{item.title}</Text>
                 <Text className="text-app-muted">{item.code}</Text>
@@ -226,32 +224,34 @@ export default function AdminCreateCourse() {
                 </Text>
               </View>
               <View className="gap-2">
-                <TouchableOpacity
-                  className={`items-center rounded-lg px-3 py-2 ${assigningId === item._id ? "bg-app-primary-loading" : "bg-blue-500"}`}
+                <AppButton
+                  title={assigningId === item._id ? "Assigning..." : "Assign"}
+                  loading={assigningId === item._id}
                   onPress={() => handleAssign(item._id)}
-                  disabled={assigningId === item._id}
-                >
-                  <Text className="font-semibold text-white">{assigningId === item._id ? "Assigning..." : "Assign"}</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className={`items-center rounded-lg px-3 py-2 ${deletingId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
+                  className={`items-center rounded-lg px-3 py-2 ${assigningId === item._id ? "bg-app-primary-loading" : "bg-blue-500"}`}
+                  textClassName="font-semibold text-white"
+                />
+                <AppButton
+                  title={deletingId === item._id ? "Deleting..." : "Delete"}
+                  variant="danger"
+                  loading={deletingId === item._id}
                   onPress={() => handleDelete(item._id)}
-                  disabled={deletingId === item._id}
-                >
-                  <Text className="font-semibold text-white">{deletingId === item._id ? "Deleting..." : "Delete"}</Text>
-                </TouchableOpacity>
+                  className={`items-center rounded-lg px-3 py-2 ${deletingId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
+                  textClassName="font-semibold text-white"
+                />
               </View>
-            </View>
+            </AppCard>
           )}
         />
 
-        <TouchableOpacity
-          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+        <AppButton
+          title="Back to Dashboard"
+          variant="outline"
           onPress={() => router.push("/admin/dashboard")}
-        >
-          <Text className="font-semibold text-app-text">Back to Dashboard</Text>
-        </TouchableOpacity>
-      </View>
+          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+          textClassName="font-semibold text-app-text"
+        />
+      </AppCard>
     </ScrollView>
     </SafeAreaView>
   );

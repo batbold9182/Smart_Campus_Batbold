@@ -1,18 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
 import {
   KeyboardAvoidingView,
-  Modal,
   Platform,
-  Pressable,
   ScrollView,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from "react-native";
 import { createUser, getAcademicOptions } from "../../services/adminServices/adminService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppButton, AppInput, AppModal } from "../../components/ui";
 
 type AcademicOptions = Record<string, Record<string, string[]>>;
 
@@ -232,16 +230,14 @@ export default function CreateUserScreen() {
               </TouchableOpacity>
             </View>
 
-            <TextInput
+            <AppInput
               placeholder="Full Name"
-              placeholderTextColor="#6b7280"
               value={name}
               onChangeText={setName}
               className={inputClassName}
             />
-            <TextInput
+            <AppInput
               placeholder="Email"
-              placeholderTextColor="#6b7280"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -278,16 +274,14 @@ export default function CreateUserScreen() {
 
             {selectedRole === "faculty" ? (
               <>
-                <TextInput
+                <AppInput
                   placeholder="Title (e.g. Instructor)"
-                  placeholderTextColor="#6b7280"
                   value={facultyTitle}
                   onChangeText={setFacultyTitle}
                   className={inputClassName}
                 />
-                <TextInput
+                <AppInput
                   placeholder="Employee ID"
-                  placeholderTextColor="#6b7280"
                   value={employeeId}
                   onChangeText={setEmployeeId}
                   className={inputClassName}
@@ -304,17 +298,15 @@ export default function CreateUserScreen() {
                   }
                   disabled={programOptions.length === 0}
                 />
-                <TextInput
+                <AppInput
                   placeholder="Year Level (e.g. 2)"
-                  placeholderTextColor="#6b7280"
                   value={yearLevel}
                   onChangeText={setYearLevel}
                   keyboardType="number-pad"
                   className={inputClassName}
                 />
-                <TextInput
+                <AppInput
                   placeholder="Student ID"
-                  placeholderTextColor="#6b7280"
                   value={studentId}
                   onChangeText={setStudentId}
                   className={inputClassName}
@@ -322,9 +314,8 @@ export default function CreateUserScreen() {
               </>
             )}
 
-            <TextInput
+            <AppInput
               placeholder="Password"
-              placeholderTextColor="#6b7280"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -335,63 +326,60 @@ export default function CreateUserScreen() {
               <Text className="mb-3 text-center text-[13px] text-app-text-subtle">{message}</Text>
             ) : null}
 
-            <TouchableOpacity
-              className="mb-2 items-center rounded-xl bg-app-primary px-4 py-3"
+            <AppButton
+              title={submitLabel}
+              loading={isSubmitting}
               onPress={handleCreate}
-              disabled={isSubmitting}
-            >
-              <Text className="text-[15px] font-semibold text-white">{submitLabel}</Text>
-            </TouchableOpacity>
+              className="mb-2 items-center rounded-xl bg-app-primary px-4 py-3"
+              textClassName="text-[15px] font-semibold text-white"
+            />
 
-            <TouchableOpacity
-              className="items-center rounded-xl border border-app-disabled bg-app-surface px-4 py-3"
+            <AppButton
+              title="Back to Dashboard"
+              variant="outline"
               onPress={() => router.push("/admin/dashboard")}
-            >
-              <Text className="text-[15px] font-semibold text-app-text">Back to Dashboard</Text>
-            </TouchableOpacity>
+              className="items-center rounded-xl border border-app-disabled bg-app-surface px-4 py-3"
+              textClassName="text-[15px] font-semibold text-app-text"
+            />
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
 
-      <Modal transparent visible={selectState.visible} animationType="fade" onRequestClose={closePicker}>
-        <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={closePicker}>
-          <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
-            <View className="mb-2 flex-row items-center justify-between">
-              <Text className="text-[17px] font-bold text-app-text">{selectState.title}</Text>
-              <TouchableOpacity onPress={closePicker}>
-                <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
-              </TouchableOpacity>
-            </View>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {selectState.options.length === 0 ? (
-                <Text className="py-3 text-app-text-subtle">No options available.</Text>
-              ) : (
-                selectState.options.map((option) => {
-                  const active = selectState.selectedValue === option;
-                  return (
-                    <TouchableOpacity
-                      key={option}
-                      className={`mb-2 rounded-lg border px-3 py-3 ${
-                        active
-                          ? "border-app-primary bg-app-primary-bg"
-                          : "border-app-border-light bg-app-surface"
-                      }`}
-                      onPress={() => {
-                        selectState.onSelect(option);
-                        closePicker();
-                      }}
-                    >
-                      <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
-                        {option}
-                      </Text>
-                    </TouchableOpacity>
-                  );
-                })
-              )}
-            </ScrollView>
-          </Pressable>
-        </Pressable>
-      </Modal>
+      <AppModal open={selectState.visible} onClose={closePicker} layout="bottom">
+        <View className="mb-2 flex-row items-center justify-between">
+          <Text className="text-[17px] font-bold text-app-text">{selectState.title}</Text>
+          <TouchableOpacity onPress={closePicker}>
+            <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
+          </TouchableOpacity>
+        </View>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {selectState.options.length === 0 ? (
+            <Text className="py-3 text-app-text-subtle">No options available.</Text>
+          ) : (
+            selectState.options.map((option) => {
+              const active = selectState.selectedValue === option;
+              return (
+                <TouchableOpacity
+                  key={option}
+                  className={`mb-2 rounded-lg border px-3 py-3 ${
+                    active
+                      ? "border-app-primary bg-app-primary-bg"
+                      : "border-app-border-light bg-app-surface"
+                  }`}
+                  onPress={() => {
+                    selectState.onSelect(option);
+                    closePicker();
+                  }}
+                >
+                  <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
+                    {option}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })
+          )}
+        </ScrollView>
+      </AppModal>
     </SafeAreaView>
   );
 }

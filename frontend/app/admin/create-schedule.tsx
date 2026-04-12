@@ -2,15 +2,13 @@ import { useCallback, useEffect, useState } from "react";
 import {
   View,
   Text,
-  TextInput,
   TouchableOpacity,
   ScrollView,
-  Modal,
-  Pressable,
 } from "react-native";
 import { createSchedule, deleteSchedule, getAdminSchedules, getCourses } from "../../services/scheduleService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { AppButton, AppInput, AppCard, AppModal } from "../../components/ui";
 
 export default function CreateScheduleScreen() {
   const inputClassName = "mb-3 rounded-xl border border-app-placeholder bg-app-surface px-3 py-3 text-[16px] text-app-text";
@@ -117,46 +115,48 @@ export default function CreateScheduleScreen() {
             <Text className="text-[18px] text-app-muted">▾</Text>
           </TouchableOpacity>
 
-          <TextInput placeholder="Day (e.g. Monday)" placeholderTextColor="#6b7280" value={day} onChangeText={setDay} className={inputClassName} />
-          <TextInput placeholder="Start Time (09:00)" placeholderTextColor="#6b7280" value={startTime} onChangeText={setStartTime} className={inputClassName} />
-          <TextInput placeholder="End Time (10:30)" placeholderTextColor="#6b7280" value={endTime} onChangeText={setEndTime} className={inputClassName} />
-          <TextInput placeholder="Room" placeholderTextColor="#6b7280" value={room} onChangeText={setRoom} className={`${inputClassName} mb-4`} />
+          <AppInput placeholder="Day (e.g. Monday)" value={day} onChangeText={setDay} className={inputClassName} />
+          <AppInput placeholder="Start Time (09:00)" value={startTime} onChangeText={setStartTime} className={inputClassName} />
+          <AppInput placeholder="End Time (10:30)" value={endTime} onChangeText={setEndTime} className={inputClassName} />
+          <AppInput placeholder="Room" value={room} onChangeText={setRoom} className={`${inputClassName} mb-4`} />
 
-          <TouchableOpacity
-            className={`mb-2 items-center rounded-xl px-4 py-3 ${isCreating ? "bg-app-primary-loading" : "bg-blue-500"}`}
+          <AppButton
+            title={isCreating ? "Creating..." : "Create Schedule"}
+            loading={isCreating}
             onPress={handleCreate}
-            disabled={isCreating}
-          >
-            <Text className="font-semibold text-white">{isCreating ? "Creating..." : "Create Schedule"}</Text>
-          </TouchableOpacity>
+            className={`mb-2 items-center rounded-xl px-4 py-3 ${isCreating ? "bg-app-primary-loading" : "bg-blue-500"}`}
+            textClassName="font-semibold text-white"
+          />
 
           <Text className="mb-2 mt-5 text-[16px] font-semibold text-app-text">Existing Schedules</Text>
           {schedules.length === 0 ? (
             <Text className="mb-3 text-app-muted">No schedules found</Text>
           ) : (
             schedules.map((item) => (
-              <View key={item._id} className="mb-2 rounded-xl border border-app-border bg-app-surface p-3">
+              <AppCard key={item._id} variant="bordered" className="mb-2 rounded-xl border border-app-border bg-app-surface p-3">
                 <Text className="font-semibold text-app-text">
                   {item.course?.title || item.course?.name || "Course"}
                 </Text>
                 <Text className="mb-2 text-app-muted">{item.day} • {item.startTime}-{item.endTime} • Room {item.room}</Text>
-                <TouchableOpacity
-                  className={`items-center rounded-lg px-3 py-2 ${loadingDeleteId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
-                  disabled={loadingDeleteId === item._id}
+                <AppButton
+                  title={loadingDeleteId === item._id ? "Deleting..." : "Delete"}
+                  variant="danger"
+                  loading={loadingDeleteId === item._id}
                   onPress={() => handleDelete(item._id)}
-                >
-                  <Text className="font-semibold text-white">{loadingDeleteId === item._id ? "Deleting..." : "Delete"}</Text>
-                </TouchableOpacity>
-              </View>
+                  className={`items-center rounded-lg px-3 py-2 ${loadingDeleteId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
+                  textClassName="font-semibold text-white"
+                />
+              </AppCard>
             ))
           )}
 
-          <TouchableOpacity
-            className="mt-2 items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+          <AppButton
+            title="Back to Dashboard"
+            variant="outline"
             onPress={() => router.push("/admin/dashboard")}
-          >
-            <Text className="font-semibold text-app-text">Back to Dashboard</Text>
-          </TouchableOpacity>
+            className="mt-2 items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+            textClassName="font-semibold text-app-text"
+          />
         </View>
 
         <View className="mt-3 rounded-xl bg-app-surface p-4 shadow-sm">
@@ -166,43 +166,39 @@ export default function CreateScheduleScreen() {
           </Text>
         </View>
 
-        <Modal transparent visible={courseSelectorOpen} animationType="fade" onRequestClose={() => setCourseSelectorOpen(false)}>
-          <Pressable className="flex-1 items-center justify-end bg-black/40 px-4 pb-6" onPress={() => setCourseSelectorOpen(false)}>
-            <Pressable className="max-h-[70%] w-full rounded-2xl bg-app-surface p-4" onPress={() => {}}>
-              <View className="mb-2 flex-row items-center justify-between">
-                <Text className="text-[17px] font-bold text-app-text">Select Course</Text>
-                <TouchableOpacity onPress={() => setCourseSelectorOpen(false)}>
-                  <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
-                </TouchableOpacity>
-              </View>
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {courses.length === 0 ? (
-                  <Text className="py-3 text-app-text-subtle">No courses available.</Text>
-                ) : (
-                  courses.map((c) => {
-                    const active = course === c._id;
-                    return (
-                      <TouchableOpacity
-                        key={c._id}
-                        className={`mb-2 rounded-lg border px-3 py-3 ${
-                          active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
-                        }`}
-                        onPress={() => {
-                          setCourse(c._id);
-                          setCourseSelectorOpen(false);
-                        }}
-                      >
-                        <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
-                          {c.title}
-                        </Text>
-                      </TouchableOpacity>
-                    );
-                  })
-                )}
-              </ScrollView>
-            </Pressable>
-          </Pressable>
-        </Modal>
+        <AppModal open={courseSelectorOpen} onClose={() => setCourseSelectorOpen(false)} layout="bottom">
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-[17px] font-bold text-app-text">Select Course</Text>
+            <TouchableOpacity onPress={() => setCourseSelectorOpen(false)}>
+              <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {courses.length === 0 ? (
+              <Text className="py-3 text-app-text-subtle">No courses available.</Text>
+            ) : (
+              courses.map((c) => {
+                const active = course === c._id;
+                return (
+                  <TouchableOpacity
+                    key={c._id}
+                    className={`mb-2 rounded-lg border px-3 py-3 ${
+                      active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
+                    }`}
+                    onPress={() => {
+                      setCourse(c._id);
+                      setCourseSelectorOpen(false);
+                    }}
+                  >
+                    <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
+                      {c.title}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })
+            )}
+          </ScrollView>
+        </AppModal>
     </ScrollView>
     </SafeAreaView>
   );
