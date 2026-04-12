@@ -108,13 +108,9 @@ router.post("/forgot-password", async (req, res) => {
         });
       }
 
-      // In dev without email configured, return OTP in response
+      // In dev without email configured, log OTP server-side only
       if (!process.env.EMAIL_USER) {
-        return res.json({
-          message: "OTP generated (no email configured)",
-          otp,
-          expiresInMinutes: RESET_TOKEN_TTL_MINUTES,
-        });
+        console.log(`[DEV] OTP for ${email}: ${otp} (expires in ${RESET_TOKEN_TTL_MINUTES} min)`);
       }
     }
 
