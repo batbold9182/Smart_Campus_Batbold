@@ -3,6 +3,8 @@ const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const { body } = require("express-validator");
+const validate = require("../middleware/validate");
 const User = require("../models/adminModels/user");
 
 const router = express.Router();
@@ -17,12 +19,17 @@ const transporter = nodemailer.createTransport({
 });
 
 // REGISTER
-router.post("/register", async (req, res) => {
+router.post(
+  "/register",
+  [
+    body("name").trim().notEmpty().withMessage("Name is required").isLength({ max: 100 }).withMessage("Name too long"),
+    body("email").isEmail().withMessage("Valid email is required").normalizeEmail().isLength({ max: 255 }),
+    body("password").isLength({ min: 6, max: 128 }).withMessage("Password must be 6-128 characters"),
+  ],
+  validate,
+  async (req, res) => {
   try {
     const { name, email, password } = req.body;
-
-    if (!email || !password)
-      return res.status(400).json({ message: "Missing fields" });
 
     const existingUser = await User.findOne({ email });
     if (existingUser)
@@ -43,7 +50,14 @@ router.post("/register", async (req, res) => {
 });
 
 // LOGIN
-router.post("/login", async (req, res) => {
+router.post(
+  "/login",
+  [
+    body("email").isEmail().withMessage("Valid email is required").normalizeEmail().isLength({ max: 255 }),
+    body("password").notEmpty().withMessage("Password is required").isLength({ max: 128 }),
+  ],
+  validate,
+  async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -81,13 +95,15 @@ router.post("/login", async (req, res) => {
 });
 
 // FORGOT PASSWORD
-router.post("/forgot-password", async (req, res) => {
+router.post(
+  "/forgot-password",
+  [
+    body("email").isEmail().withMessage("Valid email is required").normalizeEmail().isLength({ max: 255 }),
+  ],
+  validate,
+  async (req, res) => {
   try {
     const email = String(req.body?.email || "").trim().toLowerCase();
-
-    if (!email) {
-      return res.status(400).json({ message: "Email is required" });
-    }
 
     const user = await User.findOne({ email });
     if (user) {
@@ -123,19 +139,19 @@ router.post("/forgot-password", async (req, res) => {
 });
 
 // RESET PASSWORD
-router.post("/reset-password", async (req, res) => {
+router.post(
+  "/reset-password",
+  [
+    body("email").isEmail().withMessage("Valid email is required").normalizeEmail().isLength({ max: 255 }),
+    body("otp").trim().isLength({ min: 6, max: 6 }).withMessage("OTP must be 6 digits").isNumeric().withMessage("OTP must be numeric"),
+    body("newPassword").isLength({ min: 6, max: 128 }).withMessage("Password must be 6-128 characters"),
+  ],
+  validate,
+  async (req, res) => {
   try {
     const email = String(req.body?.email || "").trim().toLowerCase();
     const otp = String(req.body?.otp || "").trim();
     const newPassword = String(req.body?.newPassword || "");
-
-    if (!email || !otp || !newPassword) {
-      return res.status(400).json({ message: "Email, OTP, and new password are required" });
-    }
-
-    if (newPassword.length < 6) {
-      return res.status(400).json({ message: "Password must be at least 6 characters" });
-    }
 
     const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
 

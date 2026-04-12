@@ -2,6 +2,8 @@ require("dotenv").config();
 const http = require("http");
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 const registerLunchBuddySocket = require("./socket/lunchBuddySocket");
@@ -28,14 +30,43 @@ const attendanceRoutes = require("./routes/facultyRoutes/attendanceRoutes");
 const assignmentRoutes = require("./routes/facultyRoutes/assignmentRoutes");
 
 
-app.use(cors());
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  : [];
+
+app.use(helmet());
+app.use(
+  cors({
+    origin: allowedOrigins,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    credentials: true,
+  })
+);
 //for handling large base64 image uploads, set limits to prevent abuse
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
-app.use("/api/auth", require("./routes/authRoutes"));
+// Strict rate limit for auth endpoints (login, register, forgot-password)
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 15, // 15 attempts per window
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later" },
+});
 
-app.use("/api/protected", require("./routes/protectedRoutes"));
+// General API rate limit
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { message: "Too many requests, please try again later" },
+});
+
+app.use("/api/auth", authLimiter, require("./routes/authRoutes"));
+
+app.use("/api/protected", apiLimiter, require("./routes/protectedRoutes"));
 
 app.use("/api/admin", require("./routes/adminRoutes/adminRoutes"));
 
@@ -75,8 +106,9 @@ app.get("/", (req, res) => {
 
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: allowedOrigins,
     methods: ["GET", "POST"],
+    credentials: true,
   },
 });
 
