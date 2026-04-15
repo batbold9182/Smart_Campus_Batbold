@@ -33,13 +33,23 @@ export default function ResetPasswordScreen() {
       return;
     }
 
-    if (newPassword.length < 6) {
-      Alert.alert("Weak password", "Password must be at least 6 characters.");
+    if (newPassword.length < 9) {
+      Alert.alert("Weak password", "Password must be at least 9 characters.");
       return;
-    }
-
-    if (newPassword !== confirmPassword) {
-      Alert.alert("Passwords do not match", "Please enter the same password in both fields.");
+    } else if (newPassword.length > 64) {
+      Alert.alert("Weak password", "Password must be no more than 64 characters.");
+      return;
+    } else if (!/\d/.test(newPassword)) {
+      Alert.alert("Weak password", "Password must contain at least one number.");
+      return;
+    } else if (!/[A-Z]/.test(newPassword)) {
+      Alert.alert("Weak password", "Password must contain at least one uppercase letter.");
+      return;
+    } else if (!/[a-z]/.test(newPassword)) {
+      Alert.alert("Weak password", "Password must contain at least one lowercase letter.");
+      return;
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(newPassword)) {
+      Alert.alert("Weak password", "Password must contain at least one special character.");
       return;
     }
 

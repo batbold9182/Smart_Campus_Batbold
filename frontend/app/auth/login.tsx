@@ -15,6 +15,10 @@ import { router } from "expo-router";
 import { setToken } from "../../services/tokenStorage";
 import { haptic } from "../../utils/haptics";
 import { AppButton, AppInput, AppCard } from "../../components/ui";
+import { Asset } from "expo-asset";
+Asset.loadAsync([
+  require("../../assets/images/Logo_VIZJA.webp"),
+]);
 
 
 export default function LoginScreen() {
@@ -103,7 +107,7 @@ export default function LoginScreen() {
         >
           <AppCard className="bg-app-surface rounded-[18px] p-5 shadow-card elevation-4">
             <Image
-              source={require("../../assets/images/Logo_VIZJA.png")}
+              source={(require("../../assets/images/Logo_VIZJA.webp"))}
               style={{ width: logoSize, height: logoSize, alignSelf: "center", marginBottom: 8 }}
               resizeMode="contain"
             />

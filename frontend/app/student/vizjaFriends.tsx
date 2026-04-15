@@ -77,9 +77,9 @@ export default function VizjaFriends() {
   const [onlineCount, setOnlineCount] = useState(0);
 
   const scrollToEnd = () => {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       scrollRef.current?.scrollToEnd({ animated: true });
-    }, 50);
+    });
   };
 
   const appendMessage = (message: LunchBuddyMessage) => {

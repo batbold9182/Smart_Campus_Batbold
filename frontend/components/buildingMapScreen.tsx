@@ -135,7 +135,7 @@ export default function BuildingMapScreen() {
             <Image
               source={selectedFloor.image}
               resizeMode="contain"
-              style={{ width: "100%", height: "100%" }}
+              style={{ width: "100%", height: "100%", aspectRatio: 4 / 3 }}
             />
           </View>
 

@@ -111,7 +111,7 @@ export default function ChatBotScreen() {
 
       setMessages((prev) => [...prev, userMsg, botMsg]);
       setInputText("");
-      setTimeout(() => listRef.current?.scrollToEnd({ animated: true }), 100);
+      requestAnimationFrame(() => listRef.current?.scrollToEnd({ animated: true }));
     },
     []
   );
@@ -159,7 +159,7 @@ export default function ChatBotScreen() {
           renderItem={renderMessage}
           contentContainerStyle={{ padding: 16, paddingBottom: 8 }}
           onContentSizeChange={() =>
-            listRef.current?.scrollToEnd({ animated: true })
+            requestAnimationFrame(() => listRef.current?.scrollToEnd({ animated: true }))
           }
         />
 

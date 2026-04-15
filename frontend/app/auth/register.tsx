@@ -30,9 +30,29 @@ export default function RegisterScreen() {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 9) {
       haptic.error();
-      setMessage("Password must be at least 6 characters.");
+      setMessage("Password must be at least 9 characters.");
+      return;
+    } else if (password.length > 64) {
+      haptic.error();
+      setMessage("Password must be no more than 64 characters.");
+      return;
+    } else if (!/\d/.test(password)) {
+      haptic.error();
+      setMessage("Password must contain at least one number.");
+      return;
+    } else if (!/[A-Z]/.test(password)) {
+      haptic.error();
+      setMessage("Password must contain at least one uppercase letter.");
+      return;
+    } else if (!/[a-z]/.test(password)) {
+      haptic.error();
+      setMessage("Password must contain at least one lowercase letter.");
+      return;
+    } else if (!/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+      haptic.error();
+      setMessage("Password must contain at least one special character.");
       return;
     }
 

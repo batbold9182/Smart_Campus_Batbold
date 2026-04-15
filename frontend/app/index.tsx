@@ -3,7 +3,6 @@ import { Text } from "react-native";
 import { useRouter } from "expo-router";
 import { jwtDecode } from "jwt-decode";
 import { clearToken, getToken } from "../services/tokenStorage";
-
 type UserPayload = {
   role: "admin" | "faculty" | "student";
   exp: number;

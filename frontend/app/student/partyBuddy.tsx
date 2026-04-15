@@ -36,9 +36,9 @@ export default function PartyBuddy() {
   const [onlineCount, setOnlineCount] = useState(0);
 
   const scrollToEnd = () => {
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       scrollRef.current?.scrollToEnd({ animated: true });
-    }, 50);
+    });
   };
 
   const appendMessage = (message: PartyBuddyMessage) => {
