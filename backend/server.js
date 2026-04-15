@@ -1,6 +1,7 @@
 require("dotenv").config();
 const http = require("http");
 const express = require("express");
+const compression = require("compression");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
@@ -12,6 +13,7 @@ const registerLearningBuddySocket = require("./socket/learningBuddySocket");
 const registerPartyBuddySocket = require("./socket/partyBuddySocket");
 
 const app = express();
+app.use(compression());
 const server = http.createServer(app);
 connectDB();
 
