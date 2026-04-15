@@ -23,7 +23,7 @@ router.get("/", auth, async (req, res, next) => {
     const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
 
     if (!hasPagination) {
-      const notifications = await Notification.find(filter).sort({ createdAt: -1 });
+      const notifications = await Notification.find(filter).sort({ createdAt: -1 }).lean();
       return res.json(notifications);
     }
 
@@ -32,7 +32,7 @@ router.get("/", auth, async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const [notifications, total] = await Promise.all([
-      Notification.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit),
+      Notification.find(filter).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
       Notification.countDocuments(filter),
     ]);
 

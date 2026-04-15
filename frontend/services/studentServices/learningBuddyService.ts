@@ -48,5 +48,8 @@ export const connectLearningBuddySocket = async (token: string): Promise<Socket>
     auth: { token },
     transports: ["websocket"],
     reconnection: true,
+    reconnectionAttempts: 5,
+    reconnectionDelay: 1000,
+    reconnectionDelayMax: 5000,
   });
 };

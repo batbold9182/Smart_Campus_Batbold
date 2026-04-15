@@ -73,7 +73,7 @@ router.post(
         return res.status(400).json({ message: "Invalid school, department or program selection" });
       }
 
-      const exists = await User.findOne({ email });
+      const exists = await User.findOne({ email }).lean();
       if (exists)
         return res.status(400).json({ message: "User already exists" });
 
@@ -119,11 +119,7 @@ router.post(
   }
 );
 // ✅ Admin gets all users
-router.get("/users", auth, async (req, res, next) => {
-  if (req.user.role !== "admin") {
-    return res.status(403).json({ message: "Access denied" });
-  }
-
+router.get("/users", auth, role("admin"), async (req, res, next) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 5;
   const role = req.query.role; // faculty or student
@@ -133,7 +129,8 @@ router.get("/users", auth, async (req, res, next) => {
   const users = await User.find(query)
     .select("-password")
     .skip((page - 1) * limit)
-    .limit(limit);
+    .limit(limit)
+    .lean();
 
   const total = await User.countDocuments(query);
 
@@ -153,12 +150,8 @@ router.get("/users", auth, async (req, res, next) => {
 
 
 // ❌ DELETE USER (admin only)
-router.delete("/users/:id", auth, async (req, res, next) => {
+router.delete("/users/:id", auth, role("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     // prevent admin deleting themselves
     if (req.params.id === req.user.id) {
       return res.status(400).json({ message: "Cannot delete yourself" });
@@ -173,19 +166,15 @@ router.delete("/users/:id", auth, async (req, res, next) => {
 });
 
 // ✅ Update user information (admin only)
-router.patch("/users/:id", auth, async (req, res, next) => {
+router.patch("/users/:id", auth, role("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const { name, email, school, department, title, employeeId, studentId, program, yearLevel } = req.body;
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Check if email is being changed and already exists
     if (email && email !== user.email) {
-      const emailExists = await User.findOne({ email });
+      const emailExists = await User.findOne({ email }).lean();
       if (emailExists) return res.status(400).json({ message: "Email already in use" });
       user.email = email;
     }
@@ -229,12 +218,8 @@ router.patch("/users/:id", auth, async (req, res, next) => {
 
 //Disable / Enable user (admin only)
 
-router.patch("/users/:id/toggle", auth, async (req, res, next) => {
+router.patch("/users/:id/toggle", auth, role("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
 
@@ -248,15 +233,12 @@ router.patch("/users/:id/toggle", auth, async (req, res, next) => {
 });
 
 // ✅ Get all students (for enrollment)
-router.get("/students", auth, async (req, res, next) => {
+router.get("/students", auth, role("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const students = await User.find({ role: "student", isActive: true })
       .select("name email")
-      .sort({ name: 1 });
+      .sort({ name: 1 })
+      .lean();
 
     res.json(students);
   } catch (err) {
@@ -265,15 +247,12 @@ router.get("/students", auth, async (req, res, next) => {
 });
 
 // ✅ Get all courses (for enrollment)
-router.get("/courses", auth, async (req, res, next) => {
+router.get("/courses", auth, role("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const courses = await Course.find({ isActive: true })
       .select("title code credits")
-      .sort({ code: 1 });
+      .sort({ code: 1 })
+      .lean();
 
     res.json(courses);
   } catch (err) {

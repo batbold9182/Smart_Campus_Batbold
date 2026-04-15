@@ -52,7 +52,8 @@ router.get(
         const schedules = await Schedule.find()
           .populate("course", "name code title")
           .populate("faculty", "name email")
-          .sort({ day: 1, startTime: 1 });
+          .sort({ day: 1, startTime: 1 })
+          .lean();
         return res.json(schedules);
       }
 
@@ -66,7 +67,8 @@ router.get(
           .populate("faculty", "name email")
           .sort({ day: 1, startTime: 1 })
           .skip(skip)
-          .limit(limit),
+          .limit(limit)
+          .lean(),
         Schedule.countDocuments(),
       ]);
 
@@ -96,10 +98,10 @@ router.post(
     try {
       const { courseId, facultyId, day, startTime, endTime, room } = req.body;
 
-      const course = await Course.findById(courseId);
+      const course = await Course.findById(courseId).lean();
       if (!course) return res.status(404).json({ message: "Course not found" });
 
-      const faculty = await User.findById(facultyId);
+      const faculty = await User.findById(facultyId).lean();
       if (!faculty || faculty.role !== "faculty") {
         return res.status(400).json({ message: "Invalid faculty" });
       }

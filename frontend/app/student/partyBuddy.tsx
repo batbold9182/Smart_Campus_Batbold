@@ -107,6 +107,12 @@ export default function PartyBuddy() {
           setError(err.message || "Unable to connect to Party Buddy");
         });
 
+        socket.on("reconnect_failed", () => {
+          if (!isMounted) return;
+          setStatusLabel("Offline");
+          setError("Could not reconnect to Party Buddy. Please reload the page.");
+        });
+
         socket.on("presence:update", (payload: PartyBuddyPresencePayload) => {
           if (!isMounted) return;
           setOnlineCount(payload.onlineCount ?? 0);

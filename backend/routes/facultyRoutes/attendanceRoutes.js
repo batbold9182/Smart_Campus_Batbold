@@ -54,7 +54,7 @@ const loadStudentSchedulesForDay = async (studentId, dayName) => {
       { path: "course", select: "title code credits name" },
       { path: "faculty", select: "name email" },
     ],
-  });
+  }).lean();
 
   const assignedSchedules = assignedRows.map((row) => row.schedule).filter(Boolean);
   if (assignedSchedules.length > 0) {

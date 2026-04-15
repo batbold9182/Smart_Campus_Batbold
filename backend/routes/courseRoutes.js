@@ -3,25 +3,22 @@ const Course = require("../models/adminModels/course");
 const User = require("../models/adminModels/user");
 const Notification = require("../models/adminModels/notification");
 const auth = require("../middleware/authMiddleware");
+const authorizeRoles = require("../middleware/roleMiddleware");
 
 const router = express.Router();
 
 /**
  * CREATE COURSE (FACULTY ONLY)
  */
-router.post("/", auth, async (req, res, next) => {
+router.post("/", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const { title, code, description, credits, facultyId } = req.body;
 
     if (!facultyId) {
       return res.status(400).json({ message: "facultyId is required" });
     }
 
-    const facultyUser = await User.findById(facultyId).select("role");
+    const facultyUser = await User.findById(facultyId).select("role").lean();
     if (!facultyUser || facultyUser.role !== "faculty") {
       return res.status(400).json({ message: "Invalid facultyId" });
     }
@@ -51,18 +48,14 @@ router.post("/", auth, async (req, res, next) => {
 /**
  * ASSIGN COURSE TO FACULTY (ADMIN ONLY)
  */
-router.patch("/:id/assign", auth, async (req, res, next) => {
+router.patch("/:id/assign", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const { facultyId } = req.body;
     if (!facultyId) {
       return res.status(400).json({ message: "facultyId is required" });
     }
 
-    const facultyUser = await User.findById(facultyId).select("role");
+    const facultyUser = await User.findById(facultyId).select("role").lean();
     if (!facultyUser || facultyUser.role !== "faculty") {
       return res.status(400).json({ message: "Invalid facultyId" });
     }
@@ -93,15 +86,11 @@ router.patch("/:id/assign", auth, async (req, res, next) => {
 /**
  * GET ALL COURSES (ADMIN ONLY)
  */
-router.get("/", auth, async (req, res, next) => {
+router.get("/", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
     if (!hasPagination) {
-      const courses = await Course.find().populate("faculty", "name email");
+      const courses = await Course.find().populate("faculty", "name email").lean();
       return res.json(courses);
     }
 
@@ -110,7 +99,7 @@ router.get("/", auth, async (req, res, next) => {
     const skip = (page - 1) * limit;
 
     const [courses, total] = await Promise.all([
-      Course.find().populate("faculty", "name email").skip(skip).limit(limit),
+      Course.find().populate("faculty", "name email").skip(skip).limit(limit).lean(),
       Course.countDocuments(),
     ]);
 
@@ -131,12 +120,8 @@ router.get("/", auth, async (req, res, next) => {
 /**
  * DELETE COURSE (ADMIN ONLY)
  */
-router.delete("/:id", auth, async (req, res, next) => {
+router.delete("/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
-    if (req.user.role !== "admin") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
     const course = await Course.findByIdAndDelete(req.params.id);
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
@@ -151,13 +136,9 @@ router.delete("/:id", auth, async (req, res, next) => {
 /**
  * GET MY COURSES (FACULTY)
  */
-router.get("/my", auth, async (req, res, next) => {
+router.get("/my", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
-    if (req.user.role !== "faculty") {
-      return res.status(403).json({ message: "Access denied" });
-    }
-
-    const courses = await Course.find({ faculty: req.user.id });
+    const courses = await Course.find({ faculty: req.user.id }).lean();
     res.json(courses);
   } catch (err) {
     next(err);

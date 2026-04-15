@@ -103,6 +103,12 @@ export default function LearningBuddy() {
           setError(err.message || "Unable to connect to Learning Buddy");
         });
 
+        socket.on("reconnect_failed", () => {
+          if (!isMounted) return;
+          setStatusLabel("Offline");
+          setError("Could not reconnect to Learning Buddy. Please reload the page.");
+        });
+
         socket.on("presence:update", (payload: LearningBuddyPresencePayload) => {
           if (!isMounted) return;
           setOnlineCount(payload.onlineCount ?? 0);

@@ -25,7 +25,7 @@ const isDataImage = (value) => value.toLowerCase().startsWith("data:image/");
 
 router.get("/profile", auth, async (req, res, next) => {
   try {
-    const user = await User.findById(req.user.id).select("-password");
+    const user = await User.findById(req.user.id).select("-password").lean();
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });

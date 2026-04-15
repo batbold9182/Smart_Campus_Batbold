@@ -212,6 +212,15 @@ export default function VizjaFriends() {
           setError(socketError.message || "Unable to connect to Lunch Buddy");
         });
 
+        socket.on("reconnect_failed", () => {
+          if (!isMounted) {
+            return;
+          }
+
+          setStatusLabel("Offline");
+          setError("Could not reconnect to Lunch Buddy. Please reload the page.");
+        });
+
         socket.on("presence:update", (payload: LunchBuddyPresencePayload) => {
           if (!isMounted) {
             return;

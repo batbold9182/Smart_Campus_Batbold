@@ -20,12 +20,12 @@ router.post(
     try {
       const { studentId, scheduleId } = req.body;
 
-      const student = await User.findById(studentId);
+      const student = await User.findById(studentId).lean();
       if (!student || student.role !== "student") {
         return res.status(400).json({ message: "Invalid student" });
       }
 
-      const schedule = await Schedule.findById(scheduleId);
+      const schedule = await Schedule.findById(scheduleId).lean();
       if (!schedule) {
         return res.status(404).json({ message: "Schedule not found" });
       }
@@ -38,7 +38,7 @@ router.post(
       const populatedSchedule = await Schedule.findById(scheduleId).populate(
         "course",
         "title name code"
-      );
+      ).lean();
 
       const courseTitle =
         populatedSchedule?.course?.title ||

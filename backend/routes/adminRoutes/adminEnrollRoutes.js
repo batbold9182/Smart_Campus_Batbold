@@ -20,13 +20,13 @@ router.post(
       const { studentId, courseId } = req.body;
 
       // Validate student
-      const student = await User.findById(studentId);
+      const student = await User.findById(studentId).lean();
       if (!student || student.role !== "student") {
         return res.status(400).json({ message: "Invalid student" });
       }
 
       // Validate course
-      const course = await Course.findById(courseId);
+      const course = await Course.findById(courseId).lean();
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
       }
@@ -69,7 +69,8 @@ router.get(
         const enrollments = await Enrollment.find()
           .populate("student", "name email")
           .populate("course", "title code")
-          .sort({ createdAt: -1 });
+          .sort({ createdAt: -1 })
+          .lean();
         return res.json(enrollments);
       }
 
@@ -83,7 +84,8 @@ router.get(
           .populate("course", "title code")
           .sort({ createdAt: -1 })
           .skip(skip)
-          .limit(limit),
+          .limit(limit)
+          .lean(),
         Enrollment.countDocuments(),
       ]);
 

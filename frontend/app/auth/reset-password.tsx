@@ -82,6 +82,7 @@ export default function ResetPasswordScreen() {
             keyboardType="email-address"
             value={email}
             onChangeText={setEmail}
+            maxLength={255}
           />
 
           <AppInput
@@ -99,6 +100,7 @@ export default function ResetPasswordScreen() {
             secureTextEntry
             value={newPassword}
             onChangeText={setNewPassword}
+            maxLength={128}
           />
 
           <AppInput
@@ -107,6 +109,7 @@ export default function ResetPasswordScreen() {
             secureTextEntry
             value={confirmPassword}
             onChangeText={setConfirmPassword}
+            maxLength={128}
           />
 
           <AppButton

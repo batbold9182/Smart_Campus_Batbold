@@ -133,6 +133,7 @@ export default function LoginScreen() {
               autoCorrect={false}
               textContentType="emailAddress"
               autoComplete="email"
+              maxLength={255}
             />
             {emailError ? <Text className="text-app-error -mt-1.5 mb-[10px]">{emailError}</Text> : null}
 
@@ -153,6 +154,7 @@ export default function LoginScreen() {
               autoCorrect={false}
               textContentType="password"
               autoComplete="password"
+              maxLength={128}
             />
             {passwordError ? <Text className="text-app-error -mt-1.5 mb-[10px]">{passwordError}</Text> : null}
 

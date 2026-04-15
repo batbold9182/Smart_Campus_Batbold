@@ -115,6 +115,7 @@ export default function RegisterScreen() {
               className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCapitalize="words"
               autoCorrect={false}
+              maxLength={100}
             />
 
             <AppInput
@@ -130,6 +131,7 @@ export default function RegisterScreen() {
               autoCapitalize="none"
               keyboardType="email-address"
               autoCorrect={false}
+              maxLength={255}
             />
 
             <AppInput
@@ -144,6 +146,7 @@ export default function RegisterScreen() {
               secureTextEntry
               className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCorrect={false}
+              maxLength={128}
             />
 
             <AppInput
@@ -158,6 +161,7 @@ export default function RegisterScreen() {
               secureTextEntry
               className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
               autoCorrect={false}
+              maxLength={128}
             />
 
             <AppButton

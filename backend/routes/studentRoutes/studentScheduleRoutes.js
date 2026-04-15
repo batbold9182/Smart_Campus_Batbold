@@ -17,7 +17,7 @@ router.get("/student", auth, async (req, res, next) => {
         { path: "course", select: "title code name" },
         { path: "faculty", select: "name email" },
       ],
-    });
+    }).lean();
 
     const assignedSchedules = assignedRows
       .map((row) => row.schedule)
@@ -29,7 +29,7 @@ router.get("/student", auth, async (req, res, next) => {
 
     const enrollments = await enrollment.find({
       student: req.user.id,
-    });
+    }).lean();
 
     const courseIds = enrollments.map((e) => e.course);
 
@@ -37,7 +37,8 @@ router.get("/student", auth, async (req, res, next) => {
       course: { $in: courseIds },
     })
       .populate("course", "title code name")
-      .populate("faculty", "name email");
+      .populate("faculty", "name email")
+      .lean();
 
     res.json(schedules);
   } catch (err) {
