@@ -78,7 +78,7 @@ const loadStudentSchedulesForDay = async (studentId, dayName) => {
     .lean();
 };
 
-router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res) => {
+router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const courses = await Course.find({ faculty: req.user.id })
       .select("title code credits")
@@ -113,12 +113,11 @@ router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res)
       })),
     });
   } catch (err) {
-    console.error("FACULTY_ATTENDANCE_COURSES_ERROR:", err);
-    res.status(500).json({ message: "Failed to load faculty attendance courses" });
+    next(err);
   }
 });
 
-router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"), async (req, res) => {
+router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const attendanceDate = toStartOfDay(req.query.date);
     const scheduleId = typeof req.query.scheduleId === "string" ? req.query.scheduleId.trim() : "";
@@ -193,8 +192,7 @@ router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"
       students,
     });
   } catch (err) {
-    console.error("FACULTY_ATTENDANCE_STUDENTS_ERROR:", err);
-    res.status(500).json({ message: "Failed to load attendance list" });
+    next(err);
   }
 });
 
@@ -202,7 +200,7 @@ router.put(
   "/faculty/courses/:courseId/students/:studentId",
   auth,
   authorizeRoles("faculty"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const attendanceDate = toStartOfDay(req.body?.date);
       const scheduleId = typeof req.body?.scheduleId === "string" ? req.body.scheduleId.trim() : "";
@@ -274,13 +272,12 @@ router.put(
         attendance: formatAttendance(attendance),
       });
     } catch (err) {
-      console.error("FACULTY_ATTENDANCE_SAVE_ERROR:", err);
-      res.status(500).json({ message: "Failed to save attendance" });
+      next(err);
     }
   }
 );
 
-router.get("/student/summary", auth, authorizeRoles("student"), async (req, res) => {
+router.get("/student/summary", auth, authorizeRoles("student"), async (req, res, next) => {
   try {
     const enrollments = await Enrollment.find({ student: req.user.id })
       .populate({
@@ -375,12 +372,11 @@ router.get("/student/summary", auth, authorizeRoles("student"), async (req, res)
       },
     });
   } catch (err) {
-    console.error("STUDENT_ATTENDANCE_SUMMARY_ERROR:", err);
-    res.status(500).json({ message: "Failed to load attendance summary" });
+    next(err);
   }
 });
 
-router.get("/student/schedule", auth, authorizeRoles("student"), async (req, res) => {
+router.get("/student/schedule", auth, authorizeRoles("student"), async (req, res, next) => {
   try {
     const attendanceDate = toStartOfDay(req.query.date);
     if (!attendanceDate) {
@@ -444,8 +440,7 @@ router.get("/student/schedule", auth, authorizeRoles("student"), async (req, res
       items,
     });
   } catch (err) {
-    console.error("STUDENT_ATTENDANCE_SCHEDULE_ERROR:", err);
-    res.status(500).json({ message: "Failed to load schedule attendance" });
+    next(err);
   }
 });
 

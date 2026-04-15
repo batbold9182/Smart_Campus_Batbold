@@ -7,7 +7,7 @@ const authorizeRoles = require("../../middleware/roleMiddleware");
 const router = express.Router();
 
 // Get student schedule
-router.get("/student", auth, async (req, res) => {
+router.get("/student", auth, async (req, res, next) => {
   try {
     const assignedRows = await StudentSchedule.find({
       student: req.user.id,
@@ -41,12 +41,12 @@ router.get("/student", auth, async (req, res) => {
 
     res.json(schedules);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 // Get faculty schedule
-router.get("/faculty", auth, authorizeRoles("faculty"), async (req, res) => {
+router.get("/faculty", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const schedules = await Schedule.find({ faculty: req.user.id })
       .populate("course", "title code name")
@@ -55,7 +55,7 @@ router.get("/faculty", auth, authorizeRoles("faculty"), async (req, res) => {
 
     res.json(schedules);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

@@ -27,7 +27,7 @@ router.post(
     body("password").isLength({ min: 6, max: 128 }).withMessage("Password must be 6-128 characters"),
   ],
   validate,
-  async (req, res) => {
+  async (req, res, next) => {
   try {
     const { name, email, password } = req.body;
 
@@ -45,7 +45,7 @@ router.post(
 
     res.status(201).json({ message: "User registered" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
@@ -57,7 +57,7 @@ router.post(
     body("password").notEmpty().withMessage("Password is required").isLength({ max: 128 }),
   ],
   validate,
-  async (req, res) => {
+  async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
@@ -90,7 +90,7 @@ router.post(
       },
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
@@ -101,7 +101,7 @@ router.post(
     body("email").isEmail().withMessage("Valid email is required").normalizeEmail().isLength({ max: 255 }),
   ],
   validate,
-  async (req, res) => {
+  async (req, res, next) => {
   try {
     const email = String(req.body?.email || "").trim().toLowerCase();
 
@@ -134,7 +134,7 @@ router.post(
       message: "If an account exists for this email, an OTP has been sent.",
     });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
@@ -147,7 +147,7 @@ router.post(
     body("newPassword").isLength({ min: 6, max: 128 }).withMessage("Password must be 6-128 characters"),
   ],
   validate,
-  async (req, res) => {
+  async (req, res, next) => {
   try {
     const email = String(req.body?.email || "").trim().toLowerCase();
     const otp = String(req.body?.otp || "").trim();
@@ -172,7 +172,7 @@ router.post(
 
     return res.json({ message: "Password reset successful" });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

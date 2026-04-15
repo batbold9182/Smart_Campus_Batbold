@@ -9,7 +9,7 @@ const router = express.Router();
 /**
  * ASSIGN COURSE TO FACULTY (ADMIN ONLY)
  */
-router.put("/courses/:courseId/assign", auth, async (req, res) => {
+router.put("/courses/:courseId/assign", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Admin only" });
@@ -41,7 +41,7 @@ router.put("/courses/:courseId/assign", auth, async (req, res) => {
 
     res.json(course);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

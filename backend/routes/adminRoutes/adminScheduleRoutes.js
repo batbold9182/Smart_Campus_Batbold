@@ -14,7 +14,7 @@ router.delete(
   "/schedule/unassign",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const { studentId, scheduleId } = req.body;
 
@@ -33,7 +33,7 @@ router.delete(
         message: "Student unassigned from schedule successfully",
       });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 );
@@ -45,7 +45,7 @@ router.get(
   "/schedules",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
       if (!hasPagination) {
@@ -80,7 +80,7 @@ router.get(
         },
       });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 );
@@ -92,7 +92,7 @@ router.post(
   "/schedule",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const { courseId, facultyId, day, startTime, endTime, room } = req.body;
 
@@ -118,7 +118,7 @@ router.post(
         schedule,
       });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 );
@@ -130,7 +130,7 @@ router.delete(
   "/schedule/:id",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const scheduleId = req.params.id;
 
@@ -144,7 +144,7 @@ router.delete(
 
       res.json({ message: "Schedule deleted successfully" });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 );

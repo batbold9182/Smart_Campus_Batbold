@@ -4,7 +4,7 @@ const auth = require("../middleware/authMiddleware.js");
 
 const router = express.Router();
 // Get unread notifications count
-router.get("/unread-count", auth, async (req, res) => {
+router.get("/unread-count", auth, async (req, res, next) => {
   try {
     const count = await Notification.countDocuments({
       recipient: req.user.id,
@@ -12,12 +12,12 @@ router.get("/unread-count", auth, async (req, res) => {
     });
     res.json({ unreadCount: count });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 // Get logged-in user's notifications
-router.get("/", auth, async (req, res) => {
+router.get("/", auth, async (req, res, next) => {
   try {
     const filter = { recipient: req.user.id };
     const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
@@ -46,12 +46,12 @@ router.get("/", auth, async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 // Mark as read
-router.patch("/:id/read", auth, async (req, res) => {
+router.patch("/:id/read", auth, async (req, res, next) => {
   try {
     await Notification.findByIdAndUpdate(req.params.id, {
       isRead: true
@@ -59,7 +59,7 @@ router.patch("/:id/read", auth, async (req, res) => {
 
     res.json({ message: "Marked as read" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

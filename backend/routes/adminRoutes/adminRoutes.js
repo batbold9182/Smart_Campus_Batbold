@@ -18,7 +18,7 @@ const isValidAcademicSelection = (school, department, program) => {
   return programs.includes(program);
 };
 
-router.get("/academic-options", auth, role("admin"), async (req, res) => {
+router.get("/academic-options", auth, role("admin"), async (req, res, next) => {
   return res.json(academicHierarchy);
 });
 
@@ -27,7 +27,7 @@ router.post(
   "/create-faculty",
   auth,
   role("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const {
         name,
@@ -114,12 +114,12 @@ router.post(
         },
       });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 );
 // ✅ Admin gets all users
-router.get("/users", auth, async (req, res) => {
+router.get("/users", auth, async (req, res, next) => {
   if (req.user.role !== "admin") {
     return res.status(403).json({ message: "Access denied" });
   }
@@ -153,7 +153,7 @@ router.get("/users", auth, async (req, res) => {
 
 
 // ❌ DELETE USER (admin only)
-router.delete("/users/:id", auth, async (req, res) => {
+router.delete("/users/:id", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -168,13 +168,12 @@ router.delete("/users/:id", auth, async (req, res) => {
 
     res.json({ message: "User deleted" });
   } catch (err) {
-    console.error("DELETE USER ERROR:", err);
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 });
 
 // ✅ Update user information (admin only)
-router.patch("/users/:id", auth, async (req, res) => {
+router.patch("/users/:id", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -224,13 +223,13 @@ router.patch("/users/:id", auth, async (req, res) => {
     await user.save();
     res.json({ message: "User updated successfully", user });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 //Disable / Enable user (admin only)
 
-router.patch("/users/:id/toggle", auth, async (req, res) => {
+router.patch("/users/:id/toggle", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -244,12 +243,12 @@ router.patch("/users/:id/toggle", auth, async (req, res) => {
 
     res.json({ message: "User status updated", isActive: user.isActive });
   } catch (err) {
-    res.status(500).json({ message: "Server error" });
+    next(err);
   }
 });
 
 // ✅ Get all students (for enrollment)
-router.get("/students", auth, async (req, res) => {
+router.get("/students", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -261,12 +260,12 @@ router.get("/students", auth, async (req, res) => {
 
     res.json(students);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 // ✅ Get all courses (for enrollment)
-router.get("/courses", auth, async (req, res) => {
+router.get("/courses", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -278,7 +277,7 @@ router.get("/courses", auth, async (req, res) => {
 
     res.json(courses);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

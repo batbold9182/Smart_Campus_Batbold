@@ -16,7 +16,7 @@ router.post(
   "/assign-schedule",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const { studentId, scheduleId } = req.body;
 
@@ -57,12 +57,8 @@ router.post(
         assigned,
       });
     } catch (err) {
-      if (err.code === 11000) {
-        return res
-          .status(400)
-          .json({ message: "Schedule already assigned" });
-      }
-      res.status(500).json({ message: err.message });
+      if (err.code === 11000) err.message = "Schedule already assigned";
+      next(err);
     }
   }
 );

@@ -65,7 +65,7 @@ const isCategoryMatch = (subjects, category) => {
   );
 };
 
-router.get("/search", auth, async (req, res) => {
+router.get("/search", auth, async (req, res, next) => {
   try {
     const query = String(req.query.q || "").trim();
     const category = String(req.query.category || "").trim().toLowerCase();
@@ -127,11 +127,7 @@ router.get("/search", auth, async (req, res) => {
       items,
     });
   } catch (err) {
-    console.error("ONLINE_LIBRARY_SEARCH_ERROR:", err);
-    if (err.name === "AbortError") {
-      return res.status(503).json({ message: "OpenLibrary timed out. Please try again." });
-    }
-    res.status(500).json({ message: "Failed to search OpenLibrary" });
+    next(err);
   }
 });
 

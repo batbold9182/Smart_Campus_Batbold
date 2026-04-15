@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const { Server } = require("socket.io");
 const connectDB = require("./config/db");
+const errorHandler = require("./middleware/errorHandler");
 const registerLunchBuddySocket = require("./socket/lunchBuddySocket");
 const registerLearningBuddySocket = require("./socket/learningBuddySocket");
 const registerPartyBuddySocket = require("./socket/partyBuddySocket");
@@ -103,6 +104,8 @@ app.use("/api/assignments", assignmentRoutes);
 app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");
 });
+
+app.use(errorHandler);
 
 const io = new Server(server, {
   cors: {

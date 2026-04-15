@@ -13,7 +13,7 @@ router.post(
   "/notify",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const { title, message, recipients, target, userId, type } = req.body;
 
@@ -65,7 +65,7 @@ router.post(
         count: notifications.length
       });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 );

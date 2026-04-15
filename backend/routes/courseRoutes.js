@@ -9,7 +9,7 @@ const router = express.Router();
 /**
  * CREATE COURSE (FACULTY ONLY)
  */
-router.post("/", auth, async (req, res) => {
+router.post("/", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -44,14 +44,14 @@ router.post("/", auth, async (req, res) => {
 
     res.status(201).json(populated);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 /**
  * ASSIGN COURSE TO FACULTY (ADMIN ONLY)
  */
-router.patch("/:id/assign", auth, async (req, res) => {
+router.patch("/:id/assign", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -86,14 +86,14 @@ router.patch("/:id/assign", auth, async (req, res) => {
 
     res.json(course);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 /**
  * GET ALL COURSES (ADMIN ONLY)
  */
-router.get("/", auth, async (req, res) => {
+router.get("/", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -124,14 +124,14 @@ router.get("/", auth, async (req, res) => {
       },
     });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 /**
  * DELETE COURSE (ADMIN ONLY)
  */
-router.delete("/:id", auth, async (req, res) => {
+router.delete("/:id", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "admin") {
       return res.status(403).json({ message: "Access denied" });
@@ -144,14 +144,14 @@ router.delete("/:id", auth, async (req, res) => {
 
     res.json({ message: "Course deleted" });
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 
 /**
  * GET MY COURSES (FACULTY)
  */
-router.get("/my", auth, async (req, res) => {
+router.get("/my", auth, async (req, res, next) => {
   try {
     if (req.user.role !== "faculty") {
       return res.status(403).json({ message: "Access denied" });
@@ -160,7 +160,7 @@ router.get("/my", auth, async (req, res) => {
     const courses = await Course.find({ faculty: req.user.id });
     res.json(courses);
   } catch (err) {
-    res.status(500).json({ message: err.message });
+    next(err);
   }
 });
 

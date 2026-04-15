@@ -15,7 +15,7 @@ router.post(
   "/enroll",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const { studentId, courseId } = req.body;
 
@@ -49,10 +49,8 @@ router.post(
         enrollment
       });
     } catch (err) {
-      if (err.code === 11000) {
-        return res.status(400).json({ message: "Student already enrolled" });
-      }
-      res.status(500).json({ message: err.message });
+      if (err.code === 11000) err.message = "Student already enrolled";
+      next(err);
     }
   }
 );
@@ -64,7 +62,7 @@ router.get(
   "/enrollments",
   auth,
   authorizeRoles("admin"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
       if (!hasPagination) {
@@ -99,12 +97,12 @@ router.get(
         },
       });
     } catch (err) {
-      res.status(500).json({ message: err.message });
+      next(err);
     }
   }
 );
 
-const unenrollHandler = async (req, res) => {
+const unenrollHandler = async (req, res, next) => {
   try {
     const enrollment = await Enrollment.findByIdAndDelete(req.params.id);
 
@@ -114,7 +112,7 @@ const unenrollHandler = async (req, res) => {
 
     return res.json({ message: "Student unenrolled successfully" });
   } catch (err) {
-    return res.status(500).json({ message: err.message });
+    next(err);
   }
 };
 

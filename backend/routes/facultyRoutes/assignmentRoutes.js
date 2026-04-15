@@ -151,7 +151,7 @@ const uploadSubmissionFile = (fileBuffer, fileName, mimeType) =>
     stream.end(fileBuffer);
   });
 
-router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res) => {
+router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const courses = await Course.find({ faculty: req.user.id })
       .select("title code credits")
@@ -185,12 +185,11 @@ router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res)
       })),
     });
   } catch (err) {
-    console.error("FACULTY_ASSIGNMENT_COURSES_ERROR:", err);
-    res.status(500).json({ message: "Failed to load faculty assignment courses" });
+    next(err);
   }
 });
 
-router.get("/faculty/courses/:courseId/assignments", auth, authorizeRoles("faculty"), async (req, res) => {
+router.get("/faculty/courses/:courseId/assignments", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const course = await Course.findOne({ _id: req.params.courseId, faculty: req.user.id })
       .select("title code credits")
@@ -233,8 +232,7 @@ router.get("/faculty/courses/:courseId/assignments", auth, authorizeRoles("facul
       })),
     });
   } catch (err) {
-    console.error("FACULTY_ASSIGNMENT_LIST_ERROR:", err);
-    res.status(500).json({ message: "Failed to load assignments" });
+    next(err);
   }
 });
 
@@ -242,7 +240,7 @@ router.get(
   "/faculty/courses/:courseId/assignments/:assignmentId/submissions",
   auth,
   authorizeRoles("faculty"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const assignment = await Assignment.findOne({
         _id: req.params.assignmentId,
@@ -272,8 +270,7 @@ router.get(
           .map((submission) => formatFacultySubmission(submission)),
       });
     } catch (err) {
-      console.error("FACULTY_ASSIGNMENT_SUBMISSIONS_ERROR:", err);
-      res.status(500).json({ message: "Failed to load assignment submissions" });
+      next(err);
     }
   }
 );
@@ -282,7 +279,7 @@ router.put(
   "/faculty/assignments/:assignmentId/submissions/:submissionId/review",
   auth,
   authorizeRoles("faculty"),
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const feedback = typeof req.body?.feedback === "string" ? req.body.feedback.trim() : "";
       const rawScore = req.body?.score;
@@ -331,13 +328,12 @@ router.put(
         submission: formatSubmission(submission),
       });
     } catch (err) {
-      console.error("FACULTY_ASSIGNMENT_REVIEW_ERROR:", err);
-      res.status(500).json({ message: "Failed to save assignment review" });
+      next(err);
     }
   }
 );
 
-router.get("/submissions/:submissionId/download", auth, async (req, res) => {
+router.get("/submissions/:submissionId/download", auth, async (req, res, next) => {
   try {
     const submission = await AssignmentSubmission.findById(req.params.submissionId)
       .select("student faculty fileUrl fileName fileType cloudinaryPublicId")
@@ -386,12 +382,11 @@ router.get("/submissions/:submissionId/download", auth, async (req, res) => {
     res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
     res.send(buffer);
   } catch (err) {
-    console.error("ASSIGNMENT_SUBMISSION_DOWNLOAD_ERROR:", err);
-    res.status(500).json({ message: "Failed to download submission file" });
+    next(err);
   }
 });
 
-router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("faculty"), async (req, res) => {
+router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const title = typeof req.body?.title === "string" ? req.body.title.trim() : "";
     const description = typeof req.body?.description === "string" ? req.body.description.trim() : "";
@@ -446,12 +441,11 @@ router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("facu
       assignment: formatAssignment(assignment),
     });
   } catch (err) {
-    console.error("FACULTY_ASSIGNMENT_CREATE_ERROR:", err);
-    res.status(500).json({ message: "Failed to create assignment" });
+    next(err);
   }
 });
 
-router.delete("/:assignmentId", auth, authorizeRoles("faculty"), async (req, res) => {
+router.delete("/:assignmentId", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const assignment = await Assignment.findOneAndDelete({
       _id: req.params.assignmentId,
@@ -464,12 +458,11 @@ router.delete("/:assignmentId", auth, authorizeRoles("faculty"), async (req, res
 
     res.json({ message: "Assignment deleted successfully" });
   } catch (err) {
-    console.error("FACULTY_ASSIGNMENT_DELETE_ERROR:", err);
-    res.status(500).json({ message: "Failed to delete assignment" });
+    next(err);
   }
 });
 
-router.get("/student", auth, authorizeRoles("student"), async (req, res) => {
+router.get("/student", auth, authorizeRoles("student"), async (req, res, next) => {
   try {
     const enrollments = await Enrollment.find({ student: req.user.id })
       .populate({
@@ -564,8 +557,7 @@ router.get("/student", auth, authorizeRoles("student"), async (req, res) => {
       summary,
     });
   } catch (err) {
-    console.error("STUDENT_ASSIGNMENTS_ERROR:", err);
-    res.status(500).json({ message: "Failed to load assignments" });
+    next(err);
   }
 });
 
@@ -574,7 +566,7 @@ router.post(
   auth,
   authorizeRoles("student"),
   handleSubmissionUpload,
-  async (req, res) => {
+  async (req, res, next) => {
     try {
       const assignment = await Assignment.findById(req.params.assignmentId).lean();
 
@@ -660,8 +652,7 @@ router.post(
         submission: formatSubmission(submission),
       });
     } catch (err) {
-      console.error("STUDENT_ASSIGNMENT_SUBMISSION_ERROR:", err);
-      res.status(500).json({ message: "Failed to submit assignment" });
+      next(err);
     }
   }
 );

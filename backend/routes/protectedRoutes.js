@@ -23,7 +23,7 @@ const isHttpUrl = (value) => {
 
 const isDataImage = (value) => value.toLowerCase().startsWith("data:image/");
 
-router.get("/profile", auth, async (req, res) => {
+router.get("/profile", auth, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select("-password");
 
@@ -33,12 +33,11 @@ router.get("/profile", auth, async (req, res) => {
 
     res.json(user);
   } catch (err) {
-    console.error("PROFILE ROUTE ERROR:", err);
-    res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 });
 
-router.patch("/profile/picture", auth, async (req, res) => {
+router.patch("/profile/picture", auth, async (req, res, next) => {
   try {
     const { profile } = req.body;
 
@@ -93,8 +92,7 @@ router.patch("/profile/picture", auth, async (req, res) => {
       profile: user.profile,
     });
   } catch (err) {
-    console.error("PROFILE PICTURE UPDATE ERROR:", err);
-    return res.status(500).json({ message: "Internal server error" });
+    next(err);
   }
 });
 

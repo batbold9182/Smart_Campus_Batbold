@@ -21,7 +21,7 @@ const formatMessage = (message) => ({
   },
 });
 
-router.get("/messages", auth, role("student"), async (req, res) => {
+router.get("/messages", auth, role("student"), async (req, res, next) => {
   try {
     const requestedLimit = Number(req.query.limit);
     const limit = Number.isFinite(requestedLimit) && requestedLimit > 0
@@ -38,8 +38,7 @@ router.get("/messages", auth, role("student"), async (req, res) => {
       messages: messages.reverse().map(formatMessage),
     });
   } catch (err) {
-    console.error("PARTY_BUDDY_HISTORY_ERROR:", err);
-    res.status(500).json({ message: "Failed to load Party Buddy messages" });
+    next(err);
   }
 });
 

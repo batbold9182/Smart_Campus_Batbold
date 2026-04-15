@@ -1,5 +1,6 @@
 import axios from "axios";
-import { getToken } from "../services/tokenStorage";
+import { router } from "expo-router";
+import { getToken, clearToken } from "../services/tokenStorage";
 
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
@@ -31,6 +32,19 @@ api.interceptors.request.use(
     return config;
   },
   (error) => Promise.reject(error)
+);
+
+// 🔒 AUTO-LOGOUT ON 401
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const isLoginRequest = error.config?.url?.includes("/auth/login");
+    if (error.response?.status === 401 && !isLoginRequest) {
+      await clearToken();
+      router.replace("/auth/login");
+    }
+    return Promise.reject(error);
+  }
 );
 
 export default api;

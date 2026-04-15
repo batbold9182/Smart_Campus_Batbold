@@ -16,7 +16,7 @@ const formatGrade = (grade) => ({
   updatedAt: grade.updatedAt,
 });
 
-router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res) => {
+router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const courses = await Course.find({ faculty: req.user.id })
       .select("title code credits")
@@ -50,12 +50,11 @@ router.get("/faculty/courses", auth, authorizeRoles("faculty"), async (req, res)
       })),
     });
   } catch (err) {
-    console.error("FACULTY_GRADE_COURSES_ERROR:", err);
-    res.status(500).json({ message: "Failed to load faculty grade courses" });
+    next(err);
   }
 });
 
-router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"), async (req, res) => {
+router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const course = await Course.findOne({ _id: req.params.courseId, faculty: req.user.id })
       .select("title code credits")
@@ -102,12 +101,11 @@ router.get("/faculty/courses/:courseId/students", auth, authorizeRoles("faculty"
       students,
     });
   } catch (err) {
-    console.error("FACULTY_GRADE_STUDENTS_ERROR:", err);
-    res.status(500).json({ message: "Failed to load students for grading" });
+    next(err);
   }
 });
 
-router.put("/faculty/courses/:courseId/students/:studentId", auth, authorizeRoles("faculty"), async (req, res) => {
+router.put("/faculty/courses/:courseId/students/:studentId", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
     const numericValue = Number(req.body?.value);
     const remarks = typeof req.body?.remarks === "string" ? req.body.remarks.trim() : "";
@@ -163,12 +161,11 @@ router.put("/faculty/courses/:courseId/students/:studentId", auth, authorizeRole
       grade: formatGrade(grade),
     });
   } catch (err) {
-    console.error("FACULTY_GRADE_SAVE_ERROR:", err);
-    res.status(500).json({ message: "Failed to save grade" });
+    next(err);
   }
 });
 
-router.get("/student", auth, authorizeRoles("student"), async (req, res) => {
+router.get("/student", auth, authorizeRoles("student"), async (req, res, next) => {
   try {
     const [enrollments, grades] = await Promise.all([
       Enrollment.find({ student: req.user.id })
@@ -211,8 +208,7 @@ router.get("/student", auth, authorizeRoles("student"), async (req, res) => {
       },
     });
   } catch (err) {
-    console.error("STUDENT_GRADES_ERROR:", err);
-    res.status(500).json({ message: "Failed to load grades" });
+    next(err);
   }
 });
 
