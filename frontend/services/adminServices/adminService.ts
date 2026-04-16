@@ -46,8 +46,8 @@ export const toggleUserStatus = async (id: string) => {
     return res.data;
 };
 
-export const getAcademicOptions = async () => {
-  const res = await api.get("/api/admin/academic-options");
+export const getAcademicOptions = async (signal?: AbortSignal) => {
+  const res = await api.get("/api/admin/academic-options", { signal });
   return res.data;
 };
 

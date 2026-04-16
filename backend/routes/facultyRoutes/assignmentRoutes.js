@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const auth = require("../../middleware/authMiddleware");
 const authorizeRoles = require("../../middleware/roleMiddleware");
 const multer = require("multer");
@@ -415,17 +416,8 @@ router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("facu
       return res.status(404).json({ message: "Course not found" });
     }
 
-    const assignment = await Assignment.create({
-      title,
-      description,
-      dueDate,
-      maxPoints,
-      course: req.params.courseId,
-      faculty: req.user.id,
-    });
-
     const enrollments = await Enrollment.find({ course: req.params.courseId }).select("student").lean();
-    const notifications = enrollments
+    const notificationDocs = enrollments
       .filter((enrollment) => enrollment.student)
       .map((enrollment) => ({
         recipient: enrollment.student,
@@ -434,8 +426,20 @@ router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("facu
         type: "announcement",
       }));
 
-    if (notifications.length > 0) {
-      await Notification.insertMany(notifications);
+    const session = await mongoose.startSession();
+    let assignment;
+    try {
+      await session.withTransaction(async () => {
+        [assignment] = await Assignment.create(
+          [{ title, description, dueDate, maxPoints, course: req.params.courseId, faculty: req.user.id }],
+          { session }
+        );
+        if (notificationDocs.length > 0) {
+          await Notification.insertMany(notificationDocs, { session });
+        }
+      });
+    } finally {
+      session.endSession();
     }
 
     res.status(201).json({

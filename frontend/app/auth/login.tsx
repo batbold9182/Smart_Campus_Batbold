@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { login } from "../../services/authService";
-import { router } from "expo-router";
+import { router, useLocalSearchParams } from "expo-router";
 import { setToken } from "../../services/tokenStorage";
 import { haptic } from "../../utils/haptics";
 import { AppButton, AppInput, AppCard } from "../../components/ui";
@@ -23,11 +23,18 @@ Asset.loadAsync([
 
 export default function LoginScreen() {
   const { width } = useWindowDimensions();
+  const { reason } = useLocalSearchParams<{ reason?: string }>();
   const [email, setEmail] = useState("");
-    const logoSize = Math.max(68, Math.min(96, Math.round(width * 0.12)));
+  const logoSize = Math.max(68, Math.min(96, Math.round(width * 0.12)));
 
   const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
+
+  useEffect(() => {
+    if (reason === "expired") {
+      setMessage("Your session has expired. Please log in again.");
+    }
+  }, [reason]);
   const [isLoading, setIsLoading] = useState(false);
   const [emailError, setEmailError] = useState("");
   const [passwordError, setPasswordError] = useState("");

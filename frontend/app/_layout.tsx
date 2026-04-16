@@ -4,7 +4,9 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 import { View } from "react-native";
 import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
+import { AuthProvider } from "../contexts/AuthContext";
 import { ThemeTransitionOverlay } from "../components/ThemeTransitionOverlay";
+import { ErrorBoundary } from "../components/ErrorBoundary";
 
 function InnerLayout() {
   const { isDark, t } = useTheme();
@@ -21,7 +23,11 @@ export default function RootLayout() {
   return (
     <SafeAreaProvider>
       <ThemeProvider>
-        <InnerLayout />
+        <AuthProvider>
+          <ErrorBoundary>
+            <InnerLayout />
+          </ErrorBoundary>
+        </AuthProvider>
       </ThemeProvider>
     </SafeAreaProvider>
   );

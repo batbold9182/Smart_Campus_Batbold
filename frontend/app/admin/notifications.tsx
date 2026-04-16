@@ -7,7 +7,12 @@ import {
   Alert,
   ScrollView,
 } from "react-native";
-import api from "../../config/clientAPI";
+import {
+  getNotifications,
+  markNotificationRead,
+  getUsersByRole,
+  sendNotification,
+} from "../../services/notificationService";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { adminStyles } from "../../styles/adminStyles";
@@ -74,19 +79,17 @@ export default function NotificationsScreen() {
       setLoading(true);
       setError("");
 
-      const res = await api.get("/api/notifications", {
-        params: { page: nextPage, limit: NOTIFICATIONS_LIMIT },
-      });
+      const data = await getNotifications(nextPage, NOTIFICATIONS_LIMIT);
 
-      if (Array.isArray(res.data)) {
-        setNotifications(res.data);
+      if (Array.isArray(data)) {
+        setNotifications(data);
         setPage(1);
         setTotalPages(1);
         return;
       }
 
-      const items = res.data?.items || [];
-      const pages = Math.max(Number(res.data?.pagination?.totalPages) || 1, 1);
+      const items = data?.items || [];
+      const pages = Math.max(Number(data?.pagination?.totalPages) || 1, 1);
       setNotifications(items);
       setPage(nextPage);
       setTotalPages(pages);
@@ -116,8 +119,8 @@ export default function NotificationsScreen() {
       try {
         setLoadingRecipients(true);
         const role = audience === "specificStudent" ? "student" : "faculty";
-        const res = await api.get(`/api/admin/users?role=${role}&page=1&limit=1000`);
-        const users = Array.isArray(res.data?.users) ? res.data.users : [];
+        const data = await getUsersByRole(role);
+        const users = Array.isArray(data?.users) ? data.users : [];
 
         if (!isActive) {
           return;
@@ -157,7 +160,7 @@ export default function NotificationsScreen() {
 
   const markAsRead = async (id: string) => {
     try {
-      await api.patch(`/api/notifications/${id}/read`);
+      await markNotificationRead(id);
       setNotifications((prev) =>
         prev.map((item) => (item._id === id ? { ...item, isRead: true } : item))
       );
@@ -168,8 +171,8 @@ export default function NotificationsScreen() {
 
   const getRecipientIdsByRole = async (role: "students" | "faculty") => {
     const roleValue = role === "students" ? "student" : "faculty";
-    const res = await api.get(`/api/admin/users?role=${roleValue}&page=1&limit=1000`);
-    const users = res.data?.users || [];
+    const data = await getUsersByRole(roleValue);
+    const users = data?.users || [];
     return users.map((user: any) => user._id || user.id).filter(Boolean);
   };
 
@@ -219,7 +222,7 @@ export default function NotificationsScreen() {
         return;
       }
 
-      await api.post("/api/admin/notify", {
+      await sendNotification({
         title: title.trim(),
         message: message.trim(),
         type: "announcement",

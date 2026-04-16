@@ -60,16 +60,20 @@ export default function CreateUserScreen() {
   );
 
   useEffect(() => {
+    const controller = new AbortController();
     const loadAcademicOptions = async () => {
       try {
-        const data = await getAcademicOptions();
+        const data = await getAcademicOptions(controller.signal);
         setAcademicOptions(data || {});
-      } catch {
-        setMessage("❌ Failed to load academic options. Refresh and try again.");
+      } catch (err: any) {
+        if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") {
+          setMessage("❌ Failed to load academic options. Refresh and try again.");
+        }
       }
     };
 
     loadAcademicOptions();
+    return () => controller.abort();
   }, []);
 
   const handleCreate = async () => {

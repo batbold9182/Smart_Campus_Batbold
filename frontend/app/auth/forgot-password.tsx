@@ -68,9 +68,9 @@ export default function ForgotPasswordScreen() {
 
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
 
-          {devOtp ? (
+          {__DEV__ && devOtp ? (
             <View className="mt-[14px] border border-app-border rounded-[10px] p-3 bg-app-bg">
-              <Text className="font-bold text-app-text mb-[6px]">Development OTP</Text>
+              <Text className="font-bold text-app-text mb-[6px]">Development OTP (dev build only)</Text>
               <Text selectable className="text-app-text-secondary text-2xl tracking-[8px] text-center mb-[10px]">{devOtp}</Text>
               <AppButton
                 title="Continue to Reset Password"

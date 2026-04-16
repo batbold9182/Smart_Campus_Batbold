@@ -1,4 +1,5 @@
 const express = require("express");
+const mongoose = require("mongoose");
 const Enrollment = require("../../models/adminModels/enrollment");
 const User = require("../../models/adminModels/user");
 const Course = require("../../models/adminModels/course");
@@ -31,22 +32,33 @@ router.post(
         return res.status(404).json({ message: "Course not found" });
       }
 
-      const enrollment = await Enrollment.create({
-        student: studentId,
-        course: courseId
-      });
-
-      //auto notification
-      await notification.create({
-        recipient: studentId,
-        title: "Course Enrollment",
-        message: `You have been enrolled in the course: ${course.title}`,
-        type: "enrollment"
-      });
+      const session = await mongoose.startSession();
+      let enrollment;
+      try {
+        await session.withTransaction(async () => {
+          [enrollment] = await Enrollment.create(
+            [{ student: studentId, course: courseId }],
+            { session }
+          );
+          await notification.create(
+            [
+              {
+                recipient: studentId,
+                title: "Course Enrollment",
+                message: `You have been enrolled in the course: ${course.title}`,
+                type: "enrollment",
+              },
+            ],
+            { session }
+          );
+        });
+      } finally {
+        session.endSession();
+      }
 
       res.json({
         message: "Student enrolled successfully",
-        enrollment
+        enrollment,
       });
     } catch (err) {
       if (err.code === 11000) err.message = "Student already enrolled";

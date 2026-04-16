@@ -21,8 +21,8 @@ export const unassignSchedule = async (studentId: string, scheduleId: string) =>
   return res.data;
 };
 
-export const getStudentSchedule = async () => {
-  const res = await api.get("/api/schedule/student");
+export const getStudentSchedule = async (signal?: AbortSignal) => {
+  const res = await api.get("/api/schedule/student", { signal });
   return res.data;
 }
 
@@ -51,9 +51,10 @@ export const getCourses = async (page = 1, limit = 100) => {
   return Array.isArray(res.data) ? res.data : (res.data?.items || []);
 };
 
-export const getAdminSchedules = async (page = 1, limit = 100) => {
+export const getAdminSchedules = async (page = 1, limit = 100, signal?: AbortSignal) => {
   const res = await api.get("/api/admin/schedules", {
     params: { page, limit },
+    signal,
   });
 
   return Array.isArray(res.data) ? res.data : (res.data?.items || []);

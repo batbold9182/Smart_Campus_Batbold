@@ -10,6 +10,7 @@ const User = require("../models/adminModels/user");
 
 const router = express.Router();
 const RESET_TOKEN_TTL_MINUTES = 15;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
 
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE || "gmail",
@@ -77,7 +78,7 @@ router.post(
     const token = jwt.sign(
       { id: user._id, role: user.role },
       process.env.JWT_SECRET,
-      { expiresIn: `${RESET_TOKEN_TTL_MINUTES}m`}
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
     res.json({

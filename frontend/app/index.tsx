@@ -1,48 +1,60 @@
-﻿import { useEffect } from "react";
-import { Text } from "react-native";
+﻿import { useEffect, useRef } from "react";
+import { AppState, AppStateStatus, Text } from "react-native";
 import { useRouter } from "expo-router";
 import { jwtDecode } from "jwt-decode";
 import { clearToken, getToken } from "../services/tokenStorage";
+
 type UserPayload = {
   role: "admin" | "faculty" | "student";
   exp: number;
 };
 
+async function resolveTokenRoute(): Promise<
+  | "/auth/login"
+  | "/admin/dashboard"
+  | "/faculty/dashboard"
+  | "/student/dashboard"
+> {
+  const token = await getToken();
+  if (!token) return "/auth/login";
+  try {
+    const decoded = jwtDecode<UserPayload>(token);
+    if (decoded.exp * 1000 < Date.now()) {
+      await clearToken();
+      return "/auth/login";
+    }
+    if (decoded.role === "admin") return "/admin/dashboard";
+    if (decoded.role === "faculty") return "/faculty/dashboard";
+    return "/student/dashboard";
+  } catch {
+    await clearToken();
+    return "/auth/login";
+  }
+}
+
 export default function Index() {
   const router = useRouter();
+  const appState = useRef<AppStateStatus>(AppState.currentState);
 
   useEffect(() => {
-    const checkAuth = async () => {
-      const token = await getToken();
+    // Cold-start check
+    resolveTokenRoute().then((route) => router.replace(route));
 
-      if (!token) {
-        router.replace("/auth/login");
-        return;
-      }
-
-      try {
-        const decoded = jwtDecode<UserPayload>(token);
-
-        if (decoded.exp * 1000 < Date.now()) {
-          await clearToken();
-          router.replace("/auth/login");
-          return;
+    // Foreground-resume check: re-validate token each time app becomes active
+    const subscription = AppState.addEventListener(
+      "change",
+      async (nextState) => {
+        if (appState.current !== "active" && nextState === "active") {
+          const route = await resolveTokenRoute();
+          if (route === "/auth/login") {
+            router.replace("/auth/login");
+          }
         }
-
-        if (decoded.role === "admin") {
-          router.replace("/admin/dashboard");
-        } else if (decoded.role === "faculty") {
-          router.replace("/faculty/dashboard");
-        } else {
-          router.replace("/student/dashboard");
-        }
-      } catch {
-        await clearToken();
-        router.replace("/auth/login");
+        appState.current = nextState;
       }
-    };  
+    );
 
-    checkAuth();
+    return () => subscription.remove();
   }, [router]);
 
   return <Text>Loading...</Text>;

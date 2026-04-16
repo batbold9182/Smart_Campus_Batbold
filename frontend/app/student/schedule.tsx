@@ -6,19 +6,26 @@ import { SafeAreaView } from "react-native-safe-area-context";
 export default function StudentScheduleScreen() {
   const [schedule, setSchedule] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const router = useRouter();
-  useEffect(() => {
-    loadSchedule();
-  }, []);
 
-  const loadSchedule = async () => {
-    try {
-      const data = await getStudentSchedule();
-      setSchedule(data);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    const controller = new AbortController();
+    const loadSchedule = async () => {
+      try {
+        const data = await getStudentSchedule(controller.signal);
+        setSchedule(data);
+      } catch (err: any) {
+        if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") {
+          setError("Failed to load schedule. Please try again.");
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadSchedule();
+    return () => controller.abort();
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
@@ -28,6 +35,10 @@ export default function StudentScheduleScreen() {
         {loading ? (
           <View className="rounded-xl bg-app-surface p-4 shadow">
             <Text className="text-center text-app-muted">Loading schedule...</Text>
+          </View>
+        ) : error ? (
+          <View className="rounded-xl bg-app-surface p-4 shadow">
+            <Text className="text-center text-red-500">{error}</Text>
           </View>
         ) : schedule.length === 0 ? (
           <View className="rounded-xl bg-app-surface p-4 shadow">

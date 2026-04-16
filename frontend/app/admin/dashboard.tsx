@@ -9,7 +9,7 @@ import { getUnreadCount } from "../../services/notificationService";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
-import api from "../../config/clientAPI";
+import { getAdminSchedules } from "../../services/scheduleService";
 import { getDashboardStyles } from "../../styles/dashboardStyles";
 import { useTheme } from "../../contexts/ThemeContext";
 import { haptic } from "../../utils/haptics";
@@ -38,29 +38,30 @@ export default function AdminDashboard() {
     return "Done";
   };
 
-  const loadTodaySchedule = async () => {
+  const loadTodaySchedule = async (signal: AbortSignal) => {
     try {
-      const res = await api.get("/api/admin/schedules", { params: { page: 1, limit: 100 } });
-      const allSchedules: any[] = Array.isArray(res.data) ? res.data : (res.data?.items || []);
+      const allSchedules = await getAdminSchedules(1, 100, signal);
       const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
-      setTodaySchedule(allSchedules.filter((item) => item?.day === today));
-    } catch {
-      setTodaySchedule([]);
+      setTodaySchedule(allSchedules.filter((item: any) => item?.day === today));
+    } catch (err: any) {
+      if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") setTodaySchedule([]);
     }
   };
 
-  const loadCount = async () => {
+  const loadCount = async (signal: AbortSignal) => {
     try {
-      const data = await getUnreadCount();
+      const data = await getUnreadCount(signal);
       setCount(data?.unreadCount ?? 0);
-    } catch {
-      setCount(0);
+    } catch (err: any) {
+      if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") setCount(0);
     }
   };
 
   useEffect(() => {
-    loadTodaySchedule();
-    loadCount();
+    const controller = new AbortController();
+    loadTodaySchedule(controller.signal);
+    loadCount(controller.signal);
+    return () => controller.abort();
   }, []);
 
   useEffect(() => {

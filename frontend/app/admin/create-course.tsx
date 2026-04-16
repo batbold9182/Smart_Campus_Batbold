@@ -5,6 +5,7 @@ import {
   FlatList,
   Pressable,
   ScrollView,
+  ActivityIndicator,
 } from "react-native";
 import { useRouter } from "expo-router";
 import {
@@ -44,17 +45,20 @@ export default function AdminCreateCourse() {
   const [selectedFacultyId, setSelectedFacultyId] = useState<string | null>(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
+  const [loadingFaculty, setLoadingFaculty] = useState(true);
   const [assigningId, setAssigningId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const router = useRouter();
 
   const loadFaculty = async () => {
     try {
+      setLoadingFaculty(true);
       const data = await getUsers(1, "faculty", 100);
       setFaculty(data.users || []);
     } catch (err: any) {
       setMessage("Failed to load faculty list");
-      console.error(err.response?.data || err.message);
+    } finally {
+      setLoadingFaculty(false);
     }
   };
 
@@ -178,11 +182,16 @@ export default function AdminCreateCourse() {
         />
 
         <Text className="mb-2 text-[16px] font-semibold text-app-text">Assign to Faculty</Text>
+        {loadingFaculty && (
+          <ActivityIndicator size="small" className="mb-2" />
+        )}
         <FlatList
           data={faculty}
           keyExtractor={(item) => item._id}
           scrollEnabled={false}
-          ListEmptyComponent={<Text className="text-app-muted">No faculty found</Text>}
+          ListEmptyComponent={
+            loadingFaculty ? null : <Text className="text-app-muted">No faculty found</Text>
+          }
           renderItem={({ item }) => (
             <Pressable
               className={`mb-2 rounded-xl border p-3 ${
