@@ -1,4 +1,5 @@
 const jwt = require("jsonwebtoken");
+const xss = require("xss");
 const User = require("../models/adminModels/user");
 const LunchBuddyMessage = require("../models/studentModels/lunchBuddyMessage");
 
@@ -92,7 +93,8 @@ module.exports = (io) => {
 
     socket.on("message:send", async (payload = {}, callback = () => {}) => {
       try {
-        const text = typeof payload.text === "string" ? payload.text.trim() : "";
+        const rawText = typeof payload.text === "string" ? payload.text.trim() : "";
+        const text = xss(rawText, { whiteList: {}, stripIgnoreTag: true });
 
         if (!text) {
           callback({ ok: false, error: "Message cannot be empty" });

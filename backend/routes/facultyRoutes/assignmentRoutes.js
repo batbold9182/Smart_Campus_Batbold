@@ -343,8 +343,10 @@ router.get("/submissions/:submissionId/download", auth, async (req, res, next) =
       return res.status(404).json({ message: "Submission file not found" });
     }
 
-    const isStudentOwner = req.user.role === "student" && String(submission.student) === req.user.id;
-    const isFacultyOwner = req.user.role === "faculty" && String(submission.faculty) === req.user.id;
+    const mongoose = require("mongoose");
+    const reqUserId = new mongoose.Types.ObjectId(req.user.id);
+    const isStudentOwner = req.user.role === "student" && submission.student && new mongoose.Types.ObjectId(submission.student).equals(reqUserId);
+    const isFacultyOwner = req.user.role === "faculty" && submission.faculty && new mongoose.Types.ObjectId(submission.faculty).equals(reqUserId);
 
     if (!isStudentOwner && !isFacultyOwner) {
       return res.status(403).json({ message: "Access denied" });

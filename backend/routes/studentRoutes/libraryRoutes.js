@@ -97,7 +97,17 @@ router.get("/search", auth, async (req, res, next) => {
       return res.status(502).json({ message: "OpenLibrary is temporarily unavailable. Please try again shortly." });
     }
 
-    const data = await response.json();
+    const contentType = response.headers.get("content-type") || "";
+    if (!contentType.includes("application/json")) {
+      return res.status(502).json({ message: "OpenLibrary returned an unexpected response. Please try again shortly." });
+    }
+
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      return res.status(502).json({ message: "OpenLibrary returned malformed data. Please try again shortly." });
+    }
     const docs = Array.isArray(data.docs) ? data.docs : [];
     const filteredDocs = normalizedCategory
       ? docs.filter((doc) => isCategoryMatch(doc.subject, normalizedCategory))

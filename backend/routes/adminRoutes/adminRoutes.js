@@ -120,8 +120,8 @@ router.post(
 );
 // ✅ Admin gets all users
 router.get("/users", auth, role("admin"), async (req, res, next) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 5;
+  const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+  const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 5, 1), 100);
   const role = req.query.role; // faculty or student
 
   const query = role ? { role } : { role: { $ne: "admin" } };

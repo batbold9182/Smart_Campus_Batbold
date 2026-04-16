@@ -1,3 +1,13 @@
-import BuildingMapScreen from "../../components/buildingMapScreen";
+import { lazy, Suspense } from "react";
+import { View } from "react-native";
+import { SkeletonList } from "../../components/Skeleton";
 
-export default BuildingMapScreen;
+const BuildingMapScreen = lazy(() => import("../../components/buildingMapScreen"));
+
+export default function BuildingMap() {
+  return (
+    <Suspense fallback={<View style={{ flex: 1, padding: 20 }}><SkeletonList rows={4} /></View>}>
+      <BuildingMapScreen />
+    </Suspense>
+  );
+}

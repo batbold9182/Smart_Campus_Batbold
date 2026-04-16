@@ -112,7 +112,7 @@ const unenrollHandler = async (req, res, next) => {
       return res.status(404).json({ message: "Enrollment not found" });
     }
 
-    return res.json({ message: "Student unenrolled successfully" });
+    return res.status(204).send();
   } catch (err) {
     next(err);
   }

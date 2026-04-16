@@ -1,4 +1,11 @@
 require("dotenv").config();
+
+// Validate critical env vars before anything else
+if (!process.env.JWT_SECRET || process.env.JWT_SECRET.length < 32) {
+  console.error("FATAL: JWT_SECRET is missing or too short (minimum 32 characters). Exiting.");
+  process.exit(1);
+}
+
 const http = require("http");
 const express = require("express");
 const compression = require("compression");
@@ -33,8 +40,18 @@ const attendanceRoutes = require("./routes/facultyRoutes/attendanceRoutes");
 const assignmentRoutes = require("./routes/facultyRoutes/assignmentRoutes");
 
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const allowedOrigins = process.env.ALLOWED_ORIGINS
-  ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
+  ? process.env.ALLOWED_ORIGINS.split(",")
+      .map((o) => o.trim())
+      .filter((o) => {
+        if (isProduction && o.startsWith("http://")) {
+          console.warn(`CORS: Rejecting insecure origin in production: ${o}`);
+          return false;
+        }
+        return true;
+      })
   : [];
 
 app.use(helmet());
@@ -105,6 +122,10 @@ app.use("/api/assignments", assignmentRoutes);
 
 app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");
+});
+
+app.get("/health", (req, res) => {
+  res.json({ status: "ok", timestamp: new Date().toISOString() });
 });
 
 app.use(errorHandler);

@@ -33,4 +33,6 @@ const scheduleSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+scheduleSchema.index({ day: 1, startTime: 1 });
+
 module.exports = mongoose.model("Schedule", scheduleSchema);

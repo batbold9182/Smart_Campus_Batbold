@@ -2,6 +2,7 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
+// NOTE: crypto is still used only to generate the random OTP integer, not for hashing
 const nodemailer = require("nodemailer");
 const { body } = require("express-validator");
 const validate = require("../middleware/validate");
@@ -108,7 +109,7 @@ router.post(
     const user = await User.findOne({ email });
     if (user) {
       const otp = String(crypto.randomInt(100000, 999999));
-      const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
+      const hashedOtp = await bcrypt.hash(otp, 10);
 
       user.resetPasswordToken = hashedOtp;
       user.resetPasswordExpiresAt = new Date(Date.now() + RESET_TOKEN_TTL_MINUTES * 60 * 1000);
@@ -153,15 +154,15 @@ router.post(
     const otp = String(req.body?.otp || "").trim();
     const newPassword = String(req.body?.newPassword || "");
 
-    const hashedOtp = crypto.createHash("sha256").update(otp).digest("hex");
-
     const user = await User.findOne({
       email,
-      resetPasswordToken: hashedOtp,
+      resetPasswordToken: { $ne: null },
       resetPasswordExpiresAt: { $gt: new Date() },
     });
 
-    if (!user) {
+    const otpValid = user ? await bcrypt.compare(otp, user.resetPasswordToken) : false;
+
+    if (!user || !otpValid) {
       return res.status(400).json({ message: "Invalid or expired OTP" });
     }
 
