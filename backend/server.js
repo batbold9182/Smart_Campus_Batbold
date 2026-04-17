@@ -69,6 +69,7 @@ app.use(
     origin: allowedOrigins,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
     credentials: true,
+    maxAge: 86400, // Cache preflight response for 24 hours
   })
 );
 //for handling large base64 image uploads, set limits to prevent abuse

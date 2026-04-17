@@ -615,7 +615,7 @@ router.post(
               invalidate: true,
             });
           } catch (cleanupError) {
-            console.error("ASSIGNMENT_SUBMISSION_CLEANUP_ERROR:", cleanupError);
+            console.error("ASSIGNMENT_SUBMISSION_CLEANUP_ERROR:", cleanupError.message);
           }
         }
 

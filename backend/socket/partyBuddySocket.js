@@ -2,6 +2,7 @@ const jwt = require("jsonwebtoken");
 const xss = require("xss");
 const User = require("../models/adminModels/user");
 const PartyBuddyMessage = require("../models/studentModels/partyBuddyMessage");
+const { ipConnections, trackIpConnect, trackIpDisconnect, MAX_CONN_PER_USER, MAX_CONN_PER_IP } = require("../middleware/socketRateLimit");
 
 const NAMESPACE = "/party-buddy";
 const MAX_MESSAGE_LENGTH = 400;
@@ -87,8 +88,22 @@ module.exports = (io) => {
 
   namespace.on("connection", (socket) => {
     const currentUser = socket.data.user;
+    const ip = socket.handshake.address;
+
+    if ((onlineStudentConnections.get(currentUser.id) || 0) >= MAX_CONN_PER_USER) {
+      socket.emit("error", { message: "Too many connections" });
+      socket.disconnect(true);
+      return;
+    }
+    if ((ipConnections.get(ip) || 0) >= MAX_CONN_PER_IP) {
+      socket.emit("error", { message: "Too many connections from this address" });
+      socket.disconnect(true);
+      return;
+    }
+
     const activeConnections = onlineStudentConnections.get(currentUser.id) || 0;
     onlineStudentConnections.set(currentUser.id, activeConnections + 1);
+    trackIpConnect(ip);
     emitPresence(namespace);
 
     socket.on("message:send", async (payload = {}, callback = () => {}) => {
@@ -133,6 +148,7 @@ module.exports = (io) => {
         onlineStudentConnections.set(currentUser.id, remainingConnections);
       }
 
+      trackIpDisconnect(ip);
       emitPresence(namespace);
     });
   });
