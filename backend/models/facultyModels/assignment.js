@@ -15,6 +15,15 @@ const assignmentSchema = new mongoose.Schema(
     dueDate: {
       type: Date,
       required: true,
+      validate: {
+        validator: function (value) {
+          // On create (isNew) the due date must be in the future.
+          // Skip on updates so existing records are not broken.
+          if (!this.isNew) return true;
+          return value > new Date();
+        },
+        message: "Due date must be in the future",
+      },
     },
     maxPoints: {
       type: Number,

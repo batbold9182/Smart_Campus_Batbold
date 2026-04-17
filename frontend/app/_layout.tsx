@@ -7,6 +7,7 @@ import { ThemeProvider, useTheme } from "../contexts/ThemeContext";
 import { AuthProvider } from "../contexts/AuthContext";
 import { ThemeTransitionOverlay } from "../components/ThemeTransitionOverlay";
 import { ErrorBoundary } from "../components/ErrorBoundary";
+import Toast from "react-native-toast-message";
 
 function InnerLayout() {
   const { isDark, t } = useTheme();
@@ -15,6 +16,7 @@ function InnerLayout() {
       <StatusBar style={isDark ? "light" : "dark"} translucent={false} backgroundColor={t.bg} />
       <Stack screenOptions={{ headerShown: false }} />
       <ThemeTransitionOverlay />
+      <Toast />
     </View>
   );
 }

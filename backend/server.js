@@ -20,8 +20,11 @@ const registerLunchBuddySocket = require("./socket/lunchBuddySocket");
 const registerLearningBuddySocket = require("./socket/learningBuddySocket");
 const registerPartyBuddySocket = require("./socket/partyBuddySocket");
 
+const crypto = require("crypto");
+
 const app = express();
 app.use(compression());
+app.use((req, _res, next) => { req.id = crypto.randomUUID(); next(); });
 const server = http.createServer(app);
 connectDB();
 
@@ -55,7 +58,12 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
       })
   : [];
 
-app.use(helmet());
+app.use(
+  helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" },
+    referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+  })
+);
 app.use(
   cors({
     origin: allowedOrigins,
@@ -67,10 +75,13 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
+const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX) || 100;
+
 // Strict rate limit for auth endpoints (login, register, forgot-password)
 const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 15, // 15 attempts per window
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: 15,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many requests, please try again later" },
@@ -78,8 +89,8 @@ const authLimiter = rateLimit({
 
 // General API rate limit
 const apiLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: RATE_LIMIT_WINDOW_MS,
+  max: RATE_LIMIT_MAX,
   standardHeaders: true,
   legacyHeaders: false,
   message: { message: "Too many requests, please try again later" },
@@ -127,6 +138,13 @@ app.get("/", (req, res) => {
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
+app.get("/ready", (req, res) => {
+  if (mongoose.connection.readyState !== 1) {
+    return res.status(503).json({ status: "unavailable", reason: "database not connected" });
+  }
+  res.json({ status: "ready" });
 });
 
 app.use(errorHandler);

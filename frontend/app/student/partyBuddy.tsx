@@ -155,7 +155,7 @@ export default function PartyBuddy() {
   }, [router]);
 
   const handleSend = () => {
-    const text = draft.trim();
+    const text = draft.trim().replace(/<[^>]*>/g, "");
     const socket = socketRef.current;
 
     if (!text || !socket) return;

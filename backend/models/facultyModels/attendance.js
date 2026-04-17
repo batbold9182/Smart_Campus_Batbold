@@ -29,6 +29,10 @@ const attendanceSchema = new mongoose.Schema(
       type: Date,
       required: true,
       index: true,
+      validate: {
+        validator: (value) => value <= new Date(),
+        message: "Attendance date cannot be in the future",
+      },
     },
     status: {
       type: String,

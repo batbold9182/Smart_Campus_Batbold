@@ -30,7 +30,7 @@ const normalize = (value) =>
     .replace(/\s+/g, " ")
     .trim();
 
-const OPEN_LIBRARY_TIMEOUT_MS = 8000;
+const OPEN_LIBRARY_TIMEOUT_MS = Number(process.env.OPEN_LIBRARY_TIMEOUT_MS) || 8000;
 
 const fetchWithRetry = async (url, retries = 1) => {
   for (let attempt = 0; attempt <= retries; attempt++) {

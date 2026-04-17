@@ -21,14 +21,14 @@ export default function AdminDashboard() {
   const [user, setUser] = useState<any>(null);
   const router = useRouter();
   const [count, setCount] = useState(0);
-  const [time, setTime] = useState(new Date());
   const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
   const { isDark, t, toggleTheme } = useTheme();
 
   const s = getDashboardStyles(t, width, isDark);
 
   const getScheduleStatus = (startTime: string, endTime: string) => {
-    const now = time.getHours() * 60 + time.getMinutes();
+    const current = new Date();
+    const now = current.getHours() * 60 + current.getMinutes();
     const [startH, startM] = String(startTime || "0:0").split(":").map(Number);
     const [endH, endM] = String(endTime || "0:0").split(":").map(Number);
     const start = startH * 60 + startM;
@@ -62,11 +62,6 @@ export default function AdminDashboard() {
     loadTodaySchedule(controller.signal);
     loadCount(controller.signal);
     return () => controller.abort();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
   }, []);
 
   const handleLogout = async () => {

@@ -3,27 +3,31 @@ import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import { getStudentSchedule } from "../../services/scheduleService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { SkeletonList } from "../../components/Skeleton";
+import { AppButton } from "../../components/ui";
+
 export default function StudentScheduleScreen() {
   const [schedule, setSchedule] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const router = useRouter();
 
-  useEffect(() => {
-    const controller = new AbortController();
-    const loadSchedule = async () => {
-      try {
-        const data = await getStudentSchedule(controller.signal);
-        setSchedule(data);
-      } catch (err: any) {
+  const loadSchedule = (signal?: AbortSignal) => {
+    setLoading(true);
+    setError("");
+    getStudentSchedule(signal)
+      .then((data) => setSchedule(data))
+      .catch((err: any) => {
         if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") {
           setError("Failed to load schedule. Please try again.");
         }
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadSchedule();
+      })
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    loadSchedule(controller.signal);
     return () => controller.abort();
   }, []);
 
@@ -33,16 +37,16 @@ export default function StudentScheduleScreen() {
         <Text className="mb-4 text-[22px] font-bold text-app-text">My Schedule</Text>
 
         {loading ? (
-          <View className="rounded-xl bg-app-surface p-4 shadow">
-            <Text className="text-center text-app-muted">Loading schedule...</Text>
-          </View>
+          <SkeletonList rows={4} />
         ) : error ? (
-          <View className="rounded-xl bg-app-surface p-4 shadow">
-            <Text className="text-center text-red-500">{error}</Text>
+          <View className="mb-3 rounded-xl bg-app-surface p-4 shadow">
+            <Text className="mb-3 text-center text-red-500">{error}</Text>
+            <AppButton onPress={() => loadSchedule()}>Retry</AppButton>
           </View>
         ) : schedule.length === 0 ? (
-          <View className="rounded-xl bg-app-surface p-4 shadow">
-            <Text className="text-center text-app-muted">No schedule assigned yet</Text>
+          <View className="items-center rounded-xl bg-app-surface p-8 shadow">
+            <Text className="text-[16px] font-semibold text-app-text">No schedule assigned yet</Text>
+            <Text className="mt-1 text-[13px] text-app-muted">Your timetable will appear here once it is set up.</Text>
           </View>
         ) : (
           <FlatList

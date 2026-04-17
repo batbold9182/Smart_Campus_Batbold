@@ -82,6 +82,12 @@ export default function CreateUserScreen() {
       return;
     }
 
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email.trim())) {
+      setMessage("❌ Please enter a valid email address");
+      return;
+    }
+
     if (selectedRole === "faculty" && (!school.trim() || !department.trim() || !facultyTitle.trim() || !employeeId.trim())) {
       setMessage("❌ School, department, title and employee ID are required for faculty");
       return;

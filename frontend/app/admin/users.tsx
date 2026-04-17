@@ -11,6 +11,7 @@ import { getUsers, deleteUser, toggleUserStatus, updateUser, getAcademicOptions 
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton, AppCard, AppInput, AppModal } from "../../components/ui";
+import { SkeletonList } from "../../components/Skeleton";
 
 type AcademicOptions = Record<string, Record<string, string[]>>;
 
@@ -248,8 +249,16 @@ export default function AdminUsersScreen() {
           onChangeText={setSearch}
           className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3"
         />
-        {loading && <Text className="mb-2 text-app-muted">Loading users...</Text>}
+        {loading ? (
+          <SkeletonList rows={5} />
+        ) : filteredUsers.length === 0 ? (
+          <View className="items-center rounded-xl border border-dashed border-app-border bg-app-surface py-10">
+            <Text className="text-[16px] font-semibold text-app-text">No {activeTab === "faculty" ? "faculty" : "students"} found</Text>
+            <Text className="mt-1 text-[13px] text-app-muted">{search ? "Try a different search term" : "No accounts have been created yet"}</Text>
+          </View>
+        ) : null}
 
+        {!loading && (
         <FlatList
           data={filteredUsers}
           keyExtractor={(item) => item._id}
@@ -308,6 +317,7 @@ export default function AdminUsersScreen() {
             </View>
           )}
         />
+        )}
 
         <AppButton
           title="Back to Dashboard"

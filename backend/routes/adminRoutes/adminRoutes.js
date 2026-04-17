@@ -142,6 +142,8 @@ router.get("/users", auth, role("admin"), async (req, res, next) => {
     users,
     pagination: {
       page,
+      limit,
+      total,
       totalPages: Math.ceil(total / limit),
     },
     counters: { faculty, students, disabled },
@@ -210,7 +212,8 @@ router.patch("/users/:id", auth, role("admin"), async (req, res, next) => {
     }
 
     await user.save();
-    res.json({ message: "User updated successfully", user });
+    const { password: _pw, ...safeUser } = user.toObject();
+    res.json({ message: "User updated successfully", user: safeUser });
   } catch (err) {
     next(err);
   }

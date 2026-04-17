@@ -167,11 +167,19 @@ router.put("/faculty/courses/:courseId/students/:studentId", auth, authorizeRole
 
 router.get("/student", auth, authorizeRoles("student"), async (req, res, next) => {
   try {
-    const [enrollments, grades] = await Promise.all([
+    const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
+    const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
+    const skip = (page - 1) * limit;
+
+    const [enrollments, grades, totalEnrollments] = await Promise.all([
       Enrollment.find({ student: req.user.id })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
         .populate({ path: "course", select: "title code credits faculty", populate: { path: "faculty", select: "name" } })
         .lean(),
       Grade.find({ student: req.user.id }).lean(),
+      Enrollment.countDocuments({ student: req.user.id }),
     ]);
 
     const gradeMap = new Map(grades.map((grade) => [String(grade.course), grade]));
@@ -201,8 +209,14 @@ router.get("/student", auth, authorizeRoles("student"), async (req, res, next) =
 
     res.json({
       items,
+      pagination: {
+        page,
+        limit,
+        total: totalEnrollments,
+        totalPages: Math.ceil(totalEnrollments / limit),
+      },
       summary: {
-        courseCount: items.length,
+        courseCount: totalEnrollments,
         gradedCount: grades.length,
         averageGrade,
       },

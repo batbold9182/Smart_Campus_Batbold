@@ -11,7 +11,7 @@ const Notification = require("../../models/adminModels/notification");
 const { cloudinary, hasCloudinaryConfig } = require("../../config/cloudinary");
 
 const router = express.Router();
-const MAX_SUBMISSION_FILE_SIZE = 10 * 1024 * 1024;
+const MAX_SUBMISSION_FILE_SIZE = Number(process.env.MAX_UPLOAD_BYTES) || 10 * 1024 * 1024;
 const ALLOWED_SUBMISSION_MIME_TYPES = new Set([
   "application/pdf",
   "application/msword",

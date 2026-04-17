@@ -34,5 +34,13 @@ const scheduleSchema = new mongoose.Schema(
 );
 
 scheduleSchema.index({ day: 1, startTime: 1 });
+scheduleSchema.index({ course: 1, faculty: 1, day: 1, startTime: 1 }, { unique: true });
+
+scheduleSchema.pre("validate", function (next) {
+  if (this.startTime && this.endTime && this.startTime >= this.endTime) {
+    this.invalidate("endTime", "End time must be after start time");
+  }
+  next();
+});
 
 module.exports = mongoose.model("Schedule", scheduleSchema);

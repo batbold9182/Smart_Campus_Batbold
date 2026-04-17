@@ -28,7 +28,11 @@ router.get("/messages", auth, role("student"), async (req, res, next) => {
       ? Math.min(Math.floor(requestedLimit), MAX_LIMIT)
       : DEFAULT_LIMIT;
 
-    const messages = await LunchBuddyMessage.find()
+    // Cursor-based pagination: ?before=<messageId> loads messages older than that ID
+    const beforeId = typeof req.query.before === "string" ? req.query.before.trim() : null;
+    const filter = beforeId ? { _id: { $lt: beforeId } } : {};
+
+    const messages = await LunchBuddyMessage.find(filter)
       .sort({ createdAt: -1 })
       .limit(limit)
       .populate("sender", "name program yearLevel profile")
@@ -36,6 +40,7 @@ router.get("/messages", auth, role("student"), async (req, res, next) => {
 
     res.json({
       messages: messages.reverse().map(formatMessage),
+      hasMore: messages.length === limit,
     });
   } catch (err) {
     next(err);

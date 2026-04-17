@@ -223,8 +223,8 @@ export default function NotificationsScreen() {
       }
 
       await sendNotification({
-        title: title.trim(),
-        message: message.trim(),
+        title: title.trim().replace(/<[^>]*>/g, ""),
+        message: message.trim().replace(/<[^>]*>/g, ""),
         type: "announcement",
         recipients: recipientIds,
       });
