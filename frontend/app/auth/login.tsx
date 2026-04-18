@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import logger from "../../utils/logger";
 import {
   View,
   Text,
@@ -91,7 +92,7 @@ export default function LoginScreen() {
       } else {
         setMessage("? Login failed");
       }
-      console.error(err?.response?.data || err?.message || err);
+      logger.error(err?.response?.data || err?.message || err);
     } finally {
       setIsLoading(false);
     }

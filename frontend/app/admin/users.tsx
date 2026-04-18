@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState, useMemo } from "react";
+import logger from "../../utils/logger";
 import {
   View,
   Text,
   FlatList,
   TouchableOpacity,
   ScrollView,
-  Alert,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import { getUsers, deleteUser, toggleUserStatus, updateUser, getAcademicOptions } from "../../services/adminServices/adminService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -79,7 +80,7 @@ export default function AdminUsersScreen() {
         const data = await getAcademicOptions();
         setAcademicOptions(data || {});
       } catch {
-        console.log("Failed to load academic options");
+        logger.warn("Failed to load academic options");
       }
     };
     loadAcademicOptions();
@@ -137,7 +138,7 @@ export default function AdminUsersScreen() {
     if (!editingUser) return;
 
     if (!editForm.name || !editForm.email) {
-      Alert.alert("Error", "Name and email are required");
+      Toast.show({ type: "error", text1: "Name and email are required" });
       return;
     }
 
@@ -162,11 +163,11 @@ export default function AdminUsersScreen() {
       }
 
       await updateUser(editingUserId, updates);
-      Alert.alert("Success", "User updated successfully");
+      Toast.show({ type: "success", text1: "User updated successfully" });
       handleEditClose();
       loadUsers();
     } catch (error: any) {
-      Alert.alert("Error", error.response?.data?.message || "Failed to update user");
+      Toast.show({ type: "error", text1: error.response?.data?.message || "Failed to update user" });
     } finally {
       setUpdating(false);
     }

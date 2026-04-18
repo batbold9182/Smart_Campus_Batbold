@@ -1,4 +1,5 @@
 ﻿import { useEffect, useState } from "react";
+import logger from "../utils/logger";
 import { jwtDecode } from "jwt-decode";
 import { useRouter } from "expo-router";
 import { clearToken, getToken } from "../services/tokenStorage";
@@ -43,7 +44,7 @@ export default function useAuthGuard(requiredRole?: UserPayload["role"]) {
         setLoading(false);
       } catch (err) {
         await clearToken();
-        console.error("Auth guard error:", err);
+        logger.error("Auth guard error:", err);
         router.replace("/auth/login");
       }
     };

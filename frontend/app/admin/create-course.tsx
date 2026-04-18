@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import logger from "../../utils/logger";
 import {
   View,
   Text,
@@ -68,7 +69,7 @@ export default function AdminCreateCourse() {
       setCourses(data || []);
     } catch (err: any) {
       setMessage("Failed to load courses");
-      console.error(err.response?.data || err.message);
+      logger.error(err.response?.data || err.message);
     }
   };
 
@@ -107,7 +108,7 @@ export default function AdminCreateCourse() {
       loadCourses();
     } catch (err: any) {
       setMessage(err?.response?.data?.message || "Failed to create course");
-      console.error(err.response?.data || err.message);
+      logger.error(err.response?.data || err.message);
     } finally {
       setLoading(false);
     }
@@ -126,7 +127,7 @@ export default function AdminCreateCourse() {
       loadCourses();
     } catch (err: any) {
       setMessage(err?.response?.data?.message || "Failed to assign course");
-      console.error(err.response?.data || err.message);
+      logger.error(err.response?.data || err.message);
     } finally {
       setAssigningId(null);
     }
@@ -140,7 +141,7 @@ export default function AdminCreateCourse() {
       loadCourses();
     } catch (err: any) {
       setMessage(err?.response?.data?.message || "Failed to delete course");
-      console.error(err.response?.data || err.message);
+      logger.error(err.response?.data || err.message);
     } finally {
       setDeletingId(null);
     }

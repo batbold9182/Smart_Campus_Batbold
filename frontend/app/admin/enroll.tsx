@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import logger from "../../utils/logger";
 import {
   View,
   Text,
@@ -6,6 +7,7 @@ import {
   ScrollView,
   TouchableOpacity,
 } from "react-native";
+import Toast from "react-native-toast-message";
 import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -63,7 +65,7 @@ export default function AdminEnrollScreen() {
       setCourses(coursesRes.data || []);
       await loadEnrollments(1);
     } catch (err: any) {
-      console.error("Data loading error:", err);
+      logger.error("Data loading error:", err);
 
       let message = "Failed to load data";
       if (err.response?.status === 401) message = "Session expired. Please login again.";
@@ -72,7 +74,7 @@ export default function AdminEnrollScreen() {
       else if (err.message) message = err.message;
 
       setLoadError(message);
-      Alert.alert("Load Error", message);
+      Toast.show({ type: "error", text1: message });
     } finally {
       setInitialLoading(false);
     }
@@ -107,15 +109,15 @@ export default function AdminEnrollScreen() {
       });
 
       setEnrollSuccess("Student enrolled successfully");
-      Alert.alert("Success", "Student enrolled successfully");
-      console.log("Enrollment successful for studentId:", studentId, "courseId:", courseId);
+      Toast.show({ type: "success", text1: "Student enrolled successfully" });
+      logger.log("Enrollment successful for studentId:", studentId, "courseId:", courseId);
 
       await loadEnrollments(1);
 
       setStudentId("");
       setCourseId("");
     } catch (err: any) {
-      console.error("Enrollment error:", {
+      logger.error("Enrollment error:", {
         status: err.response?.status,
         message: err.response?.data?.message || err.message,
         payload: { studentId, courseId }
@@ -132,10 +134,7 @@ export default function AdminEnrollScreen() {
 
       setEnrollError(errorMessage);
 
-      Alert.alert(
-        "Error",
-        errorMessage
-      );
+      Toast.show({ type: "error", text1: errorMessage });
     } finally {
       setLoading(false);
     }
@@ -158,7 +157,7 @@ export default function AdminEnrollScreen() {
         : "Unenroll failed. Please try again.";
 
       setEnrollError(errorMessage);
-      Alert.alert("Error", errorMessage);
+      Toast.show({ type: "error", text1: errorMessage });
     } finally {
       setLoading(false);
     }

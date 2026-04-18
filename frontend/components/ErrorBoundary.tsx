@@ -1,4 +1,5 @@
 import React from "react";
+import logger from "../utils/logger";
 import { View, Text, TouchableOpacity } from "react-native";
 
 type Props = { children: React.ReactNode };
@@ -13,9 +14,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
   }
 
   componentDidCatch(error: unknown, info: React.ErrorInfo) {
-    if (__DEV__) {
-      console.error("[ErrorBoundary]", error, info.componentStack);
-    }
+    logger.error("[ErrorBoundary]", error, info.componentStack);
   }
 
   handleReload = () => {

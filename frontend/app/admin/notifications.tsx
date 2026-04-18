@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Toast from "react-native-toast-message";
 import {
   View,
   Text,
@@ -229,10 +230,7 @@ export default function NotificationsScreen() {
         recipients: recipientIds,
       });
 
-      Alert.alert(
-        "Success",
-        successMessage || `Notification sent to ${recipientIds.length} users`
-      );
+      Toast.show({ type: "success", text1: successMessage || `Notification sent to ${recipientIds.length} users` });
       setTitle("");
       setMessage("");
       setSelectedRecipientId("");
@@ -240,7 +238,7 @@ export default function NotificationsScreen() {
       setActiveSelector(null);
     } catch (err: any) {
       const errMsg = err.response?.data?.message || "Failed to send notification";
-      Alert.alert("Error", errMsg);
+      Toast.show({ type: "error", text1: errMsg });
     } finally {
       setSending(false);
     }

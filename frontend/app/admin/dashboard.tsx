@@ -1,7 +1,7 @@
 ﻿import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAuthGuard from "../../hooks/useAuthGuard";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { getProfile } from "../../services/userService";
 import { useRouter } from "expo-router";
 import { logout } from "../../services/authService";
@@ -26,7 +26,7 @@ export default function AdminDashboard() {
 
   const s = getDashboardStyles(t, width, isDark);
 
-  const getScheduleStatus = (startTime: string, endTime: string) => {
+  const getScheduleStatus = useCallback((startTime: string, endTime: string) => {
     const current = new Date();
     const now = current.getHours() * 60 + current.getMinutes();
     const [startH, startM] = String(startTime || "0:0").split(":").map(Number);
@@ -36,7 +36,7 @@ export default function AdminDashboard() {
     if (now >= start && now <= end) return "Now";
     if (now < start) return "Upcoming";
     return "Done";
-  };
+  }, []);
 
   const loadTodaySchedule = async (signal: AbortSignal) => {
     try {
@@ -87,11 +87,7 @@ export default function AdminDashboard() {
     if (authUser) load();
   }, [authUser, router]);
 
-  if (loading || !authUser || !user) return null;
-
-  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
-
-  const quickActions = [
+  const quickActions = useMemo(() => [
     { label: "Manage Courses", subtitle: "Create & edit", icon: <MaterialIcons name="menu-book" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/admin/create-course" as const },
     { label: "Create Schedule", subtitle: "Add timetable", icon: <Ionicons name="calendar" size={24} color="#fff" />, gradient: ["#16a34a", "#4ade80"] as const, route: "/admin/create-schedule" as const },
     { label: "Assign Schedule", subtitle: "Link to students", icon: <MaterialIcons name="assignment-ind" size={24} color="#fff" />, gradient: ["#ea580c", "#f97316"] as const, route: "/admin/assignSchedule" as const },
@@ -100,7 +96,11 @@ export default function AdminDashboard() {
     { label: "Enroll Students", subtitle: "Course enrollment", icon: <MaterialCommunityIcons name="school" size={24} color="#fff" />, gradient: ["#6d28d9", "#8b5cf6"] as const, route: "/admin/enroll" as const },
     { label: "Campus Map", subtitle: "Navigate campus", icon: <Ionicons name="location" size={24} color="#fff" />, gradient: ["#0891b2", "#22d3ee"] as const, route: "/admin/buildingMap" as const },
     { label: "Chat Bot", subtitle: "Ask anything", icon: <Ionicons name="chatbubble-ellipses" size={24} color="#fff" />, gradient: ["#d97706", "#fbbf24"] as const, route: "/admin/chatBot" as const },
-  ];
+  ], []);
+
+  if (loading || !authUser || !user) return null;
+
+  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
 
   return (
     <View style={s.container}>

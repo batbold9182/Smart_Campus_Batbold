@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import logger from "../../utils/logger";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -130,7 +131,7 @@ export default function CreateUserScreen() {
     } catch (err: any) {
       const serverMessage = err?.response?.data?.message;
       setMessage(serverMessage ? `❌ ${serverMessage}` : `❌ Failed to create ${selectedRole === "student" ? "student" : "faculty"}`);
-      console.log(err.response?.data || err.message);
+      logger.error(err.response?.data || err.message);
     } finally {
       setIsSubmitting(false);
     }
