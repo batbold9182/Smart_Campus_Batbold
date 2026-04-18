@@ -1,8 +1,12 @@
+const Sentry = require("@sentry/node");
+
 function errorHandler(err, req, res, next) {
   // Avoid logging sensitive request data; log only the error type and message
   const logMessage = `[${err.name || "Error"}] ${err.message || ""}`;
-  if ((err.statusCode || err.status || 500) >= 500) {
+  const status = err.statusCode || err.status || 500;
+  if (status >= 500) {
     console.error(logMessage, err.stack);
+    if (process.env.SENTRY_DSN) Sentry.captureException(err);
   } else {
     console.warn(logMessage);
   }
@@ -46,7 +50,6 @@ function errorHandler(err, req, res, next) {
       .json({ message: "External service timed out. Please try again." });
   }
 
-  const status = err.statusCode || err.status || 500;
   res.status(status).json({ message: err.message || "Internal server error" });
 }
 
