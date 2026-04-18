@@ -1,10 +1,8 @@
 ﻿import { View, Text, ScrollView, Pressable, TouchableOpacity, Image, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useCallback } from "react";
 import { logout } from "../../services/authService";
 import { useRouter } from "expo-router";
-import { getUnreadCount } from "../../services/notificationService";
-import { getProfile } from "../../services/userService";
 import { getStudentSchedule } from "../../services/scheduleService";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -12,88 +10,55 @@ import { StatusBar } from "expo-status-bar";
 import { getDashboardStyles } from "../../styles/dashboardStyles";
 import { useTheme } from "../../contexts/ThemeContext";
 import { haptic } from "../../utils/haptics";
+import { useUserStore } from "../../store/useUserStore";
+import { useNotificationStore } from "../../store/useNotificationStore";
+import { useScheduleStore } from "../../store/useScheduleStore";
 
 export default function StudentDashboard() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
-  const [count, setCount] = useState(0);
-  const [user, setUser] = useState<any>(null);
-  const [time, setTime] = useState(new Date());
-  const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
   const { isDark, t, toggleTheme } = useTheme();
+  const { user, fetchUser } = useUserStore();
+  const { unreadCount: count, fetchCount } = useNotificationStore();
+  const { todaySchedule, setTodaySchedule } = useScheduleStore();
 
   const s = getDashboardStyles(t, width, isDark);
 
-  const getScheduleStatus = (startTime: string, endTime: string) => {
-    const now = time.getHours() * 60 + time.getMinutes();
+  const getScheduleStatus = useCallback((startTime: string, endTime: string) => {
+    const current = new Date();
+    const now = current.getHours() * 60 + current.getMinutes();
     const [startH, startM] = String(startTime || "0:0").split(":").map(Number);
     const [endH, endM] = String(endTime || "0:0").split(":").map(Number);
     const start = startH * 60 + startM;
     const end = endH * 60 + endM;
-
     if (now >= start && now <= end) return "Now";
     if (now < start) return "Upcoming";
     return "Done";
-  };
+  }, []);
 
-  const loadTodaySchedule = async () => {
+  const loadTodaySchedule = useCallback(async () => {
     try {
       const allSchedules = await getStudentSchedule();
       const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
-      const filtered = (Array.isArray(allSchedules) ? allSchedules : []).filter((item) => item?.day === today);
-      setTodaySchedule(filtered);
+      setTodaySchedule((Array.isArray(allSchedules) ? allSchedules : []).filter((item) => item?.day === today));
     } catch {
       setTodaySchedule([]);
     }
-  };
-
-  const loadCount = async () => {
-    try {
-      const data = await getUnreadCount();
-      setCount(data?.unreadCount ?? 0);
-    } catch {
-      setCount(0);
-    }
-  };
+  }, [setTodaySchedule]);
 
   useEffect(() => {
-    loadCount();
+    fetchUser();
+    fetchCount();
     loadTodaySchedule();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTime(new Date());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
+  }, [fetchUser, fetchCount, loadTodaySchedule]);
 
   const handleLogout = async () => {
     await logout();
     router.replace("/auth/login");
   };
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const profile = await getProfile();
-        setUser(profile);
-      } catch {
-        // layout handles auth; ignore profile errors here
-      }
-    };
-    load();
-  }, []);
-
-  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
-
-  if (!user) {
-    return null;
-  }
-
-  const quickActions = [
+  const quickActions = useMemo(() => [
     { label: "Create Meeting", subtitle: "Schedule a call", icon: <Ionicons name="videocam" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/student/create-meeting" as const },
     { label: "Grades", subtitle: "View your scores", icon: <MaterialCommunityIcons name="book-open-variant" size={24} color="#fff" />, gradient: ["#16a34a", "#4ade80"] as const, route: "/student/grades" as const },
     { label: "Attendance", subtitle: "Track records", icon: <MaterialIcons name="fact-check" size={24} color="#fff" />, gradient: ["#ea580c", "#f97316"] as const, route: "/student/attendance" as const },
@@ -102,7 +67,12 @@ export default function StudentDashboard() {
     { label: "Online Library", subtitle: "Browse resources", icon: <MaterialIcons name="local-library" size={24} color="#fff" />, gradient: ["#0891b2", "#22d3ee"] as const, route: "/student/onlineLibrary" as const },
     { label: "Campus Map", subtitle: "Navigate campus", icon: <Ionicons name="location" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/student/buildingMap" as const },
     { label: "Chat Bot", subtitle: "Ask anything", icon: <Ionicons name="chatbubble-ellipses" size={24} color="#fff" />, gradient: ["#ea580c", "#f97316"] as const, route: "/student/chatBot" as const },
-  ];
+  ], []);
+
+  if (!user) return null;
+
+  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
+
   return (
     <View style={s.container}>
       <StatusBar style={isDark ? "light" : "dark"} />

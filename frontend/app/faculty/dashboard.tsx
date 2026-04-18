@@ -2,9 +2,7 @@
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { logout } from "../../services/authService";
-import { useEffect, useState } from "react";
-import { getUnreadCount } from "../../services/notificationService";
-import { getProfile } from "../../services/userService";
+import { useEffect, useMemo, useCallback } from "react";
 import { getFacultySchedule } from "../../services/scheduleService";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
@@ -12,21 +10,24 @@ import { StatusBar } from "expo-status-bar";
 import { getDashboardStyles } from "../../styles/dashboardStyles";
 import { useTheme } from "../../contexts/ThemeContext";
 import { haptic } from "../../utils/haptics";
+import { useUserStore } from "../../store/useUserStore";
+import { useNotificationStore } from "../../store/useNotificationStore";
+import { useScheduleStore } from "../../store/useScheduleStore";
 
 export default function FacultyDashboard() {
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const [count, setCount] = useState(0);
-  const [user, setUser] = useState<any>(null);
-  const [time, setTime] = useState(new Date());
-  const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
   const { isDark, t, toggleTheme } = useTheme();
+  const { user, fetchUser } = useUserStore();
+  const { unreadCount: count, fetchCount } = useNotificationStore();
+  const { todaySchedule, setTodaySchedule } = useScheduleStore();
 
   const s = getDashboardStyles(t, width, isDark);
 
-  const getScheduleStatus = (startTime: string, endTime: string) => {
-    const now = time.getHours() * 60 + time.getMinutes();
+  const getScheduleStatus = useCallback((startTime: string, endTime: string) => {
+    const current = new Date();
+    const now = current.getHours() * 60 + current.getMinutes();
     const [startH, startM] = String(startTime || "0:0").split(":").map(Number);
     const [endH, endM] = String(endTime || "0:0").split(":").map(Number);
     const start = startH * 60 + startM;
@@ -34,9 +35,9 @@ export default function FacultyDashboard() {
     if (now >= start && now <= end) return "Now";
     if (now < start) return "Upcoming";
     return "Done";
-  };
+  }, []);
 
-  const loadTodaySchedule = async () => {
+  const loadTodaySchedule = useCallback(async () => {
     try {
       const allSchedules = await getFacultySchedule();
       const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
@@ -44,49 +45,20 @@ export default function FacultyDashboard() {
     } catch {
       setTodaySchedule([]);
     }
-  };
-
-  const loadCount = async () => {
-    try {
-      const data = await getUnreadCount();
-      setCount(data?.unreadCount ?? 0);
-    } catch {
-      setCount(0);
-    }
-  };
+  }, [setTodaySchedule]);
 
   useEffect(() => {
-    loadCount();
+    fetchUser();
+    fetchCount();
     loadTodaySchedule();
-  }, []);
-
-  useEffect(() => {
-    const timer = setInterval(() => setTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const profile = await getProfile();
-        setUser(profile);
-      } catch {
-        // layout handles auth; ignore profile errors here
-      }
-    };
-    load();
-  }, []);
+  }, [fetchUser, fetchCount, loadTodaySchedule]);
 
   const handleLogout = async () => {
     await logout();
     router.replace("/auth/login");
   };
 
-  if (!user) return null;
-
-  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
-
-  const quickActions = [
+  const quickActions = useMemo(() => [
     { label: "My Courses", subtitle: "Manage classes", icon: <MaterialIcons name="menu-book" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/faculty/courses" as const },
     { label: "Assignments", subtitle: "Review tasks", icon: <MaterialIcons name="assignment" size={24} color="#fff" />, gradient: ["#0d9488", "#2dd4bf"] as const, route: "/faculty/assignments" as const },
     { label: "Grades", subtitle: "Record scores", icon: <MaterialCommunityIcons name="book-open-variant" size={24} color="#fff" />, gradient: ["#16a34a", "#4ade80"] as const, route: "/faculty/grades" as const },
@@ -94,7 +66,11 @@ export default function FacultyDashboard() {
     { label: "Exam", subtitle: "Schedule exams", icon: <MaterialIcons name="edit-document" size={24} color="#fff" />, gradient: ["#2563eb", "#60a5fa"] as const, route: "/faculty/exam" as const },
     { label: "Campus Map", subtitle: "Navigate campus", icon: <Ionicons name="location" size={24} color="#fff" />, gradient: ["#0891b2", "#22d3ee"] as const, route: "/faculty/buildingMap" as const },
     { label: "Chat Bot", subtitle: "Ask anything", icon: <Ionicons name="chatbubble-ellipses" size={24} color="#fff" />, gradient: ["#d97706", "#fbbf24"] as const, route: "/faculty/chatBot" as const },
-  ];
+  ], []);
+
+  if (!user) return null;
+
+  const profileUri = user?.profile && user.profile !== "defaultProfile.png" ? user.profile : null;
 
   return (
     <View style={s.container}>

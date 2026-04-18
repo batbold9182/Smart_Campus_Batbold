@@ -1,6 +1,6 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { getProfile, type AppUserProfile } from "../../services/userService";
+import { useUserStore } from "../../store/useUserStore";
 import ProfileCard from "../../components/profileCard";
 import useAuthGuard from "../../hooks/useAuthGuard";
 import { useRouter } from "expo-router";
@@ -13,13 +13,13 @@ import { SkeletonRow, SkeletonCard } from "../../components/Skeleton";
 
 export default function AdminProfile() {
   const { loading } = useAuthGuard("admin");
-  const [user, setUser] = useState<AppUserProfile | null>(null);
+  const { user, fetchUser } = useUserStore();
   const { isDark, t, toggleTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
-    getProfile().then(setUser);
-  }, []);
+    if (!user) fetchUser();
+  }, [user, fetchUser]);
 
   if (loading || !user) {
     return (

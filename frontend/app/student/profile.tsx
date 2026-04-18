@@ -1,6 +1,6 @@
-﻿import { useEffect, useState } from "react";
+﻿import { useEffect } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { getProfile, type AppUserProfile } from "../../services/userService";
+import { useUserStore } from "../../store/useUserStore";
 import ProfileCard from "../../components/profileCard";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -11,13 +11,13 @@ import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonRow, SkeletonCard } from "../../components/Skeleton";
 
 export default function StudentProfile() {
-  const [user, setUser] = useState<AppUserProfile | null>(null);
+  const { user, fetchUser } = useUserStore();
   const { isDark, t, toggleTheme } = useTheme();
   const router = useRouter();
 
   useEffect(() => {
-    getProfile().then(setUser).catch(() => {});
-  }, []);
+    if (!user) fetchUser();
+  }, [user, fetchUser]);
 
   if (!user) {
     return (

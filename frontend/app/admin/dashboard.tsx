@@ -1,11 +1,9 @@
 ﻿import { View, Text, Pressable, TouchableOpacity, ScrollView, Image, useWindowDimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import useAuthGuard from "../../hooks/useAuthGuard";
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { getProfile } from "../../services/userService";
+import { useCallback, useEffect, useMemo } from "react";
 import { useRouter } from "expo-router";
 import { logout } from "../../services/authService";
-import { getUnreadCount } from "../../services/notificationService";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons, MaterialIcons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { StatusBar } from "expo-status-bar";
@@ -13,16 +11,19 @@ import { getAdminSchedules } from "../../services/scheduleService";
 import { getDashboardStyles } from "../../styles/dashboardStyles";
 import { useTheme } from "../../contexts/ThemeContext";
 import { haptic } from "../../utils/haptics";
+import { useUserStore } from "../../store/useUserStore";
+import { useNotificationStore } from "../../store/useNotificationStore";
+import { useScheduleStore } from "../../store/useScheduleStore";
 
 export default function AdminDashboard() {
   const { width } = useWindowDimensions();
   const { loading, user: authUser } = useAuthGuard();
   const insets = useSafeAreaInsets();
-  const [user, setUser] = useState<any>(null);
   const router = useRouter();
-  const [count, setCount] = useState(0);
-  const [todaySchedule, setTodaySchedule] = useState<any[]>([]);
   const { isDark, t, toggleTheme } = useTheme();
+  const { user, fetchUser } = useUserStore();
+  const { unreadCount: count, fetchCount } = useNotificationStore();
+  const { todaySchedule, setTodaySchedule } = useScheduleStore();
 
   const s = getDashboardStyles(t, width, isDark);
 
@@ -38,7 +39,7 @@ export default function AdminDashboard() {
     return "Done";
   }, []);
 
-  const loadTodaySchedule = async (signal: AbortSignal) => {
+  const loadTodaySchedule = useCallback(async (signal: AbortSignal) => {
     try {
       const allSchedules = await getAdminSchedules(1, 100, signal);
       const today = new Intl.DateTimeFormat("en-US", { weekday: "long" }).format(new Date());
@@ -46,23 +47,14 @@ export default function AdminDashboard() {
     } catch (err: any) {
       if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") setTodaySchedule([]);
     }
-  };
-
-  const loadCount = async (signal: AbortSignal) => {
-    try {
-      const data = await getUnreadCount(signal);
-      setCount(data?.unreadCount ?? 0);
-    } catch (err: any) {
-      if (err?.name !== "CanceledError" && err?.code !== "ERR_CANCELED") setCount(0);
-    }
-  };
+  }, [setTodaySchedule]);
 
   useEffect(() => {
     const controller = new AbortController();
     loadTodaySchedule(controller.signal);
-    loadCount(controller.signal);
+    fetchCount(controller.signal);
     return () => controller.abort();
-  }, []);
+  }, [loadTodaySchedule, fetchCount]);
 
   const handleLogout = async () => {
     await logout();
@@ -76,16 +68,8 @@ export default function AdminDashboard() {
   }, [authUser, loading, router]);
 
   useEffect(() => {
-    const load = async () => {
-      const profile = await getProfile();
-      if (profile.role !== "admin") {
-        router.replace("/auth/login");
-        return;
-      }
-      setUser(profile);
-    };
-    if (authUser) load();
-  }, [authUser, router]);
+    if (authUser) fetchUser();
+  }, [authUser, fetchUser]);
 
   const quickActions = useMemo(() => [
     { label: "Manage Courses", subtitle: "Create & edit", icon: <MaterialIcons name="menu-book" size={24} color="#fff" />, gradient: ["#7c3aed", "#a855f7"] as const, route: "/admin/create-course" as const },
