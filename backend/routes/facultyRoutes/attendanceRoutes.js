@@ -7,25 +7,11 @@ const Attendance = require("../../models/facultyModels/attendance");
 const Schedule = require("../../models/adminModels/schedule");
 const StudentSchedule = require("../../models/adminModels/studentSchedule");
 
+const { toStartOfDay, formatDateKey } = require("../../utils/dateUtils");
+
 const router = express.Router();
 
 const ALLOWED_STATUSES = ["present", "absent", "late", "excused"];
-
-const toStartOfDay = (dateValue) => {
-  const parsed = dateValue ? new Date(dateValue) : new Date();
-  if (Number.isNaN(parsed.getTime())) {
-    return null;
-  }
-
-  return new Date(Date.UTC(parsed.getUTCFullYear(), parsed.getUTCMonth(), parsed.getUTCDate()));
-};
-
-const formatDateKey = (dateValue) => {
-  const year = dateValue.getUTCFullYear();
-  const month = String(dateValue.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(dateValue.getUTCDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
 
 const formatAttendance = (record) => {
   if (!record) {

@@ -47,16 +47,6 @@ router.get(
   authorizeRoles("admin"),
   async (req, res, next) => {
     try {
-      const hasPagination = req.query.page !== undefined || req.query.limit !== undefined;
-      if (!hasPagination) {
-        const schedules = await Schedule.find()
-          .populate("course", "name code title")
-          .populate("faculty", "name email")
-          .sort({ day: 1, startTime: 1 })
-          .lean();
-        return res.json(schedules);
-      }
-
       const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
       const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 20, 1), 100);
       const skip = (page - 1) * limit;

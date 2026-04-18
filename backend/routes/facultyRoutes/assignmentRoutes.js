@@ -9,6 +9,7 @@ const Course = require("../../models/adminModels/course");
 const Enrollment = require("../../models/adminModels/enrollment");
 const Notification = require("../../models/adminModels/notification");
 const { cloudinary, hasCloudinaryConfig } = require("../../config/cloudinary");
+const { formatDateKey } = require("../../utils/dateUtils");
 
 const router = express.Router();
 const MAX_SUBMISSION_FILE_SIZE = Number(process.env.MAX_UPLOAD_BYTES) || 10 * 1024 * 1024;
@@ -107,18 +108,6 @@ const formatFacultySubmission = (submission) => ({
   },
 });
 
-const formatDateKey = (dateValue) => {
-  const parsed = new Date(dateValue);
-
-  if (Number.isNaN(parsed.getTime())) {
-    return "";
-  }
-
-  const year = parsed.getUTCFullYear();
-  const month = String(parsed.getUTCMonth() + 1).padStart(2, "0");
-  const day = String(parsed.getUTCDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
 
 const toSafeFileName = (value) => {
   const raw = typeof value === "string" && value.trim() ? value.trim() : "assignment-submission";
