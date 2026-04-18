@@ -1,60 +1,57 @@
-﻿import { useEffect, useState } from "react";
-import api from "../../config/clientAPI";
+import { useState } from "react";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import api from "../../config/clientAPI";
 import { studentStyles } from "../../styles/studentStyles";
-import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
+import NotificationFeed, { type NotificationItem } from "../../components/notificationFeed";
+
+const LIMIT = 6;
+
+type NotificationsPage = {
+  items: NotificationItem[];
+  totalPages: number;
+};
+
+const fetchStudentNotifications = async (page: number): Promise<NotificationsPage> => {
+  const res = await api.get("/api/notifications", { params: { page, limit: LIMIT } });
+  if (Array.isArray(res.data)) {
+    return { items: res.data, totalPages: 1 };
+  }
+  return {
+    items: res.data?.items || [],
+    totalPages: Math.max(Number(res.data?.pagination?.totalPages) || 1, 1),
+  };
+};
 
 export default function NotificationsScreen() {
-  const NOTIFICATIONS_LIMIT = 6;
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const router = useRouter();
+  const queryClient = useQueryClient();
+  const [page, setPage] = useState(1);
 
-  const loadNotifications = async (nextPage = 1) => {
-    try {
-      setLoading(true);
-      setError("");
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["student-notifications", page],
+    queryFn: () => fetchStudentNotifications(page),
+    placeholderData: (prev) => prev,
+  });
 
-      const res = await api.get("/api/notifications", {
-        params: { page: nextPage, limit: NOTIFICATIONS_LIMIT },
-      });
-
-      if (Array.isArray(res.data)) {
-        setNotifications(res.data);
-        setPage(1);
-        setTotalPages(1);
-        return;
-      }
-
-      const items = res.data?.items || [];
-      const pages = Math.max(Number(res.data?.pagination?.totalPages) || 1, 1);
-      setNotifications(items);
-      setPage(nextPage);
-      setTotalPages(pages);
-    } catch (err: any) {
-      const message = err.response?.data?.message || "Failed to load notifications";
-      setError(message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadNotifications(1);
-  }, []);
+  const notifications = data?.items ?? [];
+  const totalPages = data?.totalPages ?? 1;
+  const error = isError ? "Failed to load notifications" : "";
 
   const markAsRead = async (id: string) => {
     try {
       await api.patch(`/api/notifications/${id}/read`);
-      setNotifications((prev) =>
-        prev.map((item) => (item._id === id ? { ...item, isRead: true } : item))
+      // Optimistic update in cache
+      queryClient.setQueryData(
+        ["student-notifications", page],
+        (old: NotificationsPage | undefined) =>
+          old
+            ? { ...old, items: old.items.map((item) => (item._id === id ? { ...item, isRead: true } : item)) }
+            : old
       );
     } catch {
-      setError("Failed to mark notification as read");
+      // silent — badge will correct on next fetch
     }
   };
 
@@ -63,18 +60,17 @@ export default function NotificationsScreen() {
       <NotificationFeed
         title="Notifications"
         notifications={notifications}
-        loading={loading}
+        loading={isLoading}
         error={error}
         page={page}
         totalPages={totalPages}
         styles={studentStyles}
-        onRetry={() => loadNotifications(1)}
+        onRetry={() => queryClient.invalidateQueries({ queryKey: ["student-notifications", page] })}
         onMarkAsRead={markAsRead}
-        onPrevious={() => loadNotifications(page - 1)}
-        onNext={() => loadNotifications(page + 1)}
+        onPrevious={() => setPage((p) => p - 1)}
+        onNext={() => setPage((p) => p + 1)}
         onBack={() => router.push("/student/dashboard")}
       />
     </SafeAreaView>
   );
 }
-

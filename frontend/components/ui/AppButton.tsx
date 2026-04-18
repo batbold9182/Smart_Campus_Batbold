@@ -65,6 +65,8 @@ export function AppButton({
         onPress?.(e);
       }}
       activeOpacity={0.75}
+      accessibilityRole="button"
+      accessibilityLabel={label ?? "button"}
       {...rest}
     >
       {loading ? (

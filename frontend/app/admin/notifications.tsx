@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { Alert } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { adminStyles } from "../../styles/adminStyles";
-import { NotificationItem } from "../../components/notificationFeed";
+import { type NotificationItem } from "../../components/notificationFeed";
 import NotificationFeed from "../../components/notificationFeed";
 import NotificationForm, {
   type Audience,
@@ -17,13 +18,28 @@ import {
   sendNotification,
 } from "../../services/notificationService";
 
+const NOTIFICATIONS_LIMIT = 5;
+
+type NotificationsPage = {
+  items: NotificationItem[];
+  totalPages: number;
+};
+
+const fetchAdminNotifications = async (page: number): Promise<NotificationsPage> => {
+  const data = await getNotifications(page, NOTIFICATIONS_LIMIT);
+  if (Array.isArray(data)) return { items: data, totalPages: 1 };
+  return {
+    items: data?.items || [],
+    totalPages: Math.max(Number(data?.pagination?.totalPages) || 1, 1),
+  };
+};
+
 export default function NotificationsScreen() {
-  const NOTIFICATIONS_LIMIT = 5;
-  const [notifications, setNotifications] = useState<NotificationItem[]>([]);
+  const router = useRouter();
+  const queryClient = useQueryClient();
   const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
+
+  // Form state
   const [title, setTitle] = useState("");
   const [message, setMessage] = useState("");
   const [audience, setAudience] = useState<Audience>("students");
@@ -33,8 +49,19 @@ export default function NotificationsScreen() {
   const [loadingRecipients, setLoadingRecipients] = useState(false);
   const [recipientModalOpen, setRecipientModalOpen] = useState(false);
   const [sending, setSending] = useState(false);
-  const router = useRouter();
 
+  // Notification list query
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ["admin-notifications", page],
+    queryFn: () => fetchAdminNotifications(page),
+    placeholderData: (prev) => prev,
+  });
+
+  const notifications = data?.items ?? [];
+  const totalPages = data?.totalPages ?? 1;
+  const error = isError ? "Failed to load notifications" : "";
+
+  // Derived form values
   const isSpecificAudience = audience === "specificStudent" || audience === "specificFaculty";
   const selectedRecipient = recipientOptions.find((r) => r.id === selectedRecipientId) || null;
   const normalizedSearch = recipientSearch.trim().toLowerCase();
@@ -47,35 +74,7 @@ export default function NotificationsScreen() {
     );
   });
 
-  const loadNotifications = async (nextPage = 1) => {
-    try {
-      setLoading(true);
-      setError("");
-      const data = await getNotifications(nextPage, NOTIFICATIONS_LIMIT);
-
-      if (Array.isArray(data)) {
-        setNotifications(data);
-        setPage(1);
-        setTotalPages(1);
-        return;
-      }
-
-      const items = data?.items || [];
-      const pages = Math.max(Number(data?.pagination?.totalPages) || 1, 1);
-      setNotifications(items);
-      setPage(nextPage);
-      setTotalPages(pages);
-    } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to load notifications");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadNotifications(1);
-  }, []);
-
+  // Load recipients when audience changes
   useEffect(() => {
     let isActive = true;
 
@@ -125,11 +124,15 @@ export default function NotificationsScreen() {
   const markAsRead = async (id: string) => {
     try {
       await markNotificationRead(id);
-      setNotifications((prev) =>
-        prev.map((item) => (item._id === id ? { ...item, isRead: true } : item))
+      queryClient.setQueryData(
+        ["admin-notifications", page],
+        (old: NotificationsPage | undefined) =>
+          old
+            ? { ...old, items: old.items.map((item) => (item._id === id ? { ...item, isRead: true } : item)) }
+            : old
       );
     } catch {
-      setError("Failed to mark notification as read");
+      // silent — badge will correct on next fetch
     }
   };
 
@@ -188,6 +191,9 @@ export default function NotificationsScreen() {
       setSelectedRecipientId("");
       setRecipientSearch("");
       setRecipientModalOpen(false);
+      // Refresh the list to show the new notification
+      queryClient.invalidateQueries({ queryKey: ["admin-notifications"] });
+      setPage(1);
     } catch (err: any) {
       Toast.show({ type: "error", text1: err.response?.data?.message || "Failed to send notification" });
     } finally {
@@ -200,15 +206,15 @@ export default function NotificationsScreen() {
       <NotificationFeed
         title="Notifications"
         notifications={notifications}
-        loading={loading}
+        loading={isLoading}
         error={error}
         page={page}
         totalPages={totalPages}
         styles={adminStyles}
-        onRetry={() => loadNotifications(1)}
+        onRetry={() => queryClient.invalidateQueries({ queryKey: ["admin-notifications", page] })}
         onMarkAsRead={markAsRead}
-        onPrevious={() => loadNotifications(page - 1)}
-        onNext={() => loadNotifications(page + 1)}
+        onPrevious={() => setPage((p) => p - 1)}
+        onNext={() => setPage((p) => p + 1)}
         onBack={() => router.push("/admin/dashboard")}
         backLabel="Back to Dashboard"
         topContent={

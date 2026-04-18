@@ -16,7 +16,7 @@ type Props = {
 
 function StatCard({ value, label }: { value: number; label: string }) {
   return (
-    <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
+    <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card" style={{ minWidth: "30%" }}>
       <Text className="text-[20px] font-bold text-app-text">{value}</Text>
       <Text className="mt-1 text-[12px] text-app-muted">{label}</Text>
     </View>
@@ -26,7 +26,7 @@ function StatCard({ value, label }: { value: number; label: string }) {
 export default function StatsCards({ summary }: Props) {
   return (
     <>
-      <View className="mb-4 flex-row justify-between gap-2">
+      <View className="mb-4 flex-row flex-wrap justify-between gap-2">
         <StatCard value={summary.courseCount} label="Courses" />
         <StatCard value={summary.assignmentCount} label="Assignments" />
         <StatCard value={summary.dueTodayCount} label="Due Today" />

@@ -86,9 +86,10 @@ export default function NotificationForm({
             return (
               <TouchableOpacity
                 key={option.value}
-                className={`min-w-[48%] flex-1 rounded-xl border px-3 py-3 ${
+                className={`flex-1 rounded-xl border px-3 py-3 ${
                   isActive ? "border-blue-500 bg-app-primary-light" : "border-app-border bg-app-surface"
                 }`}
+                style={{ minWidth: "45%" }}
                 onPress={() => setAudience(option.value)}
               >
                 <Text className={`text-[14px] font-semibold ${isActive ? "text-blue-700" : "text-app-text"}`}>

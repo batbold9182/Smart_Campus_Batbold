@@ -14,7 +14,7 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
       borderBottomRightRadius: 24,
     },
     headerLogoWrap: { alignItems: "center", justifyContent: "center" },
-    headerLogo: { width: 360, height: 80 },
+    headerLogo: { width: Math.round(width * 0.9), height: Math.round(width * 0.9 * (80 / 360)) },
     contentPadding: { paddingHorizontal: 20 },
 
     // Profile row

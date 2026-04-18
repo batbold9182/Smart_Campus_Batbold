@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
 import { Alert, Linking, Platform, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useRouter } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import AnimatedScreen from "../../components/AnimatedScreen";
 import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
 import { AppButton } from "../../components/ui";
@@ -10,32 +10,21 @@ import {
   downloadAssignmentSubmission,
   getAssignmentSubmissionDownloadUrl,
   getStudentAssignments,
-  type StudentAssignmentsResponse,
 } from "../../services/facultyServices/assignmentService";
 import StatsCards from "../../components/student/StatsCards";
 import AssignmentCard from "../../components/student/AssignmentCard";
 
 export default function StudentAssignments() {
   const router = useRouter();
-  const [data, setData] = useState<StudentAssignmentsResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  const loadAssignments = async () => {
-    const response = await getStudentAssignments();
-    setData(response);
-  };
+  const { data, isLoading } = useQuery({
+    queryKey: ["student-assignments"],
+    queryFn: getStudentAssignments,
+  });
 
-  useEffect(() => {
-    const initialize = async () => {
-      try {
-        const response = await getStudentAssignments();
-        setData(response);
-      } finally {
-        setLoading(false);
-      }
-    };
-    initialize();
-  }, []);
+  const invalidateAssignments = () =>
+    queryClient.invalidateQueries({ queryKey: ["student-assignments"] });
 
   const openFile = async (submissionId: string, url: string, fileName?: string | null) => {
     try {
@@ -58,7 +47,7 @@ export default function StudentAssignments() {
     }
   };
 
-  if (loading) {
+  if (isLoading) {
     return (
       <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
         <LinearGradient
@@ -91,48 +80,48 @@ export default function StudentAssignments() {
 
       <AnimatedScreen>
         <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
-            {data?.summary && <StatsCards summary={data.summary} />}
+          {data?.summary && <StatsCards summary={data.summary} />}
 
-            {!data?.items.length ? (
-              <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-                <Text className="mb-2 text-[16px] font-semibold text-app-text">No Assignments Yet</Text>
-                <Text className="text-app-muted">
-                  Assignments from your enrolled courses will appear here once faculty publish them.
+          {!data?.items.length ? (
+            <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
+              <Text className="mb-2 text-[16px] font-semibold text-app-text">No Assignments Yet</Text>
+              <Text className="text-app-muted">
+                Assignments from your enrolled courses will appear here once faculty publish them.
+              </Text>
+            </View>
+          ) : (
+            data.items.map((item) => (
+              <View key={item.course.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
+                <Text className="text-[16px] font-semibold text-app-text">{item.course.title}</Text>
+                <Text className="mt-1 text-app-muted">
+                  {item.course.code} · {item.course.credits} credits
                 </Text>
+                <Text className="mt-1 text-app-placeholder">Faculty: {item.course.facultyName}</Text>
+
+                {item.assignments.length === 0 ? (
+                  <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
+                    <Text className="text-app-muted">No assignments published for this course yet.</Text>
+                  </View>
+                ) : (
+                  item.assignments.map((assignment) => (
+                    <AssignmentCard
+                      key={assignment.id}
+                      assignment={assignment}
+                      onSubmitSuccess={invalidateAssignments}
+                      onOpenFile={openFile}
+                    />
+                  ))
+                )}
               </View>
-            ) : (
-              data.items.map((item) => (
-                <View key={item.course.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-                  <Text className="text-[16px] font-semibold text-app-text">{item.course.title}</Text>
-                  <Text className="mt-1 text-app-muted">
-                    {item.course.code} · {item.course.credits} credits
-                  </Text>
-                  <Text className="mt-1 text-app-placeholder">Faculty: {item.course.facultyName}</Text>
+            ))
+          )}
 
-                  {item.assignments.length === 0 ? (
-                    <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
-                      <Text className="text-app-muted">No assignments published for this course yet.</Text>
-                    </View>
-                  ) : (
-                    item.assignments.map((assignment) => (
-                      <AssignmentCard
-                        key={assignment.id}
-                        assignment={assignment}
-                        onSubmitSuccess={loadAssignments}
-                        onOpenFile={openFile}
-                      />
-                    ))
-                  )}
-                </View>
-              ))
-            )}
-
-            <AppButton
-              title="Back to Dashboard"
-              onPress={() => router.push("/student/dashboard")}
-              className="items-center rounded-lg bg-blue-500 p-[14px]"
-              textClassName="font-semibold text-white"
-            />
+          <AppButton
+            title="Back to Dashboard"
+            onPress={() => router.push("/student/dashboard")}
+            className="items-center rounded-lg bg-blue-500 p-[14px]"
+            textClassName="font-semibold text-white"
+          />
         </ScrollView>
       </AnimatedScreen>
     </SafeAreaView>

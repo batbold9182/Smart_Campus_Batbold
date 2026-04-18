@@ -241,12 +241,16 @@ export default function CreateUserScreen() {
               </TouchableOpacity>
             </View>
 
+            <Text className="text-app-muted text-[11px] mb-3">* Required fields</Text>
+
+            <Text className="text-app-text text-[13px] mb-1">Full Name *</Text>
             <AppInput
               placeholder="Full Name"
               value={name}
               onChangeText={setName}
               className={inputClassName}
             />
+            <Text className="text-app-text text-[13px] mb-1">Email *</Text>
             <AppInput
               placeholder="Email"
               value={email}
@@ -257,7 +261,7 @@ export default function CreateUserScreen() {
             />
 
             <SelectField
-              label="School / Faculty"
+              label="School / Faculty *"
               value={school}
               placeholder="Select school"
               onPress={() =>
@@ -271,7 +275,7 @@ export default function CreateUserScreen() {
             />
 
             <SelectField
-              label="Department"
+              label="Department *"
               value={department}
               placeholder={school ? "Select department" : "Select school first"}
               onPress={() =>
@@ -285,12 +289,14 @@ export default function CreateUserScreen() {
 
             {selectedRole === "faculty" ? (
               <>
+                <Text className="text-app-text text-[13px] mb-1">Title *</Text>
                 <AppInput
                   placeholder="Title (e.g. Instructor)"
                   value={facultyTitle}
                   onChangeText={setFacultyTitle}
                   className={inputClassName}
                 />
+                <Text className="text-app-text text-[13px] mb-1">Employee ID *</Text>
                 <AppInput
                   placeholder="Employee ID"
                   value={employeeId}
@@ -301,7 +307,7 @@ export default function CreateUserScreen() {
             ) : (
               <>
                 <SelectField
-                  label="Program"
+                  label="Program *"
                   value={program}
                   placeholder={department ? "Select program" : "Select department first"}
                   onPress={() =>
@@ -309,6 +315,7 @@ export default function CreateUserScreen() {
                   }
                   disabled={programOptions.length === 0}
                 />
+                <Text className="text-app-text text-[13px] mb-1">Year Level *</Text>
                 <AppInput
                   placeholder="Year Level (e.g. 2)"
                   value={yearLevel}
@@ -316,6 +323,7 @@ export default function CreateUserScreen() {
                   keyboardType="number-pad"
                   className={inputClassName}
                 />
+                <Text className="text-app-text text-[13px] mb-1">Student ID *</Text>
                 <AppInput
                   placeholder="Student ID"
                   value={studentId}
@@ -325,6 +333,7 @@ export default function CreateUserScreen() {
               </>
             )}
 
+            <Text className="text-app-text text-[13px] mb-1">Password *</Text>
             <AppInput
               placeholder="Password"
               value={password}

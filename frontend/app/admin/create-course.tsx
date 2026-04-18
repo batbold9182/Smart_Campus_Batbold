@@ -196,7 +196,7 @@ export default function AdminCreateCourse() {
           renderItem={({ item }) => (
             <Pressable
               className={`mb-2 rounded-xl border p-3 ${
-                selectedFacultyId === item._id ? "border-blue-400 bg-blue-50" : "border-app-border bg-app-surface"
+                selectedFacultyId === item._id ? "border-app-primary bg-app-primary-light" : "border-app-border bg-app-surface"
               }`}
               onPress={() => setSelectedFacultyId(item._id)}
             >
@@ -211,7 +211,7 @@ export default function AdminCreateCourse() {
             title={loading ? "Creating..." : "Create and Assign"}
             loading={loading}
             onPress={handleCreate}
-            className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-blue-500"}`}
+            className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-app-primary"}`}
             textClassName="font-semibold text-white"
           />
         </View>
@@ -238,7 +238,7 @@ export default function AdminCreateCourse() {
                   title={assigningId === item._id ? "Assigning..." : "Assign"}
                   loading={assigningId === item._id}
                   onPress={() => handleAssign(item._id)}
-                  className={`items-center rounded-lg px-3 py-2 ${assigningId === item._id ? "bg-app-primary-loading" : "bg-blue-500"}`}
+                  className={`items-center rounded-lg px-3 py-2 ${assigningId === item._id ? "bg-app-primary-loading" : "bg-app-primary"}`}
                   textClassName="font-semibold text-white"
                 />
                 <AppButton

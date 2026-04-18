@@ -29,19 +29,33 @@ export default function SharedProfileScreen({ user, loading = false, dashboardRo
         paddingVertical: 18,
         borderBottomLeftRadius: 24,
         borderBottomRightRadius: 24,
-        flexDirection: showToggle ? "row" : undefined,
-        alignItems: showToggle ? "center" : undefined,
-        justifyContent: showToggle ? "space-between" : undefined,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "space-between",
       }}
     >
+      <TouchableOpacity
+        onPress={() => router.push(dashboardRoute as any)}
+        style={{
+          width: 44,
+          height: 44,
+          borderRadius: 22,
+          backgroundColor: "rgba(255,255,255,0.2)",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        accessibilityLabel="Go back to dashboard"
+      >
+        <Ionicons name="arrow-back" size={22} color="#ffffff" />
+      </TouchableOpacity>
       <Text style={{ fontSize: 22, fontWeight: "bold", color: "#ffffff" }}>My Profile</Text>
-      {showToggle && (
+      {showToggle ? (
         <TouchableOpacity
           onPress={toggleTheme}
           style={{
-            width: 36,
-            height: 36,
-            borderRadius: 18,
+            width: 44,
+            height: 44,
+            borderRadius: 22,
             backgroundColor: "rgba(255,255,255,0.2)",
             alignItems: "center",
             justifyContent: "center",
@@ -49,6 +63,8 @@ export default function SharedProfileScreen({ user, loading = false, dashboardRo
         >
           <Ionicons name={isDark ? "sunny" : "moon"} size={18} color="#ffffff" />
         </TouchableOpacity>
+      ) : (
+        <View style={{ width: 44 }} />
       )}
     </LinearGradient>
   );

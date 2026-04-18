@@ -58,7 +58,7 @@ export default function AdminUsersScreen() {
               <TouchableOpacity
                 key={role}
                 className={`flex-1 items-center rounded-xl border px-3 py-3 ${
-                  activeTab === role ? "border-blue-300 bg-blue-50" : "border-app-border bg-app-surface"
+                  activeTab === role ? "border-app-primary bg-app-primary-light" : "border-app-border bg-app-surface"
                 }`}
                 onPress={() => {
                   setActiveTab(role);
@@ -91,7 +91,7 @@ export default function AdminUsersScreen() {
 
           <View className="mb-3 flex-row items-center justify-between">
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-blue-500"}`}
+              className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-primary"}`}
               disabled={page === 1}
               onPress={() => setPage(page - 1)}
             >
@@ -102,7 +102,7 @@ export default function AdminUsersScreen() {
             </Text>
             <TouchableOpacity
               className={`rounded-lg px-4 py-2 ${
-                page === pagination?.totalPages ? "bg-app-disabled" : "bg-blue-500"
+                page === pagination?.totalPages ? "bg-app-disabled" : "bg-primary"
               }`}
               disabled={page === pagination?.totalPages}
               onPress={() => setPage(page + 1)}

@@ -35,6 +35,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
   const [updating, setUpdating] = useState(false);
   const [academicOptions, setAcademicOptions] = useState<AcademicOptions>({});
   const [pickerState, setPickerState] = useState<PickerState>(initialPickerState);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const schoolOptions = useMemo(() => Object.keys(academicOptions), [academicOptions]);
   const departmentOptions = useMemo(
@@ -51,6 +52,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
 
   useEffect(() => {
     if (!editingUser) return;
+    setErrors({});
     setEditForm({
       name: editingUser.name || "",
       email: editingUser.email || "",
@@ -90,10 +92,14 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
   const handleSave = async () => {
     if (!editingUserId || !editingUser) return;
 
-    if (!editForm.name || !editForm.email) {
-      Toast.show({ type: "error", text1: "Name and email are required" });
+    const newErrors: Record<string, string> = {};
+    if (!editForm.name) newErrors.name = "Name is required.";
+    if (!editForm.email) newErrors.email = "Email is required.";
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
       return;
     }
+    setErrors({});
 
     try {
       setUpdating(true);
@@ -124,7 +130,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
   };
 
   return (
-    <AppModal open={editingUserId !== null} onClose={onClose} layout="center">
+    <AppModal open={editingUserId !== null} onClose={() => { setErrors({}); onClose(); }} layout="center">
       <ScrollView className="rounded-2xl bg-app-surface p-5">
         <View className="mb-4">
           <Text className="text-[20px] font-bold text-app-text">Edit User</Text>
@@ -139,6 +145,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
             placeholder="Enter name"
             className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
           />
+          {errors.name ? <Text className="mt-1 text-[12px] text-red-500">{errors.name}</Text> : null}
         </View>
 
         <View className="mb-4">
@@ -150,6 +157,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
             keyboardType="email-address"
             className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
           />
+          {errors.email ? <Text className="mt-1 text-[12px] text-red-500">{errors.email}</Text> : null}
         </View>
 
         <View className="mb-4">
@@ -277,16 +285,16 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
           <AppButton
             title="Cancel"
             variant="outline"
-            onPress={onClose}
+            onPress={() => { setErrors({}); onClose(); }}
             loading={updating}
-            className="flex-1 items-center rounded-lg bg-gray-300 px-4 py-3"
+            className="flex-1 items-center rounded-lg bg-app-surface border border-app-border px-4 py-3"
             textClassName="font-semibold text-app-text"
           />
           <AppButton
             title={updating ? "Saving..." : "Save"}
             loading={updating}
             onPress={handleSave}
-            className="flex-1 items-center rounded-lg bg-blue-500 px-4 py-3"
+            className="flex-1 items-center rounded-lg bg-primary px-4 py-3"
             textClassName="font-semibold text-white"
           />
         </View>
@@ -307,7 +315,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
                 <TouchableOpacity
                   key={option}
                   className={`border-b border-app-border px-4 py-3 ${
-                    pickerState.selectedValue === option ? "bg-blue-50" : "bg-app-surface"
+                    pickerState.selectedValue === option ? "bg-app-primary-light" : "bg-app-surface"
                   }`}
                   onPress={() => {
                     pickerState.onSelect(option);
@@ -317,7 +325,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
                   <Text
                     className={`text-[16px] ${
                       pickerState.selectedValue === option
-                        ? "font-bold text-blue-600"
+                        ? "font-bold text-app-primary"
                         : "text-app-text"
                     }`}
                   >

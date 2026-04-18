@@ -8,11 +8,13 @@ interface AppInputProps extends TextInputProps {
 const defaultClassName =
   "rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text";
 
-export function AppInput({ className, placeholderTextColor, ...rest }: AppInputProps) {
+export function AppInput({ className, placeholderTextColor, accessibilityLabel, placeholder, ...rest }: AppInputProps) {
   return (
     <TextInput
       className={className ?? defaultClassName}
       placeholderTextColor={placeholderTextColor ?? "#9ca3af"}
+      placeholder={placeholder}
+      accessibilityLabel={accessibilityLabel ?? placeholder}
       {...rest}
     />
   );

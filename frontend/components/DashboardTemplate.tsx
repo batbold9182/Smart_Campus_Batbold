@@ -137,7 +137,7 @@ export default function DashboardTemplate({
                 <View>
                   <Ionicons name="notifications" size={26} color="#facc15" />
                   {unreadCount > 0 && (
-                    <View style={s.badge}>
+                    <View style={s.badge} accessibilityLabel={`${unreadCount} unread notifications`}>
                       <Text style={s.badgeText}>{unreadCount}</Text>
                     </View>
                   )}

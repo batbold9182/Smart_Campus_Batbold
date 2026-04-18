@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   KeyboardAvoidingView,
@@ -9,17 +9,10 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { useRef } from "react";
 import { useRouter } from "expo-router";
-import type { Socket } from "socket.io-client";
-import { getToken } from "../../services/tokenStorage";
-import { getProfile, type AppUserProfile } from "../../services/userService";
-import {
-  connectLunchBuddySocket,
-  getLunchBuddyMessages,
-  type LunchBuddyMessage,
-  type LunchBuddyPresencePayload,
-  type LunchBuddySendAck,
-} from "../../services/studentServices/lunchBuddyService";
+import { useLunchBuddy } from "../../hooks/useLunchBuddy";
+import { useUserStore } from "../../store/useUserStore";
 import { AppButton, AppInput } from "../../components/ui";
 
 type BuddySection = "hub" | "lunch";
@@ -36,7 +29,7 @@ const buddySections: {
   {
     key: "lunch",
     title: "Lunch Buddy",
-    icon: "??",
+    icon: "🍱",
     description: "Find students who are free to eat now and chat in real time.",
     accentClassName: "bg-app-primary-light",
     badgeLabel: "Live",
@@ -44,7 +37,7 @@ const buddySections: {
   {
     key: "learning",
     title: "Learning Buddy",
-    icon: "??",
+    icon: "📘",
     description: "Meet classmates for review sessions, study groups, and exam prep.",
     accentClassName: "bg-app-success-light",
     badgeLabel: "Live",
@@ -52,293 +45,76 @@ const buddySections: {
   {
     key: "party",
     title: "Party Buddy",
-    icon: "??",
+    icon: "🎉",
     description: "Plan events, invite friends, and discover social hangouts on campus.",
     accentClassName: "bg-app-error-bg",
     badgeLabel: "Live",
   },
 ];
 
+const formatMessageTime = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+};
+
 export default function VizjaFriends() {
   const router = useRouter();
-  const socketRef = useRef<Socket | null>(null);
   const scrollRef = useRef<ScrollView | null>(null);
-
-  const [currentUser, setCurrentUser] = useState<AppUserProfile | null>(null);
-  const [authToken, setAuthToken] = useState("");
+  const { user, fetchUser } = useUserStore();
   const [selectedSection, setSelectedSection] = useState<BuddySection>("hub");
-  const [messages, setMessages] = useState<LunchBuddyMessage[]>([]);
   const [draft, setDraft] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [chatLoading, setChatLoading] = useState(false);
-  const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
-  const [statusLabel, setStatusLabel] = useState("Choose a room");
-  const [onlineCount, setOnlineCount] = useState(0);
-
-  const scrollToEnd = () => {
-    requestAnimationFrame(() => {
-      scrollRef.current?.scrollToEnd({ animated: true });
-    });
-  };
-
-  const appendMessage = (message: LunchBuddyMessage) => {
-    setMessages((currentMessages) => {
-      if (currentMessages.some((item) => item.id === message.id)) {
-        return currentMessages;
-      }
-
-      return [...currentMessages, message];
-    });
-  };
-
-  const formatMessageTime = (value: string) => {
-    const date = new Date(value);
-
-    if (Number.isNaN(date.getTime())) {
-      return "";
-    }
-
-    return date.toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  };
 
   useEffect(() => {
-    let isMounted = true;
+    if (!user) fetchUser();
+  }, [user, fetchUser]);
 
-    const loadBaseState = async () => {
-      try {
-        const token = await getToken();
+  const scrollToEnd = () => requestAnimationFrame(() => scrollRef.current?.scrollToEnd({ animated: true }));
 
-        const profile = await getProfile();
-
-        if (!isMounted) {
-          return;
-        }
-
-        setAuthToken(token ?? "");
-        setCurrentUser(profile);
-        setLoading(false);
-      } catch (loadError: any) {
-        if (!isMounted) {
-          return;
-        }
-
-        const message =
-          loadError?.response?.data?.message ||
-          loadError?.message ||
-          "Failed to load Vizja Friends";
-
-        setError(message);
-        setStatusLabel("Offline");
-        setLoading(false);
-      }
-    };
-
-    loadBaseState();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [router]);
-
-  useEffect(() => {
-    if (selectedSection !== "lunch" || !authToken) {
-      socketRef.current?.disconnect();
-      socketRef.current = null;
-      setSending(false);
-      setOnlineCount(0);
-      setDraft("");
-      setError("");
-      setStatusLabel("Choose a room");
-      return;
-    }
-
-    let isMounted = true;
-    setChatLoading(true);
-    setStatusLabel("Connecting...");
-    setError("");
-
-    const handleVisibilityChange = () => {
-      if (typeof document === "undefined") return;
-      if (document.visibilityState === "hidden") {
-        socketRef.current?.disconnect();
-      } else {
-        socketRef.current?.connect();
-      }
-    };
-
-    const initializeLunchBuddy = async () => {
-      try {
-        const history = await getLunchBuddyMessages(60);
-
-        if (!isMounted) {
-          return;
-        }
-
-        setMessages(history);
-
-        const socket = await connectLunchBuddySocket(authToken);
-        socketRef.current = socket;
-
-        socket.on("connect", () => {
-          if (!isMounted) {
-            return;
-          }
-
-          getLunchBuddyMessages(100).then((msgs) => {
-            if (isMounted) setMessages(msgs);
-          });
-          setStatusLabel("Live");
-          setError("");
-        });
-
-        socket.on("disconnect", () => {
-          if (!isMounted) {
-            return;
-          }
-
-          setStatusLabel("Reconnecting...");
-        });
-
-        socket.on("connect_error", (socketError) => {
-          if (!isMounted) {
-            return;
-          }
-
-          setStatusLabel("Offline");
-          setError(socketError.message || "Unable to connect to Lunch Buddy");
-        });
-
-        socket.on("reconnect_failed", () => {
-          if (!isMounted) {
-            return;
-          }
-
-          setStatusLabel("Offline");
-          setError("Could not reconnect to Lunch Buddy. Please reload the page.");
-        });
-
-        socket.on("presence:update", (payload: LunchBuddyPresencePayload) => {
-          if (!isMounted) {
-            return;
-          }
-
-          setOnlineCount(payload.onlineCount ?? 0);
-        });
-
-        socket.on("message:new", (message: LunchBuddyMessage) => {
-          if (!isMounted) {
-            return;
-          }
-
-          appendMessage(message);
-          scrollToEnd();
-        });
-
-        if (typeof document !== "undefined") {
-          document.addEventListener("visibilitychange", handleVisibilityChange);
-        }
-
-        setChatLoading(false);
-        scrollToEnd();
-      } catch (loadError: any) {
-        if (!isMounted) {
-          return;
-        }
-
-        const message =
-          loadError?.response?.data?.message ||
-          loadError?.message ||
-          "Failed to load Lunch Buddy";
-
-        setError(message);
-        setStatusLabel("Offline");
-        setChatLoading(false);
-      }
-    };
-
-    initializeLunchBuddy();
-
-    return () => {
-      isMounted = false;
-      if (typeof document !== "undefined") {
-        document.removeEventListener("visibilitychange", handleVisibilityChange);
-      }
-      socketRef.current?.disconnect();
-      socketRef.current = null;
-    };
-  }, [authToken, selectedSection]);
+  const lunchActive = selectedSection === "lunch";
+  const { messages, loading: chatLoading, sending, error, statusLabel, onlineCount, send, isConnected } =
+    useLunchBuddy(lunchActive);
 
   const handleSend = () => {
     const text = draft.trim();
-    const socket = socketRef.current;
-
-    if (!text || !socket) {
-      return;
-    }
-
+    if (!text) return;
     if (text.length > 400) {
       Alert.alert("Message too long", "Keep each message under 400 characters.");
       return;
     }
-
-    setSending(true);
-
-    socket.emit("message:send", { text }, (response: LunchBuddySendAck) => {
-      setSending(false);
-
-      if (response?.ok) {
-        setDraft("");
-        return;
-      }
-
-      Alert.alert("Unable to send", response?.error || "Please try again.");
-    });
+    send(
+      text,
+      () => { setDraft(""); scrollToEnd(); },
+      (msg) => Alert.alert("Unable to send", msg)
+    );
   };
 
-  if (loading) {
-    return (
-      <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <AppButton title="Loading Vizja Friends..." loading={true} className="bg-transparent" textClassName="mt-3 text-[15px] text-app-muted" onPress={() => {}} />
-      </SafeAreaView>
-    );
-  }
-
   const headerTitle = selectedSection === "hub" ? "Vizja Friends" : "Lunch Buddy";
-  const headerDescription = selectedSection === "hub"
-    ? "Choose a section for campus friendships, study partners, and social plans."
-    : "Student-only live chat for finding lunch company on campus.";
+  const headerDescription =
+    selectedSection === "hub"
+      ? "Choose a section for campus friendships, study partners, and social plans."
+      : "Student-only live chat for finding lunch company on campus.";
 
-  const selectedSectionMeta = buddySections.find((section) => section.key === selectedSection);
+  const selectedSectionMeta = buddySections.find((s) => s.key === selectedSection);
 
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <KeyboardAvoidingView
-        className="flex-1"
-        behavior={Platform.OS === "ios" ? "padding" : undefined}
-      >
+      <KeyboardAvoidingView className="flex-1" behavior={Platform.OS === "ios" ? "padding" : undefined}>
         <View className="border-b border-app-border-light bg-app-surface px-5 pb-4 pt-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
               <Text className="text-[22px] font-bold text-app-text">{headerTitle}</Text>
-              <Text className="mt-1 text-[13px] text-app-muted">
-                {headerDescription}
-              </Text>
+              <Text className="mt-1 text-[13px] text-app-muted">{headerDescription}</Text>
             </View>
-
             <AppButton
               title={selectedSection === "hub" ? "Back" : "Sections"}
               variant="ghost"
               onPress={() => {
                 if (selectedSection === "hub") {
                   router.push("/student/dashboard");
-                  return;
+                } else {
+                  setSelectedSection("hub");
                 }
-
-                setSelectedSection("hub");
               }}
               className="rounded-full bg-app-primary-light px-4 py-2"
               textClassName="font-semibold text-app-primary-dark"
@@ -359,9 +135,9 @@ export default function VizjaFriends() {
                 <Text className="text-[12px] font-semibold text-app-primary-dark">{onlineCount} students online</Text>
               </View>
             ) : null}
-            {currentUser?.program ? (
+            {user?.program ? (
               <View className="rounded-full bg-app-bg-muted px-3 py-2">
-                <Text className="text-[12px] font-semibold text-app-text-secondary">{currentUser.program}</Text>
+                <Text className="text-[12px] font-semibold text-app-text-secondary">{user.program}</Text>
               </View>
             ) : null}
           </View>
@@ -412,10 +188,9 @@ export default function VizjaFriends() {
                     <Text className="text-[12px] font-semibold text-app-text">{section.badgeLabel}</Text>
                   </View>
                 </View>
-
                 <View className="mt-5 flex-row items-center justify-between border-t border-app-bg-muted pt-4">
                   <Text className="text-[13px] font-semibold text-app-primary-dark">Open section</Text>
-                  <Text className="text-[18px] text-app-placeholder">?</Text>
+                  <Text className="text-[18px] text-app-placeholder">›</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -445,26 +220,21 @@ export default function VizjaFriends() {
                   ) : null}
 
                   {messages.map((message) => {
-                    const isMine = message.sender.id === currentUser?._id;
-
+                    const isMine = message.sender.id === user?._id;
                     return (
                       <View
                         key={message.id}
-                        className={`max-w-[88%] rounded-2xl px-4 py-3 ${
-                          isMine ? "self-end bg-app-primary" : "self-start bg-app-surface"
-                        }`}
+                        className={`max-w-[88%] rounded-2xl px-4 py-3 ${isMine ? "self-end bg-app-primary" : "self-start bg-app-surface"}`}
                       >
                         {!isMine ? (
                           <Text className="mb-1 text-[12px] font-semibold text-app-primary-dark">
                             {message.sender.name}
-                            {message.sender.program ? ` � ${message.sender.program}` : ""}
+                            {message.sender.program ? ` • ${message.sender.program}` : ""}
                           </Text>
                         ) : null}
-
                         <Text className={isMine ? "text-[15px] leading-6 text-white" : "text-[15px] leading-6 text-app-text"}>
                           {message.text}
                         </Text>
-
                         <Text className={`mt-2 text-[11px] ${isMine ? "text-app-primary-light" : "text-app-placeholder"}`}>
                           {formatMessageTime(message.createdAt)}
                         </Text>
@@ -485,19 +255,13 @@ export default function VizjaFriends() {
                       textAlignVertical="top"
                     />
                   </View>
-
                   <View className="mt-3 flex-row items-center justify-between">
                     <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
-
                     <AppButton
                       title={sending ? "Sending..." : "Send"}
                       loading={sending}
                       onPress={handleSend}
-                      className={`rounded-full px-5 py-3 ${
-                        draft.trim() && !sending && socketRef.current?.connected
-                          ? "bg-app-primary"
-                          : "bg-app-primary-muted"
-                      }`}
+                      className={`rounded-full px-5 py-3 ${draft.trim() && !sending && isConnected() ? "bg-app-primary" : "bg-app-primary-muted"}`}
                       textClassName="font-semibold text-white"
                     />
                   </View>
