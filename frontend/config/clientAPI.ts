@@ -34,9 +34,21 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 🔒 AUTO-LOGOUT ON 401 + FRIENDLY MESSAGES FOR OTHER STATUS CODES
+// 📦 UNWRAP STANDARDISED ENVELOPE { success, message, data } → data
+// Routes return { success, message, data }; this interceptor makes service
+// files receive the payload directly so they need no changes.
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (
+      response.data !== null &&
+      typeof response.data === "object" &&
+      "success" in response.data &&
+      "data" in response.data
+    ) {
+      response.data = response.data.data;
+    }
+    return response;
+  },
   async (error) => {
     const status: number | undefined = error.response?.status;
     const isLoginRequest = error.config?.url?.includes("/auth/login");

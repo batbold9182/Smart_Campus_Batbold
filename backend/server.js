@@ -81,6 +81,33 @@ app.use(
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 
+// Normalise every res.json() call to { success, message, data }.
+// Routes keep their existing res.json() calls unchanged; this middleware
+// wraps them transparently before the bytes leave the server.
+app.use((_req, res, next) => {
+  const originalJson = res.json.bind(res);
+  res.json = function (body) {
+    // Already shaped — pass through (prevents double-wrapping)
+    if (body !== null && typeof body === "object" && "success" in body) {
+      return originalJson(body);
+    }
+    if (res.statusCode >= 400) {
+      return originalJson({
+        success: false,
+        message: (body && body.message) || "An error occurred",
+        // Preserve validation errors array when present
+        data: (body && body.errors) || null,
+      });
+    }
+    return originalJson({
+      success: true,
+      message: (body && typeof body === "object" && body.message) || "ok",
+      data: body,
+    });
+  };
+  next();
+});
+
 const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
 const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX) || 100;
 

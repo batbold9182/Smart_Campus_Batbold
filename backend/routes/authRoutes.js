@@ -10,6 +10,21 @@ const validate = require("../middleware/validate");
 const User = require("../models/adminModels/user");
 
 const router = express.Router();
+
+// Password must be 8–128 chars and contain at least one uppercase letter,
+// one digit, and one special character.
+const PASSWORD_RULES = [
+  /[A-Z]/,
+  /\d/,
+  /[^A-Za-z0-9]/,
+];
+const passwordValidator = (field) =>
+  body(field)
+    .isLength({ min: 8, max: 128 }).withMessage("Password must be 8–128 characters")
+    .matches(PASSWORD_RULES[0]).withMessage("Password must contain at least one uppercase letter")
+    .matches(PASSWORD_RULES[1]).withMessage("Password must contain at least one number")
+    .matches(PASSWORD_RULES[2]).withMessage("Password must contain at least one special character");
+
 const RESET_TOKEN_TTL_MINUTES = process.env.RESET_TOKEN_TTL_MINUTES
   ? Number(process.env.RESET_TOKEN_TTL_MINUTES)
   : 15;
@@ -39,7 +54,7 @@ router.post(
   [
     body("name").trim().notEmpty().withMessage("Name is required").isLength({ max: 100 }).withMessage("Name too long"),
     body("email").isEmail().withMessage("Valid email is required").normalizeEmail().isLength({ max: 255 }),
-    body("password").isLength({ min: 6, max: 128 }).withMessage("Password must be 6-128 characters"),
+    passwordValidator("password"),
   ],
   validate,
   async (req, res, next) => {
@@ -161,7 +176,7 @@ router.post(
   [
     body("email").isEmail().withMessage("Valid email is required").normalizeEmail().isLength({ max: 255 }),
     body("otp").trim().isLength({ min: 6, max: 6 }).withMessage("OTP must be 6 digits").isNumeric().withMessage("OTP must be numeric"),
-    body("newPassword").isLength({ min: 6, max: 128 }).withMessage("Password must be 6-128 characters"),
+    passwordValidator("newPassword"),
   ],
   validate,
   async (req, res, next) => {

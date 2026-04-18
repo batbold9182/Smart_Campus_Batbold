@@ -53,6 +53,20 @@ router.post(
         return res.status(400).json({ message: "Name, email and password are required" });
       }
 
+      if (
+        typeof password !== "string" ||
+        password.length < 8 ||
+        password.length > 128 ||
+        !/[A-Z]/.test(password) ||
+        !/\d/.test(password) ||
+        !/[^A-Za-z0-9]/.test(password)
+      ) {
+        return res.status(400).json({
+          message:
+            "Password must be 8–128 characters and contain at least one uppercase letter, one number, and one special character",
+        });
+      }
+
       if (safeRole === "faculty" && (!school || !department || !title || !employeeId)) {
         return res
           .status(400)
