@@ -1,45 +1,21 @@
 import { useEffect, useState } from "react";
+import { Alert } from "react-native";
 import Toast from "react-native-toast-message";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
-  ScrollView,
-} from "react-native";
+import { useRouter } from "expo-router";
+import { adminStyles } from "../../styles/adminStyles";
+import { NotificationItem } from "../../components/notificationFeed";
+import NotificationFeed from "../../components/notificationFeed";
+import NotificationForm, {
+  type Audience,
+  type RecipientOption,
+} from "../../components/admin/NotificationForm";
+import RecipientPickerModal from "../../components/admin/RecipientPickerModal";
 import {
   getNotifications,
   markNotificationRead,
   getUsersByRole,
   sendNotification,
 } from "../../services/notificationService";
-import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { adminStyles } from "../../styles/adminStyles";
-import AnimatedScreen from "../../components/AnimatedScreen";
-import { SkeletonList } from "../../components/Skeleton";
-import NotificationFeed, { NotificationItem } from "../../components/notificationFeed";
-import { AppButton, AppCard, AppInput, AppModal } from "../../components/ui";
-
-type Audience = "students" | "faculty" | "all" | "specificStudent" | "specificFaculty";
-
-type RecipientOption = {
-  id: string;
-  name: string;
-  email: string;
-  identifier: string;
-};
-
-type SelectorType = "recipient" | null;
-
-const audienceOptions: { value: Audience; label: string; description: string }[] = [
-  { value: "students", label: "Students", description: "Send to all students" },
-  { value: "faculty", label: "Faculty", description: "Send to all faculty" },
-  { value: "all", label: "Students + Faculty", description: "Send campus-wide" },
-  { value: "specificStudent", label: "Specific Student", description: "Choose one student" },
-  { value: "specificFaculty", label: "Specific Faculty", description: "Choose one faculty member" },
-];
 
 export default function NotificationsScreen() {
   const NOTIFICATIONS_LIMIT = 5;
@@ -55,23 +31,19 @@ export default function NotificationsScreen() {
   const [selectedRecipientId, setSelectedRecipientId] = useState("");
   const [recipientSearch, setRecipientSearch] = useState("");
   const [loadingRecipients, setLoadingRecipients] = useState(false);
-  const [activeSelector, setActiveSelector] = useState<SelectorType>(null);
+  const [recipientModalOpen, setRecipientModalOpen] = useState(false);
   const [sending, setSending] = useState(false);
   const router = useRouter();
 
   const isSpecificAudience = audience === "specificStudent" || audience === "specificFaculty";
-  const selectedRecipient = recipientOptions.find((recipient) => recipient.id === selectedRecipientId) || null;
-  const selectedAudienceMeta = audienceOptions.find((option) => option.value === audience);
-  const normalizedRecipientSearch = recipientSearch.trim().toLowerCase();
-  const filteredRecipientOptions = recipientOptions.filter((recipient) => {
-    if (!normalizedRecipientSearch) {
-      return true;
-    }
-
+  const selectedRecipient = recipientOptions.find((r) => r.id === selectedRecipientId) || null;
+  const normalizedSearch = recipientSearch.trim().toLowerCase();
+  const filteredRecipientOptions = recipientOptions.filter((r) => {
+    if (!normalizedSearch) return true;
     return (
-      recipient.name.toLowerCase().includes(normalizedRecipientSearch) ||
-      recipient.email.toLowerCase().includes(normalizedRecipientSearch) ||
-      recipient.identifier.toLowerCase().includes(normalizedRecipientSearch)
+      r.name.toLowerCase().includes(normalizedSearch) ||
+      r.email.toLowerCase().includes(normalizedSearch) ||
+      r.identifier.toLowerCase().includes(normalizedSearch)
     );
   });
 
@@ -79,7 +51,6 @@ export default function NotificationsScreen() {
     try {
       setLoading(true);
       setError("");
-
       const data = await getNotifications(nextPage, NOTIFICATIONS_LIMIT);
 
       if (Array.isArray(data)) {
@@ -95,8 +66,7 @@ export default function NotificationsScreen() {
       setPage(nextPage);
       setTotalPages(pages);
     } catch (err: any) {
-      const message = err.response?.data?.message || "Failed to load notifications";
-      setError(message);
+      setError(err.response?.data?.message || "Failed to load notifications");
     } finally {
       setLoading(false);
     }
@@ -109,7 +79,7 @@ export default function NotificationsScreen() {
   useEffect(() => {
     let isActive = true;
 
-    const loadRecipientOptions = async () => {
+    const loadRecipients = async () => {
       if (!isSpecificAudience) {
         setRecipientOptions([]);
         setSelectedRecipientId("");
@@ -123,19 +93,17 @@ export default function NotificationsScreen() {
         const data = await getUsersByRole(role);
         const users = Array.isArray(data?.users) ? data.users : [];
 
-        if (!isActive) {
-          return;
-        }
+        if (!isActive) return;
 
         setRecipientOptions(
           users
-            .map((user: any) => ({
-              id: user._id || user.id,
-              name: user.name || "Unknown user",
-              email: user.email || "",
-              identifier: user.studentId || user.employeeId || "",
+            .map((u: any) => ({
+              id: u._id || u.id,
+              name: u.name || "Unknown user",
+              email: u.email || "",
+              identifier: u.studentId || u.employeeId || "",
             }))
-            .filter((user: RecipientOption) => Boolean(user.id))
+            .filter((u: RecipientOption) => Boolean(u.id))
         );
         setSelectedRecipientId("");
         setRecipientSearch("");
@@ -146,17 +114,12 @@ export default function NotificationsScreen() {
           setRecipientSearch("");
         }
       } finally {
-        if (isActive) {
-          setLoadingRecipients(false);
-        }
+        if (isActive) setLoadingRecipients(false);
       }
     };
 
-    loadRecipientOptions();
-
-    return () => {
-      isActive = false;
-    };
+    loadRecipients();
+    return () => { isActive = false; };
   }, [audience, isSpecificAudience]);
 
   const markAsRead = async (id: string) => {
@@ -171,17 +134,8 @@ export default function NotificationsScreen() {
   };
 
   const getRecipientIdsByRole = async (role: "students" | "faculty") => {
-    const roleValue = role === "students" ? "student" : "faculty";
-    const data = await getUsersByRole(roleValue);
-    const users = data?.users || [];
-    return users.map((user: any) => user._id || user.id).filter(Boolean);
-  };
-
-  const openRecipientSelector = () => {
-    if (!loadingRecipients && recipientOptions.length > 0) {
-      setRecipientSearch("");
-      setActiveSelector("recipient");
-    }
+    const data = await getUsersByRole(role === "students" ? "student" : "faculty");
+    return (data?.users || []).map((u: any) => u._id || u.id).filter(Boolean);
   };
 
   const handleSendNotification = async () => {
@@ -189,7 +143,6 @@ export default function NotificationsScreen() {
       Alert.alert("Validation", "Please enter title and message");
       return;
     }
-
     if (isSpecificAudience && !selectedRecipientId) {
       Alert.alert("Validation", "Please select a recipient");
       return;
@@ -197,7 +150,6 @@ export default function NotificationsScreen() {
 
     try {
       setSending(true);
-
       let recipientIds: string[] = [];
       let successMessage = "";
 
@@ -211,11 +163,11 @@ export default function NotificationsScreen() {
       } else if (audience === "faculty") {
         recipientIds = await getRecipientIdsByRole("faculty");
       } else {
-        const [studentIds, facultyIds] = await Promise.all([
+        const [s, f] = await Promise.all([
           getRecipientIdsByRole("students"),
           getRecipientIdsByRole("faculty"),
         ]);
-        recipientIds = [...new Set([...studentIds, ...facultyIds])];
+        recipientIds = [...new Set([...s, ...f])];
       }
 
       if (recipientIds.length === 0) {
@@ -235,156 +187,13 @@ export default function NotificationsScreen() {
       setMessage("");
       setSelectedRecipientId("");
       setRecipientSearch("");
-      setActiveSelector(null);
+      setRecipientModalOpen(false);
     } catch (err: any) {
-      const errMsg = err.response?.data?.message || "Failed to send notification";
-      Toast.show({ type: "error", text1: errMsg });
+      Toast.show({ type: "error", text1: err.response?.data?.message || "Failed to send notification" });
     } finally {
       setSending(false);
     }
   };
-
-  if (loading) {
-    return (
-      <View className={adminStyles.loadingScreen}>
-        <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24, marginHorizontal: -20, marginTop: -20 }}>
-          <Text className="text-[22px] font-bold text-white">Notifications</Text>
-        </LinearGradient>
-        <View style={{ paddingTop: 16 }}>
-          <SkeletonList rows={4} />
-        </View>
-      </View>
-    );
-  }
-
-  if (error) {
-    return (
-      <View className={adminStyles.loadingScreen}>
-        <Text className={`mb-3 ${adminStyles.title}`}>Notifications</Text>
-        <Text className={adminStyles.errorText}>{error}</Text>
-        <TouchableOpacity className={adminStyles.paginationButtonEnabled} onPress={() => loadNotifications(1)}>
-          <Text className={adminStyles.buttonPrimaryText}>Retry</Text>
-        </TouchableOpacity>
-      </View>
-    );
-  }
-
-  const sendForm = (
-    <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
-      <Text className="text-2xl font-bold text-app-text">Notifications</Text>
-      <Text className="mb-5 mt-1 text-[13px] text-app-muted">
-        Send announcements to all users or target a single faculty member or studentor ID.
-      </Text>
-
-      <View className="mb-[14px] rounded-lg border border-app-border bg-app-bg p-3">
-        <Text className="mb-[10px] text-[16px] font-bold text-app-text">Send Notification</Text>
-
-        <AppInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Title"
-          className="mb-[10px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
-        />
-
-        <AppInput
-          value={message}
-          onChangeText={setMessage}
-          placeholder="Message"
-          className="mb-[10px] min-h-[80px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
-          multiline
-          textAlignVertical="top"
-        />
-
-        <Text className="mb-[6px] text-[14px] text-app-text">Audience</Text>
-        <View className="mb-[10px] flex-row flex-wrap gap-2">
-          {audienceOptions.map((option) => {
-            const isActive = audience === option.value;
-            return (
-              <TouchableOpacity
-                key={option.value}
-                className={`min-w-[48%] flex-1 rounded-xl border px-3 py-3 ${
-                  isActive
-                    ? "border-blue-500 bg-app-primary-light"
-                    : "border-app-border bg-app-surface"
-                }`}
-                onPress={() => setAudience(option.value)}
-              >
-                <Text className={`text-[14px] font-semibold ${isActive ? "text-blue-700" : "text-app-text"}`}>
-                  {option.label}
-                </Text>
-                <Text className={`mt-1 text-[12px] ${isActive ? "text-blue-700" : "text-app-muted"}`}>
-                  {option.description}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-
-        <View className="mb-[10px] rounded-xl border border-app-border bg-app-surface px-3 py-3">
-          <Text className="text-[12px] uppercase tracking-[0.6px] text-app-muted">Current Audience</Text>
-          <Text className="mt-1 text-[15px] font-semibold text-app-text">{selectedAudienceMeta?.label}</Text>
-          <Text className="mt-1 text-[13px] text-app-muted">{selectedAudienceMeta?.description}</Text>
-        </View>
-
-        {isSpecificAudience ? (
-          <View className="mb-[10px]">
-            <Text className="mb-[6px] text-[14px] text-app-text">Recipient</Text>
-            {loadingRecipients ? (
-              <View className="rounded-xl border border-app-border bg-app-surface px-3 py-4">
-                <View className="flex-row items-center gap-2">
-                  <ActivityIndicator size="small" />
-                  <Text className="text-[14px] text-app-muted">Loading recipients...</Text>
-                </View>
-              </View>
-            ) : (
-              <TouchableOpacity
-                className="rounded-xl border border-app-border bg-app-surface px-3 py-4"
-                onPress={openRecipientSelector}
-                disabled={recipientOptions.length === 0}
-              >
-                <View className="flex-row items-center justify-between">
-                  <View className="flex-1 pr-3">
-                    <Text className="text-[12px] uppercase tracking-[0.6px] text-app-muted">Selected Recipient</Text>
-                    <Text className={`mt-1 text-[15px] font-semibold ${selectedRecipient ? "text-app-text" : "text-app-muted"}`}>
-                      {selectedRecipient ? selectedRecipient.name : "Tap to choose a recipient"}
-                    </Text>
-                    <Text className="mt-1 text-[13px] text-app-muted">
-                      {selectedRecipient
-                        ? [selectedRecipient.email, selectedRecipient.identifier].filter(Boolean).join(" • ")
-                        : "Opens a list of matching users"}
-                    </Text>
-                  </View>
-                  <Text className="text-[18px] text-app-muted">▾</Text>
-                </View>
-              </TouchableOpacity>
-            )}
-            {!loadingRecipients && recipientOptions.length === 0 ? (
-              <Text className="mt-[6px] text-[12px] text-app-muted">
-                No users found for this audience.
-              </Text>
-            ) : null}
-          </View>
-        ) : null}
-
-        {sending ? (
-          <AppButton
-            title="Sending..."
-            loading={true}
-            className={adminStyles.buttonPrimary}
-            textClassName={adminStyles.buttonPrimaryText}
-            onPress={() => {}}
-          />
-        ) : (
-          <AppButton
-            title="Send Notification"
-            onPress={handleSendNotification}
-            className={adminStyles.buttonPrimary}
-            textClassName={adminStyles.buttonPrimaryText}
-          />
-        )}
-      </View>
-    </AppCard>
-  );
 
   return (
     <>
@@ -402,63 +211,43 @@ export default function NotificationsScreen() {
         onNext={() => loadNotifications(page + 1)}
         onBack={() => router.push("/admin/dashboard")}
         backLabel="Back to Dashboard"
-        topContent={sendForm}
+        topContent={
+          <NotificationForm
+            title={title}
+            setTitle={setTitle}
+            message={message}
+            setMessage={setMessage}
+            audience={audience}
+            setAudience={setAudience}
+            sending={sending}
+            onSend={handleSendNotification}
+            isSpecificAudience={isSpecificAudience}
+            selectedRecipient={selectedRecipient}
+            loadingRecipients={loadingRecipients}
+            recipientOptions={recipientOptions}
+            onOpenRecipientSelector={() => {
+              if (!loadingRecipients && recipientOptions.length > 0) {
+                setRecipientSearch("");
+                setRecipientModalOpen(true);
+              }
+            }}
+            styles={adminStyles}
+          />
+        }
       />
 
-      <AppModal open={activeSelector === "recipient"} onClose={() => setActiveSelector(null)} layout="bottom">
-        <View className="mb-2 flex-row items-center justify-between">
-          <Text className="text-[17px] font-bold text-app-text">Select Recipient</Text>
-          <TouchableOpacity onPress={() => setActiveSelector(null)}>
-            <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
-          </TouchableOpacity>
-        </View>
-        <AppInput
-          value={recipientSearch}
-          onChangeText={setRecipientSearch}
-          placeholder="Search by name, email, ID"
-          className="mb-3 rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[15px] text-app-text"
-        />
-            <Text className="mb-3 text-[12px] text-app-muted">
-              {filteredRecipientOptions.length} result{filteredRecipientOptions.length === 1 ? "" : "s"}
-            </Text>
-            <ScrollView showsVerticalScrollIndicator={false}>
-              {filteredRecipientOptions.length === 0 ? (
-                <View className="rounded-xl border border-dashed border-app-border bg-app-surface px-4 py-5">
-                  <Text className="text-center text-[14px] text-app-muted">
-                    No recipients match your search.
-                  </Text>
-                </View>
-              ) : filteredRecipientOptions.map((recipient) => {
-                const active = recipient.id === selectedRecipientId;
-                return (
-                  <TouchableOpacity
-                    key={recipient.id}
-                    className={`mb-2 rounded-lg border px-3 py-3 ${
-                      active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
-                    }`}
-                    onPress={() => {
-                      setSelectedRecipientId(recipient.id);
-                      setActiveSelector(null);
-                    }}
-                  >
-                    <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
-                      {recipient.name}
-                    </Text>
-                    <Text className={`mt-1 text-[13px] ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
-                      {recipient.email}
-                    </Text>
-                    {recipient.identifier ? (
-                      <Text className={`mt-1 text-[12px] ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
-                        ID: {recipient.identifier}
-                      </Text>
-                    ) : null}
-                  </TouchableOpacity>
-                );
-              })}
-            </ScrollView>
-      </AppModal>
+      <RecipientPickerModal
+        open={recipientModalOpen}
+        onClose={() => setRecipientModalOpen(false)}
+        recipientSearch={recipientSearch}
+        setRecipientSearch={setRecipientSearch}
+        filteredOptions={filteredRecipientOptions}
+        selectedRecipientId={selectedRecipientId}
+        onSelect={(id) => {
+          setSelectedRecipientId(id);
+          setRecipientModalOpen(false);
+        }}
+      />
     </>
   );
 }
-
-

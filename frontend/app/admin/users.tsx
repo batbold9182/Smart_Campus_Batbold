@@ -1,36 +1,12 @@
-import { useCallback, useEffect, useState, useMemo } from "react";
-import logger from "../../utils/logger";
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  ScrollView,
-} from "react-native";
-import Toast from "react-native-toast-message";
-import { getUsers, deleteUser, toggleUserStatus, updateUser, getAcademicOptions } from "../../services/adminServices/adminService";
-import { useRouter } from "expo-router";
+import { useCallback, useEffect, useState } from "react";
+import { View, Text, FlatList, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { AppButton, AppCard, AppInput, AppModal } from "../../components/ui";
+import { useRouter } from "expo-router";
+import { getUsers, deleteUser, toggleUserStatus } from "../../services/adminServices/adminService";
+import { AppButton, AppCard, AppInput } from "../../components/ui";
 import { SkeletonList } from "../../components/Skeleton";
-
-type AcademicOptions = Record<string, Record<string, string[]>>;
-
-type PickerState = {
-  visible: boolean;
-  title: string;
-  options: string[];
-  selectedValue: string;
-  onSelect: (value: string) => void;
-};
-
-const initialPickerState: PickerState = {
-  visible: false,
-  title: "",
-  options: [],
-  selectedValue: "",
-  onSelect: () => {},
-};
+import UserListItem from "../../components/admin/UserListItem";
+import EditUserModal from "../../components/admin/EditUserModal";
 
 export default function AdminUsersScreen() {
   const [users, setUsers] = useState<any[]>([]);
@@ -42,21 +18,7 @@ export default function AdminUsersScreen() {
   const [loading, setLoading] = useState(false);
   const [expandedUserId, setExpandedUserId] = useState<string | null>(null);
   const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [editForm, setEditForm] = useState<any>({});
-  const [updating, setUpdating] = useState(false);
-  const [academicOptions, setAcademicOptions] = useState<AcademicOptions>({});
-  const [pickerState, setPickerState] = useState<PickerState>(initialPickerState);
   const router = useRouter();
-
-  const schoolOptions = useMemo(() => Object.keys(academicOptions), [academicOptions]);
-  const departmentOptions = useMemo(
-    () => (editForm.school ? Object.keys(academicOptions[editForm.school] || {}) : []),
-    [academicOptions, editForm.school]
-  );
-  const programOptions = useMemo(
-    () => (editForm.school && editForm.department ? academicOptions[editForm.school]?.[editForm.department] || [] : []),
-    [academicOptions, editForm.school, editForm.department]
-  );
 
   const loadUsers = useCallback(async () => {
     try {
@@ -74,112 +36,13 @@ export default function AdminUsersScreen() {
     loadUsers();
   }, [loadUsers]);
 
-  useEffect(() => {
-    const loadAcademicOptions = async () => {
-      try {
-        const data = await getAcademicOptions();
-        setAcademicOptions(data || {});
-      } catch {
-        logger.warn("Failed to load academic options");
-      }
-    };
-    loadAcademicOptions();
-  }, []);
-
-
-  const handleDelete = async (id: string) => {
-    await deleteUser(id);
-    loadUsers();
-  };
-
-  const handleEditOpen = (user: any) => {
-    setEditingUserId(user._id);
-    setEditForm({
-      name: user.name || "",
-      email: user.email || "",
-      school: user.school || "",
-      department: user.department || "",
-      title: user.role === "faculty" ? user.title || "" : "",
-      employeeId: user.role === "faculty" ? user.employeeId || "" : "",
-      studentId: user.role === "student" ? user.studentId || "" : "",
-      program: user.role === "student" ? user.program || "" : "",
-      yearLevel: user.role === "student" ? user.yearLevel?.toString() || "" : "",
-    });
-  };
-
-  const handleEditClose = () => {
-    setEditingUserId(null);
-    setEditForm({});
-  };
-
-  const openPicker = (
-    title: string,
-    options: string[],
-    selectedValue: string,
-    onSelect: (value: string) => void
-  ) => {
-    setPickerState({
-      visible: true,
-      title,
-      options,
-      selectedValue,
-      onSelect,
-    });
-  };
-
-  const closePicker = () => {
-    setPickerState((prev) => ({ ...prev, visible: false }));
-  };
-
-  const handleUpdateUser = async () => {
-    if (!editingUserId) return;
-    
-    const editingUser = users.find(u => u._id === editingUserId);
-    if (!editingUser) return;
-
-    if (!editForm.name || !editForm.email) {
-      Toast.show({ type: "error", text1: "Name and email are required" });
-      return;
-    }
-
-    try {
-      setUpdating(true);
-      const updates: any = {
-        name: editForm.name,
-        email: editForm.email,
-      };
-
-      if (editingUser.role === "faculty") {
-        updates.school = editForm.school || null;
-        updates.department = editForm.department || null;
-        updates.title = editForm.title || null;
-        updates.employeeId = editForm.employeeId || null;
-      } else if (editingUser.role === "student") {
-        updates.school = editForm.school || null;
-        updates.department = editForm.department || null;
-        updates.studentId = editForm.studentId || null;
-        updates.program = editForm.program || null;
-        updates.yearLevel = editForm.yearLevel ? parseInt(editForm.yearLevel) : null;
-      }
-
-      await updateUser(editingUserId, updates);
-      Toast.show({ type: "success", text1: "User updated successfully" });
-      handleEditClose();
-      loadUsers();
-    } catch (error: any) {
-      Toast.show({ type: "error", text1: error.response?.data?.message || "Failed to update user" });
-    } finally {
-      setUpdating(false);
-    }
-  };
+  const editingUser = users.find((u) => u._id === editingUserId);
 
   const filteredUsers = (users || []).filter(
-  (user) =>
-    user.name.toLowerCase().includes(search.toLowerCase()) ||
-    user.email.toLowerCase().includes(search.toLowerCase())
-);
-
-  const editingUser = users.find(u => u._id === editingUserId);
+    (u) =>
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.email.toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
@@ -190,347 +53,119 @@ export default function AdminUsersScreen() {
             Browse, filter, and manage faculty and student accounts.
           </Text>
 
-        <View className="mb-3 flex-row gap-2">
-          {["faculty", "student"].map((role) => (
-            <TouchableOpacity
-              key={role}
-              className={`flex-1 items-center rounded-xl border px-3 py-3 ${
-                activeTab === role ? "border-blue-300 bg-blue-50" : "border-app-border bg-app-surface"
-              }`}
-              onPress={() => {
-                setActiveTab(role as any);
-                setPage(1);
-                setExpandedUserId(null);
-                setEditingUserId(null);
-              }}
-            >
-              <Text className="font-bold text-app-text">
-                {role === "faculty" ? "Faculty" : "Students"}
-              </Text>
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <View className="mb-4 flex-row justify-between gap-2">
-          <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
-            <Text className="text-[16px] font-bold text-app-text">{counters?.faculty ?? 0}</Text>
-            <Text className="text-[11px] text-app-muted">Faculty</Text>
-          </View>
-          <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
-            <Text className="text-[16px] font-bold text-app-text">{counters?.students ?? 0}</Text>
-            <Text className="text-[11px] text-app-muted">Students</Text>
-          </View>
-          <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
-            <Text className="text-[16px] font-bold text-app-text">{counters?.disabled ?? 0}</Text>
-            <Text className="text-[11px] text-app-muted">Disabled</Text>
-          </View>
-        </View>
-
-        <View className="mb-3 flex-row items-center justify-between">
-          <TouchableOpacity
-            className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-blue-500"}`}
-            disabled={page === 1}
-            onPress={() => setPage(page - 1)}
-          >
-            <Text className="font-semibold text-white">Prev</Text>
-          </TouchableOpacity>
-          <Text className="text-[13px] text-app-text">Page {page} / {pagination?.totalPages || 1}</Text>
-          <TouchableOpacity
-            className={`rounded-lg px-4 py-2 ${page === pagination?.totalPages ? "bg-app-disabled" : "bg-blue-500"}`}
-            disabled={page === pagination?.totalPages}
-            onPress={() => setPage(page + 1)}
-          >
-            <Text className="font-semibold text-white">Next</Text>
-          </TouchableOpacity>
-        </View>
-
-        <AppInput
-          placeholder={`Search ${activeTab}`}
-          value={search}
-          onChangeText={setSearch}
-          className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3"
-        />
-        {loading ? (
-          <SkeletonList rows={5} />
-        ) : filteredUsers.length === 0 ? (
-          <View className="items-center rounded-xl border border-dashed border-app-border bg-app-surface py-10">
-            <Text className="text-[16px] font-semibold text-app-text">No {activeTab === "faculty" ? "faculty" : "students"} found</Text>
-            <Text className="mt-1 text-[13px] text-app-muted">{search ? "Try a different search term" : "No accounts have been created yet"}</Text>
-          </View>
-        ) : null}
-
-        {!loading && (
-        <FlatList
-          data={filteredUsers}
-          keyExtractor={(item) => item._id}
-          scrollEnabled={false}
-          renderItem={({ item }) => (
-            <View className="mb-3 rounded-xl border border-app-border bg-app-surface p-3">
+          <View className="mb-3 flex-row gap-2">
+            {(["faculty", "student"] as const).map((role) => (
               <TouchableOpacity
-                activeOpacity={0.8}
-                onPress={() =>
-                  setExpandedUserId((prev) => (prev === item._id ? null : item._id))
-                }
-              >
-                <Text className="mb-1 text-[16px] font-semibold text-app-text">{item.name}</Text>
-                <Text className="mb-1 text-[13px] text-app-muted">{item.email}</Text>
-                {activeTab === "faculty" ? (
-                  <View className="mb-2 gap-1">
-                    <Text className="text-[12px] text-app-text-secondary">School: {item.school || "-"}</Text>
-                    <Text className="text-[12px] text-app-text-secondary">Department: {item.department || "-"}</Text>
-                    <Text className="text-[12px] text-app-text-secondary">Title: {item.title || "-"}</Text>
-                    <Text className="text-[12px] text-app-text-secondary">Employee ID: {item.employeeId || "-"}</Text>
-                  </View>
-                ) : (
-                  <View className="mb-2 gap-1">
-                    <Text className="text-[12px] text-app-text-secondary">Program: {item.program || "-"}</Text>
-                    <Text className="text-[12px] text-app-text-secondary">Year: {item.yearLevel || "-"}</Text>
-                    <Text className="text-[12px] text-app-text-secondary">Student ID: {item.studentId || "-"}</Text>
-                  </View>
-                )}
-                <Text className="mb-2 text-[12px] font-medium text-app-primary">
-                  {expandedUserId === item._id ? "Hide actions" : "Show actions"}
-                </Text>
-              </TouchableOpacity>
-
-              {expandedUserId === item._id ? (
-                <View className="gap-[6px]">
-                  <TouchableOpacity
-                    className="items-center rounded-lg bg-blue-500 px-3 py-2"
-                    onPress={() => handleEditOpen(item)}
-                  >
-                    <Text className="font-semibold text-white">Edit</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className={`items-center rounded-lg px-3 py-2 ${item.isActive ? "bg-amber-500" : "bg-emerald-600"}`}
-                    onPress={() => toggleUserStatus(item._id).then(loadUsers)}
-                  >
-                    <Text className="font-semibold text-white">{item.isActive ? "Disable" : "Enable"}</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className="items-center rounded-lg bg-red-500 px-3 py-2"
-                    onPress={() => handleDelete(item._id)}
-                  >
-                    <Text className="font-semibold text-white">Delete</Text>
-                  </TouchableOpacity>
-                </View>
-              ) : null}
-            </View>
-          )}
-        />
-        )}
-
-        <AppButton
-          title="Back to Dashboard"
-          variant="outline"
-          onPress={() => router.push("/admin/dashboard")}
-          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
-          textClassName="font-semibold text-app-text"
-        />
-      </AppCard>
-    </ScrollView>
-
-    <AppModal open={editingUserId !== null} onClose={handleEditClose} layout="center">
-          <ScrollView className="rounded-2xl bg-app-surface p-5">
-            <View className="mb-4">
-              <Text className="text-[20px] font-bold text-app-text">Edit User</Text>
-              <Text className="mt-1 text-[13px] text-app-muted">{editingUser?.name}</Text>
-            </View>
-
-            {/* Name Field */}
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Name *</Text>
-              <AppInput
-                value={editForm.name}
-                onChangeText={(text) => setEditForm({ ...editForm, name: text })}
-                placeholder="Enter name"
-                className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
-              />
-            </View>
-
-            {/* Email Field */}
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Email *</Text>
-              <AppInput
-                value={editForm.email}
-                onChangeText={(text) => setEditForm({ ...editForm, email: text })}
-                placeholder="Enter email"
-                keyboardType="email-address"
-                className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
-              />
-            </View>
-
-            {/* School Field */}
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">School</Text>
-              <TouchableOpacity
-                activeOpacity={0.7}
-                className="min-h-[48px] flex-row items-center justify-between rounded-lg border border-app-border bg-app-surface px-3 py-2"
-                onPress={() => openPicker("School", schoolOptions, editForm.school, (value) => {
-                  setEditForm({ ...editForm, school: value, department: "", program: "" });
-                  closePicker();
-                })}
-              >
-                <Text className={editForm.school ? "text-app-text" : "text-app-placeholder"}>
-                  {editForm.school || "Select school"}
-                </Text>
-                <Text className="text-[16px] text-app-muted">▾</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Department Field */}
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Department</Text>
-              <TouchableOpacity
-                activeOpacity={editForm.school ? 0.7 : 0.5}
-                disabled={!editForm.school}
-                className={`min-h-[48px] flex-row items-center justify-between rounded-lg border px-3 py-2 ${
-                  editForm.school ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-subtle"
+                key={role}
+                className={`flex-1 items-center rounded-xl border px-3 py-3 ${
+                  activeTab === role ? "border-blue-300 bg-blue-50" : "border-app-border bg-app-surface"
                 }`}
-                onPress={() => openPicker("Department", departmentOptions, editForm.department, (value) => {
-                  setEditForm({ ...editForm, department: value, program: "" });
-                  closePicker();
-                })}
+                onPress={() => {
+                  setActiveTab(role);
+                  setPage(1);
+                  setExpandedUserId(null);
+                  setEditingUserId(null);
+                }}
               >
-                <Text className={editForm.department ? "text-app-text" : "text-app-placeholder"}>
-                  {editForm.department || "Select department"}
+                <Text className="font-bold text-app-text">
+                  {role === "faculty" ? "Faculty" : "Students"}
                 </Text>
-                <Text className={`text-[16px] ${editForm.school ? "text-app-muted" : "text-app-border"}`}>▾</Text>
               </TouchableOpacity>
+            ))}
+          </View>
+
+          <View className="mb-4 flex-row justify-between gap-2">
+            <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
+              <Text className="text-[16px] font-bold text-app-text">{counters?.faculty ?? 0}</Text>
+              <Text className="text-[11px] text-app-muted">Faculty</Text>
             </View>
-
-            {/* Faculty-specific Fields */}
-            {editingUser?.role === "faculty" && (
-              <>
-                <View className="mb-4">
-                  <Text className="mb-2 text-[12px] font-semibold text-app-text">Title</Text>
-                  <AppInput
-                    value={editForm.title}
-                    onChangeText={(text) => setEditForm({ ...editForm, title: text })}
-                    placeholder="Enter title"
-                    className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
-                  />
-                </View>
-                <View className="mb-4">
-                  <Text className="mb-2 text-[12px] font-semibold text-app-text">Employee ID</Text>
-                  <AppInput
-                    value={editForm.employeeId}
-                    onChangeText={(text) => setEditForm({ ...editForm, employeeId: text })}
-                    placeholder="Enter employee ID"
-                    className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
-                  />
-                </View>
-              </>
-            )}
-
-            {/* Student-specific Fields */}
-            {editingUser?.role === "student" && (
-              <>
-                <View className="mb-4">
-                  <Text className="mb-2 text-[12px] font-semibold text-app-text">Student ID</Text>
-                  <AppInput
-                    value={editForm.studentId}
-                    onChangeText={(text) => setEditForm({ ...editForm, studentId: text })}
-                    placeholder="Enter student ID"
-                    className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
-                  />
-                </View>
-
-                <View className="mb-4">
-                  <Text className="mb-2 text-[12px] font-semibold text-app-text">Program</Text>
-                  <TouchableOpacity
-                    activeOpacity={editForm.school && editForm.department ? 0.7 : 0.5}
-                    disabled={!editForm.school || !editForm.department}
-                    className={`min-h-[48px] flex-row items-center justify-between rounded-lg border px-3 py-2 ${
-                      editForm.school && editForm.department ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-subtle"
-                    }`}
-                    onPress={() => openPicker("Program", programOptions, editForm.program, (value) => {
-                      setEditForm({ ...editForm, program: value });
-                      closePicker();
-                    })}
-                  >
-                    <Text className={editForm.program ? "text-app-text" : "text-app-placeholder"}>
-                      {editForm.program || "Select program"}
-                    </Text>
-                    <Text className={`text-[16px] ${editForm.school && editForm.department ? "text-app-muted" : "text-app-border"}`}>▾</Text>
-                  </TouchableOpacity>
-                </View>
-
-                <View className="mb-4">
-                  <Text className="mb-2 text-[12px] font-semibold text-app-text">Year Level</Text>
-                  <AppInput
-                    value={editForm.yearLevel}
-                    onChangeText={(text) => setEditForm({ ...editForm, yearLevel: text })}
-                    placeholder="Enter year level"
-                    keyboardType="number-pad"
-                    className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
-                  />
-                </View>
-              </>
-            )}
-
-            <View className="mt-6 flex-row gap-3">
-              <AppButton
-                title="Cancel"
-                variant="outline"
-                onPress={handleEditClose}
-                loading={updating}
-                className="flex-1 items-center rounded-lg bg-gray-300 px-4 py-3"
-                textClassName="font-semibold text-app-text"
-              />
-              <AppButton
-                title={updating ? "Saving..." : "Save"}
-                loading={updating}
-                onPress={handleUpdateUser}
-                className="flex-1 items-center rounded-lg bg-blue-500 px-4 py-3"
-                textClassName="font-semibold text-white"
-              />
+            <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
+              <Text className="text-[16px] font-bold text-app-text">{counters?.students ?? 0}</Text>
+              <Text className="text-[11px] text-app-muted">Students</Text>
             </View>
-          </ScrollView>
-
-        {pickerState.visible ? (
-          <View className="absolute inset-0 justify-end">
-            <TouchableOpacity
-              className="absolute inset-0"
-              activeOpacity={1}
-              onPress={closePicker}
-            />
-            <View className="max-h-[60%] rounded-t-3xl bg-app-surface p-5">
-              <View className="mb-4 flex-row items-center justify-between">
-                <Text className="text-[18px] font-bold text-app-text">{pickerState.title}</Text>
-                <TouchableOpacity onPress={closePicker}>
-                  <Text className="text-[24px] text-app-muted">X</Text>
-                </TouchableOpacity>
-              </View>
-
-              <ScrollView showsVerticalScrollIndicator={false}>
-                {pickerState.options.map((option) => (
-                  <TouchableOpacity
-                    key={option}
-                    className={`border-b border-app-border px-4 py-3 ${
-                      pickerState.selectedValue === option ? "bg-blue-50" : "bg-app-surface"
-                    }`}
-                    onPress={() => {
-                      pickerState.onSelect(option);
-                      closePicker();
-                    }}
-                  >
-                    <Text
-                      className={`text-[16px] ${
-                        pickerState.selectedValue === option
-                          ? "font-bold text-blue-600"
-                          : "text-app-text"
-                      }`}
-                    >
-                      {option}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+            <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
+              <Text className="text-[16px] font-bold text-app-text">{counters?.disabled ?? 0}</Text>
+              <Text className="text-[11px] text-app-muted">Disabled</Text>
             </View>
           </View>
-        ) : null}
-    </AppModal>
+
+          <View className="mb-3 flex-row items-center justify-between">
+            <TouchableOpacity
+              className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-blue-500"}`}
+              disabled={page === 1}
+              onPress={() => setPage(page - 1)}
+            >
+              <Text className="font-semibold text-white">Prev</Text>
+            </TouchableOpacity>
+            <Text className="text-[13px] text-app-text">
+              Page {page} / {pagination?.totalPages || 1}
+            </Text>
+            <TouchableOpacity
+              className={`rounded-lg px-4 py-2 ${
+                page === pagination?.totalPages ? "bg-app-disabled" : "bg-blue-500"
+              }`}
+              disabled={page === pagination?.totalPages}
+              onPress={() => setPage(page + 1)}
+            >
+              <Text className="font-semibold text-white">Next</Text>
+            </TouchableOpacity>
+          </View>
+
+          <AppInput
+            placeholder={`Search ${activeTab}`}
+            value={search}
+            onChangeText={setSearch}
+            className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3"
+          />
+
+          {loading ? (
+            <SkeletonList rows={5} />
+          ) : filteredUsers.length === 0 ? (
+            <View className="items-center rounded-xl border border-dashed border-app-border bg-app-surface py-10">
+              <Text className="text-[16px] font-semibold text-app-text">
+                No {activeTab === "faculty" ? "faculty" : "students"} found
+              </Text>
+              <Text className="mt-1 text-[13px] text-app-muted">
+                {search ? "Try a different search term" : "No accounts have been created yet"}
+              </Text>
+            </View>
+          ) : null}
+
+          {!loading && (
+            <FlatList
+              data={filteredUsers}
+              keyExtractor={(item) => item._id}
+              scrollEnabled={false}
+              renderItem={({ item }) => (
+                <UserListItem
+                  item={item}
+                  activeTab={activeTab}
+                  expandedUserId={expandedUserId}
+                  onToggle={(id) => setExpandedUserId((prev) => (prev === id ? null : id))}
+                  onEdit={(u) => setEditingUserId(u._id)}
+                  onToggleStatus={(id) => toggleUserStatus(id).then(loadUsers)}
+                  onDelete={(id) => deleteUser(id).then(loadUsers)}
+                />
+              )}
+            />
+          )}
+
+          <AppButton
+            title="Back to Dashboard"
+            variant="outline"
+            onPress={() => router.push("/admin/dashboard")}
+            className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
+            textClassName="font-semibold text-app-text"
+          />
+        </AppCard>
+      </ScrollView>
+
+      <EditUserModal
+        editingUserId={editingUserId}
+        editingUser={editingUser}
+        onClose={() => setEditingUserId(null)}
+        onSaved={loadUsers}
+      />
     </SafeAreaView>
   );
 }
