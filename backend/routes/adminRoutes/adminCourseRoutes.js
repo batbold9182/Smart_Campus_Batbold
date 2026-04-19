@@ -23,7 +23,7 @@ router.put("/courses/:courseId/assign", auth, authorizeRoles("admin"), async (re
       req.params.courseId,
       { faculty: facultyId },
       { new: true }
-    ).populate("faculty", "name email");
+    ).populate("faculty", "name email").lean();
 
     if (!course) {
       return res.status(404).json({ message: "Course not found" });

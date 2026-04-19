@@ -588,7 +588,7 @@ router.post(
       const existingSubmission = await AssignmentSubmission.findOne({
         assignment: assignment._id,
         student: req.user.id,
-      });
+      }).lean();
 
       let uploadedFile = null;
 

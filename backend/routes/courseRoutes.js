@@ -64,7 +64,7 @@ router.patch("/:id/assign", auth, authorizeRoles("admin"), async (req, res, next
       req.params.id,
       { faculty: facultyId },
       { new: true }
-    ).populate("faculty", "name email");
+    ).populate("faculty", "name email").lean();
 
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
@@ -122,7 +122,7 @@ router.get("/", auth, authorizeRoles("admin"), async (req, res, next) => {
  */
 router.delete("/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
-    const course = await Course.findByIdAndDelete(req.params.id);
+    const course = await Course.findByIdAndDelete(req.params.id).lean();
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }

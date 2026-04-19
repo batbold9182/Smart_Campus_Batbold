@@ -125,7 +125,7 @@ router.put("/faculty/courses/:courseId/students/:studentId", auth, authorizeRole
     const enrollment = await Enrollment.findOne({
       course: req.params.courseId,
       student: req.params.studentId,
-    }).populate("student", "name");
+    }).populate("student", "name").lean();
 
     if (!enrollment) {
       return res.status(404).json({ message: "Student is not enrolled in this course" });
