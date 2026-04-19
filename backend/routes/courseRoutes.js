@@ -8,6 +8,61 @@ const authorizeRoles = require("../middleware/roleMiddleware");
 const router = express.Router();
 
 /**
+ * @swagger
+ * tags:
+ *   name: Courses
+ *   description: Course management
+ */
+
+/**
+ * @swagger
+ * /courses:
+ *   post:
+ *     summary: Create a course (admin only)
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [title, code, credits, facultyId]
+ *             properties:
+ *               title:
+ *                 type: string
+ *                 maxLength: 200
+ *               code:
+ *                 type: string
+ *                 maxLength: 20
+ *               description:
+ *                 type: string
+ *                 maxLength: 1000
+ *               credits:
+ *                 type: number
+ *               facultyId:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: Course created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/SuccessResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/Course'
+ *       400:
+ *         description: Validation error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+/**
  * CREATE COURSE (FACULTY ONLY)
  */
 router.post("/", auth, authorizeRoles("admin"), async (req, res, next) => {
@@ -84,6 +139,33 @@ router.patch("/:id/assign", auth, authorizeRoles("admin"), async (req, res, next
 });
 
 /**
+ * @swagger
+ * /courses:
+ *   get:
+ *     summary: List all courses (admin only)
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *         description: Page number (omit for all courses)
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *         description: Items per page (max 100)
+ *     responses:
+ *       200:
+ *         description: Array of courses (or paginated object when page/limit supplied)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ */
+/**
  * GET ALL COURSES (ADMIN ONLY)
  */
 router.get("/", auth, authorizeRoles("admin"), async (req, res, next) => {
@@ -118,6 +200,34 @@ router.get("/", auth, authorizeRoles("admin"), async (req, res, next) => {
 });
 
 /**
+ * @swagger
+ * /courses/{id}:
+ *   delete:
+ *     summary: Delete a course (admin only)
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Course deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       404:
+ *         description: Course not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
+/**
  * DELETE COURSE (ADMIN ONLY)
  */
 router.delete("/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
@@ -133,6 +243,22 @@ router.delete("/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /courses/my:
+ *   get:
+ *     summary: Get courses assigned to the authenticated faculty
+ *     tags: [Courses]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Array of courses for the faculty
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ */
 /**
  * GET MY COURSES (FACULTY)
  */

@@ -27,6 +27,8 @@ const registerLearningBuddySocket = require("./socket/learningBuddySocket");
 const registerPartyBuddySocket = require("./socket/partyBuddySocket");
 
 const crypto = require("crypto");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./config/swagger");
 
 const app = express();
 app.use(compression());
@@ -166,6 +168,12 @@ app.use("/api/v1/library", libraryRoutes);
 app.use("/api/v1/attendance", attendanceRoutes);
 
 app.use("/api/v1/assignments", assignmentRoutes);
+
+// API documentation – only expose in non-production by default
+if (process.env.NODE_ENV !== "production") {
+  app.use("/api/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  app.get("/api/docs.json", (_req, res) => res.json(swaggerSpec));
+}
 
 app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");

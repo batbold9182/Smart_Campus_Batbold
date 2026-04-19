@@ -23,6 +23,46 @@ const isHttpUrl = (value) => {
 
 const isDataImage = (value) => value.toLowerCase().startsWith("data:image/");
 
+/**
+ * @swagger
+ * tags:
+ *   name: Profile
+ *   description: Current user profile
+ */
+
+/**
+ * @swagger
+ * /protected/profile:
+ *   get:
+ *     summary: Get current user's profile
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: User profile (password excluded)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               allOf:
+ *                 - $ref: '#/components/schemas/SuccessResponse'
+ *                 - type: object
+ *                   properties:
+ *                     data:
+ *                       $ref: '#/components/schemas/User'
+ *       401:
+ *         description: Unauthorised
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ *       404:
+ *         description: User not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.get("/profile", auth, async (req, res, next) => {
   try {
     const user = await User.findById(req.user.id).select("-password").lean();
@@ -37,6 +77,39 @@ router.get("/profile", auth, async (req, res, next) => {
   }
 });
 
+/**
+ * @swagger
+ * /protected/profile/picture:
+ *   patch:
+ *     summary: Update current user's profile picture
+ *     tags: [Profile]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required: [profile]
+ *             properties:
+ *               profile:
+ *                 type: string
+ *                 description: Public image URL, base64 data URI, or "defaultProfile.png"
+ *     responses:
+ *       200:
+ *         description: Profile picture updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/SuccessResponse'
+ *       400:
+ *         description: Invalid image value
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 router.patch("/profile/picture", auth, async (req, res, next) => {
   try {
     const { profile } = req.body;
