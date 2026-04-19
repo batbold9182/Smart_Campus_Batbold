@@ -9,15 +9,18 @@ const courseSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 200,
     },
     code: {
       type: String,
       required: true,
       unique: true,
       uppercase: true,
+      maxlength: 20,
     },
     description: {
       type: String,
+      maxlength: 1000,
     },
     credits: {
       type: Number,

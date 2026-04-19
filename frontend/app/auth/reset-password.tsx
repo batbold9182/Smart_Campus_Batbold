@@ -134,7 +134,7 @@ export default function ResetPasswordScreen() {
             title="Get one time password"
             variant="ghost"
             onPress={() => router.replace("/auth/forgot-password")}
-            className="bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center"
+            className="mt-2 items-center justify-center"
             textClassName="text-blue-600 font-semibold"
           />
 

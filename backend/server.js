@@ -15,6 +15,7 @@ const http = require("http");
 const express = require("express");
 const mongoose = require("mongoose");
 const compression = require("compression");
+const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
@@ -29,6 +30,7 @@ const crypto = require("crypto");
 
 const app = express();
 app.use(compression());
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
 app.use((req, _res, next) => { req.id = crypto.randomUUID(); next(); });
 const server = http.createServer(app);
 connectDB();

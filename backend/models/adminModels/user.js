@@ -2,8 +2,8 @@ const mongoose = require("mongoose");
 
 const UserSchema = new mongoose.Schema(
   {
-    name: String,
-    email: { type: String, unique: true, sparse: true },
+    name: { type: String, maxlength: 100 },
+    email: { type: String, unique: true, sparse: true, maxlength: 255 },
     password: String,
     profile: {
       type: String,
@@ -20,26 +20,31 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: null,
       trim: true,
+      maxlength: 100,
     },
     department: {
       type: String,
       default: null,
       trim: true,
+      maxlength: 100,
     },
     title: {
       type: String,
       default: null,
       trim: true,
+      maxlength: 100,
     },
     studentId: {
       type: String,
       default: null,
       trim: true,
+      maxlength: 20,
     },
     program: {
       type: String,
       default: null,
       trim: true,
+      maxlength: 100,
     },
     yearLevel: {
       type: Number,
@@ -49,6 +54,7 @@ const UserSchema = new mongoose.Schema(
       type: String,
       default: null,
       trim: true,
+      maxlength: 20,
     },
     isActive: {
       type: Boolean,

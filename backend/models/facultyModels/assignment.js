@@ -6,11 +6,13 @@ const assignmentSchema = new mongoose.Schema(
       type: String,
       required: true,
       trim: true,
+      maxlength: 200,
     },
     description: {
       type: String,
       default: "",
       trim: true,
+      maxlength: 2000,
     },
     dueDate: {
       type: Date,

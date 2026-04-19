@@ -4,11 +4,13 @@ const notificationSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true
+      required: true,
+      maxlength: 200,
     },
     message: {
       type: String,
-      required: true
+      required: true,
+      maxlength: 2000,
     },
     recipient: {
       type: mongoose.Schema.Types.ObjectId,
