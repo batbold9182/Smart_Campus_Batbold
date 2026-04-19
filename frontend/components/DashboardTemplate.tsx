@@ -133,11 +133,15 @@ export default function DashboardTemplate({
                   color={isDark ? "#facc15" : "#6b21a8"}
                 />
               </TouchableOpacity>
-              <TouchableOpacity onPress={() => router.push(notificationsRoute as any)}>
+              <TouchableOpacity
+                onPress={() => router.push(notificationsRoute as any)}
+                accessibilityRole="button"
+                accessibilityLabel={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
+              >
                 <View>
                   <Ionicons name="notifications" size={26} color="#facc15" />
                   {unreadCount > 0 && (
-                    <View style={s.badge} accessibilityLabel={`${unreadCount} unread notifications`}>
+                    <View style={s.badge} importantForAccessibility="no">
                       <Text style={s.badgeText}>{unreadCount}</Text>
                     </View>
                   )}

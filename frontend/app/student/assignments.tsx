@@ -1,9 +1,7 @@
-import { Alert, Linking, Platform, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { Alert, Linking, Platform, Text, View } from "react-native";
 import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import AnimatedScreen from "../../components/AnimatedScreen";
+import ScreenLayout from "../../components/ScreenLayout";
 import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
 import { AppButton } from "../../components/ui";
 import {
@@ -49,37 +47,16 @@ export default function StudentAssignments() {
 
   if (isLoading) {
     return (
-      <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-        <LinearGradient
-          colors={["#2563eb", "#7c3aed"]}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}
-        >
-          <Text className="text-[22px] font-bold text-white">Assignments</Text>
-        </LinearGradient>
-        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
-          <SkeletonStatRow count={3} />
-          <SkeletonStatRow count={2} />
-          <SkeletonList rows={3} />
-        </View>
-      </SafeAreaView>
+      <ScreenLayout title="Assignments" backRoute="/student/dashboard">
+        <SkeletonStatRow count={3} />
+        <SkeletonStatRow count={2} />
+        <SkeletonList rows={3} />
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <LinearGradient
-        colors={["#2563eb", "#7c3aed"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 0 }}
-        style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}
-      >
-        <Text className="text-[22px] font-bold text-white">Assignments</Text>
-      </LinearGradient>
-
-      <AnimatedScreen>
-        <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
+    <ScreenLayout title="Assignments" backRoute="/student/dashboard">
           {data?.summary && <StatsCards summary={data.summary} />}
 
           {!data?.items.length ? (
@@ -116,14 +93,9 @@ export default function StudentAssignments() {
             ))
           )}
 
-          <AppButton
-            title="Back to Dashboard"
-            onPress={() => router.push("/student/dashboard")}
-            className="items-center rounded-lg bg-blue-500 p-[14px]"
-            textClassName="font-semibold text-white"
-          />
-        </ScrollView>
-      </AnimatedScreen>
-    </SafeAreaView>
+          <AppButton onPress={() => router.push("/student/dashboard")}>
+            Back to Dashboard
+          </AppButton>
+    </ScreenLayout>
   );
 }

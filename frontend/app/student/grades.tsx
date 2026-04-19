@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text } from "react-native";
 import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
 import { getStudentGrades, type StudentGradesResponse } from "../../services/facultyServices/gradeService";
-import AnimatedScreen from "../../components/AnimatedScreen";
+import ScreenLayout from "../../components/ScreenLayout";
 import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
-import useResponsive from "../../hooks/useResponsive";
+import { AppButton } from "../../components/ui";
 
 export default function Grades() {
   const router = useRouter();
@@ -26,29 +24,17 @@ export default function Grades() {
     loadGrades();
   }, []);
 
-  const { isDesktop } = useResponsive();
-
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-        <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
-          <Text className="text-[22px] font-bold text-white">Grades</Text>
-        </LinearGradient>
-        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
-          <SkeletonStatRow count={3} />
-          <SkeletonList rows={3} />
-        </View>
-      </SafeAreaView>
+      <ScreenLayout title="Grades" backRoute="/student/dashboard">
+        <SkeletonStatRow count={3} />
+        <SkeletonList rows={3} />
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
-        <Text className="text-[22px] font-bold text-white">Grades</Text>
-      </LinearGradient>
-      <AnimatedScreen>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
+    <ScreenLayout title="Grades" backRoute="/student/dashboard">
 
         <View className="mb-4 flex-row justify-between gap-2">
           <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card">
@@ -107,14 +93,9 @@ export default function Grades() {
           })
         )}
 
-        <TouchableOpacity
-          className="items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/student/dashboard")}
-        >
-          <Text className="font-semibold text-white">Back to Dashboard</Text>
-        </TouchableOpacity>
-      </ScrollView>
-      </AnimatedScreen>
-    </SafeAreaView>
+        <AppButton onPress={() => router.push("/student/dashboard")}>
+          Back to Dashboard
+        </AppButton>
+    </ScreenLayout>
   );
 }

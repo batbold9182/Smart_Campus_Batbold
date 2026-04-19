@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Alert } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { View, Text, TouchableOpacity, Alert } from "react-native";
 import { useRouter } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import AnimatedScreen from "../../components/AnimatedScreen";
+import ScreenLayout from "../../components/ScreenLayout";
 import { SkeletonList } from "../../components/Skeleton";
 import { AppButton, AppInput } from "../../components/ui";
 import {
@@ -166,24 +164,14 @@ export default function Attendance() {
 
   if (loading) {
     return (
-      <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-        <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
-          <Text className="text-[22px] font-bold text-white">Attendance</Text>
-        </LinearGradient>
-        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
-          <SkeletonList rows={4} />
-        </View>
-      </SafeAreaView>
+      <ScreenLayout title="Attendance" backRoute="/faculty/dashboard">
+        <SkeletonList rows={4} />
+      </ScreenLayout>
     );
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <LinearGradient colors={["#2563eb", "#7c3aed"]} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={{ paddingHorizontal: 20, paddingVertical: 18, borderBottomLeftRadius: 24, borderBottomRightRadius: 24 }}>
-        <Text className="text-[22px] font-bold text-white">Attendance</Text>
-      </LinearGradient>
-      <AnimatedScreen>
-      <ScrollView className="flex-1 px-5" contentContainerClassName="pb-5 pt-4">
+    <ScreenLayout title="Attendance" backRoute="/faculty/dashboard">
 
         <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
           <Text className="mb-2 text-[16px] font-semibold text-app-text">Attendance Date</Text>
@@ -353,8 +341,6 @@ export default function Attendance() {
         <AppButton onPress={() => router.push("/faculty/dashboard")}>
           Back to Dashboard
         </AppButton>
-      </ScrollView>
-      </AnimatedScreen>
-    </SafeAreaView>
+    </ScreenLayout>
   );
 }

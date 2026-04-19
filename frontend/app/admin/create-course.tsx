@@ -246,7 +246,7 @@ export default function AdminCreateCourse() {
                   variant="danger"
                   loading={deletingId === item._id}
                   onPress={() => handleDelete(item._id)}
-                  className={`items-center rounded-lg px-3 py-2 ${deletingId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
+                  className={`items-center rounded-lg px-3 py-2 ${deletingId === item._id ? "bg-app-error-loading" : "bg-app-danger"}`}
                   textClassName="font-semibold text-white"
                 />
               </View>

@@ -49,20 +49,26 @@ export default function UserListItem({
       {isExpanded ? (
         <View className="gap-[6px]">
           <TouchableOpacity
-            className="items-center rounded-lg bg-blue-500 px-3 py-2"
+            className="items-center rounded-lg bg-app-primary px-3 py-3"
             onPress={() => onEdit(item)}
+            accessibilityRole="button"
+            accessibilityLabel={`Edit ${item.name}`}
           >
             <Text className="font-semibold text-white">Edit</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`items-center rounded-lg px-3 py-2 ${item.isActive ? "bg-amber-500" : "bg-emerald-600"}`}
+            className={`items-center rounded-lg px-3 py-3 ${item.isActive ? "bg-app-warning" : "bg-app-success-accent"}`}
             onPress={() => onToggleStatus(item._id)}
+            accessibilityRole="button"
+            accessibilityLabel={item.isActive ? `Disable ${item.name}` : `Enable ${item.name}`}
           >
             <Text className="font-semibold text-white">{item.isActive ? "Disable" : "Enable"}</Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className="items-center rounded-lg bg-red-500 px-3 py-2"
+            className="items-center rounded-lg bg-app-danger px-3 py-3"
             onPress={() => onDelete(item._id)}
+            accessibilityRole="button"
+            accessibilityLabel={`Delete ${item.name}`}
           >
             <Text className="font-semibold text-white">Delete</Text>
           </TouchableOpacity>
