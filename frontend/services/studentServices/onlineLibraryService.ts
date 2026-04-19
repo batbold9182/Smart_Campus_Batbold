@@ -21,7 +21,7 @@ export type LibrarySearchResponse = {
 };
 
 export const searchOnlineLibrary = async (query: string, page = 1, limit = 12, category = "") => {
-  const response = await api.get<LibrarySearchResponse>("/api/library/search", {
+  const response = await api.get<LibrarySearchResponse>("/library/search", {
     params: { q: query, page, limit, category },
   });
 

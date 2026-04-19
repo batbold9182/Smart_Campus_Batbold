@@ -31,7 +31,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "";
 const SOCKET_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, "");
 
 export const getPartyBuddyMessages = async (limit = 50) => {
-  const response = await api.get<HistoryResponse>("/api/party-buddy/messages", {
+  const response = await api.get<HistoryResponse>("/party-buddy/messages", {
     params: { limit },
   });
 

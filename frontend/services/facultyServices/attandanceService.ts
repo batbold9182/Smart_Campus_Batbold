@@ -100,13 +100,13 @@ export type StudentAttendanceScheduleResponse = {
 };
 
 export const getFacultyAttendanceCourses = async () => {
-	const response = await api.get<{ courses: FacultyAttendanceCourse[] }>("/api/attendance/faculty/courses");
+	const response = await api.get<{ courses: FacultyAttendanceCourse[] }>("/attendance/faculty/courses");
 	return response.data.courses;
 };
 
 export const getFacultyCourseAttendance = async (courseId: string, date: string, scheduleId?: string) => {
 	const response = await api.get<FacultyAttendanceCourseDetail>(
-		`/api/attendance/faculty/courses/${courseId}/students`,
+		`/attendance/faculty/courses/${courseId}/students`,
 		{
 			params: { date, scheduleId },
 		}
@@ -119,17 +119,17 @@ export const saveStudentAttendance = async (
 	studentId: string,
 	payload: { status: AttendanceStatus; date: string; remarks?: string; scheduleId?: string }
 ) => {
-	const response = await api.put(`/api/attendance/faculty/courses/${courseId}/students/${studentId}`, payload);
+	const response = await api.put(`/attendance/faculty/courses/${courseId}/students/${studentId}`, payload);
 	return response.data;
 };
 
 export const getStudentAttendanceSummary = async () => {
-	const response = await api.get<StudentAttendanceSummaryResponse>("/api/attendance/student/summary");
+	const response = await api.get<StudentAttendanceSummaryResponse>("/attendance/student/summary");
 	return response.data;
 };
 
 export const getStudentScheduleAttendance = async (date: string) => {
-	const response = await api.get<StudentAttendanceScheduleResponse>("/api/attendance/student/schedule", {
+	const response = await api.get<StudentAttendanceScheduleResponse>("/attendance/student/schedule", {
 		params: { date },
 	});
 	return response.data;

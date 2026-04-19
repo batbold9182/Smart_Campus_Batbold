@@ -131,41 +131,41 @@ const apiLimiter = rateLimit({
   message: { message: "Too many requests, please try again later" },
 });
 
-app.use("/api/auth", authLimiter, require("./routes/authRoutes"));
+app.use("/api/v1/auth", authLimiter, require("./routes/authRoutes"));
 
-app.use("/api/protected", apiLimiter, require("./routes/protectedRoutes"));
+app.use("/api/v1/protected", apiLimiter, require("./routes/protectedRoutes"));
 
-app.use("/api/admin", require("./routes/adminRoutes/adminRoutes"));
+app.use("/api/v1/admin", require("./routes/adminRoutes/adminRoutes"));
 
-app.use("/api/admin", adminCourseRoutes);
+app.use("/api/v1/admin", adminCourseRoutes);
 
-app.use("/api/admin", adminEnrollRoutes);
+app.use("/api/v1/admin", adminEnrollRoutes);
 
-app.use("/api/courses", require("./routes/courseRoutes"));
+app.use("/api/v1/courses", require("./routes/courseRoutes"));
 
-app.use("/api/admin", adminNotificationRoutes);
+app.use("/api/v1/admin", adminNotificationRoutes);
 
-app.use("/api/notifications", notificationRoutes);
+app.use("/api/v1/notifications", notificationRoutes);
 
-app.use("/api/admin", scheduleRoutes);
+app.use("/api/v1/admin", scheduleRoutes);
 
-app.use("/api/schedule", studentScheduleRoutes);
+app.use("/api/v1/schedule", studentScheduleRoutes);
 
-app.use("/api/admin", adminStudentScheduleRoutes);
+app.use("/api/v1/admin", adminStudentScheduleRoutes);
 
-app.use("/api/lunch-buddy", lunchBuddyRoutes);
+app.use("/api/v1/lunch-buddy", lunchBuddyRoutes);
 
-app.use("/api/learning-buddy", learningBuddyRoutes);
+app.use("/api/v1/learning-buddy", learningBuddyRoutes);
 
-app.use("/api/party-buddy", partyBuddyRoutes);
+app.use("/api/v1/party-buddy", partyBuddyRoutes);
 
-app.use("/api/grades", gradeRoutes);
+app.use("/api/v1/grades", gradeRoutes);
 
-app.use("/api/library", libraryRoutes);
+app.use("/api/v1/library", libraryRoutes);
 
-app.use("/api/attendance", attendanceRoutes);
+app.use("/api/v1/attendance", attendanceRoutes);
 
-app.use("/api/assignments", assignmentRoutes);
+app.use("/api/v1/assignments", assignmentRoutes);
 
 app.get("/", (req, res) => {
   res.send("🚀 Smart Campus Backend is Running");

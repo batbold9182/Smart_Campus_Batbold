@@ -88,12 +88,12 @@ export type StudentAssignmentsResponse = {
 };
 
 export const getFacultyAssignmentCourses = async () => {
-  const response = await api.get<{ courses: FacultyAssignmentCourse[] }>("/api/assignments/faculty/courses");
+  const response = await api.get<{ courses: FacultyAssignmentCourse[] }>("/assignments/faculty/courses");
   return response.data.courses;
 };
 
 export const getFacultyCourseAssignments = async (courseId: string) => {
-  const response = await api.get<FacultyAssignmentCourseDetail>(`/api/assignments/faculty/courses/${courseId}/assignments`);
+  const response = await api.get<FacultyAssignmentCourseDetail>(`/assignments/faculty/courses/${courseId}/assignments`);
   return response.data;
 };
 
@@ -101,23 +101,23 @@ export const createCourseAssignment = async (
   courseId: string,
   payload: { title: string; description?: string; dueDate: string; maxPoints: number }
 ) => {
-  const response = await api.post(`/api/assignments/faculty/courses/${courseId}/assignments`, payload);
+  const response = await api.post(`/assignments/faculty/courses/${courseId}/assignments`, payload);
   return response.data;
 };
 
 export const deleteCourseAssignment = async (assignmentId: string) => {
-  const response = await api.delete(`/api/assignments/${assignmentId}`);
+  const response = await api.delete(`/assignments/${assignmentId}`);
   return response.data;
 };
 
 export const getStudentAssignments = async () => {
-  const response = await api.get<StudentAssignmentsResponse>("/api/assignments/student");
+  const response = await api.get<StudentAssignmentsResponse>("/assignments/student");
   return response.data;
 };
 
 export const getFacultyAssignmentSubmissions = async (courseId: string, assignmentId: string) => {
   const response = await api.get<FacultyAssignmentSubmissionDetail>(
-    `/api/assignments/faculty/courses/${courseId}/assignments/${assignmentId}/submissions`
+    `/assignments/faculty/courses/${courseId}/assignments/${assignmentId}/submissions`
   );
   return response.data;
 };
@@ -128,20 +128,20 @@ export const saveFacultyAssignmentReview = async (
   payload: { score?: number | null; feedback?: string }
 ) => {
   const response = await api.put(
-    `/api/assignments/faculty/assignments/${assignmentId}/submissions/${submissionId}/review`,
+    `/assignments/faculty/assignments/${assignmentId}/submissions/${submissionId}/review`,
     payload
   );
   return response.data;
 };
 
 export const submitStudentAssignment = async (assignmentId: string, payload: FormData) => {
-  const response = await api.post(`/api/assignments/student/assignments/${assignmentId}/submission`, payload);
+  const response = await api.post(`/assignments/student/assignments/${assignmentId}/submission`, payload);
 
   return response.data;
 };
 
 export const downloadAssignmentSubmission = async (submissionId: string) => {
-  const response = await api.get(`/api/assignments/submissions/${submissionId}/download`, {
+  const response = await api.get(`/assignments/submissions/${submissionId}/download`, {
     responseType: "blob",
   });
 
@@ -151,5 +151,5 @@ export const downloadAssignmentSubmission = async (submissionId: string) => {
 export const getAssignmentSubmissionDownloadUrl = async (submissionId: string) => {
   const token = await getToken();
   const baseUrl = (api.defaults.baseURL || "").replace(/\/$/, "");
-  return `${baseUrl}/api/assignments/submissions/${submissionId}/download?token=${encodeURIComponent(token || "")}`;
+  return `${baseUrl}/assignments/submissions/${submissionId}/download?token=${encodeURIComponent(token || "")}`;
 };

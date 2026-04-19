@@ -22,12 +22,12 @@ export type UpdateProfilePictureResponse = {
 };
 
 export const getProfile = async () => {
-  const response = await api.get<AppUserProfile>("/api/protected/profile");
+  const response = await api.get<AppUserProfile>("/protected/profile");
   return response.data;
 };
 
 export const updateMyProfilePicture = async (profile: string) => {
-  const response = await api.patch<UpdateProfilePictureResponse>("/api/protected/profile/picture", { profile });
+  const response = await api.patch<UpdateProfilePictureResponse>("/protected/profile/picture", { profile });
   return response.data;
 };
 

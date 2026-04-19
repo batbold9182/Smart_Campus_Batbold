@@ -1,6 +1,6 @@
 import api from "../../config/clientAPI";
 export const unenrollStudent = async (enrollmentId: string) => {
-  const res = await api.delete(`/api/admin/enrollments/${enrollmentId}`);
+  const res = await api.delete(`/admin/enrollments/${enrollmentId}`);
   return res.data;
 }
 export const createUser = async (
@@ -19,7 +19,7 @@ export const createUser = async (
     yearLevel?: number;
   }
 ) => {
-  const res = await api.post("/api/admin/create-faculty", {
+  const res = await api.post("/admin/create-faculty", {
     name,
     email,
     password,
@@ -31,27 +31,27 @@ export const createUser = async (
 
 export const getUsers = async (page = 1, role?: string, limit = 5) => {
   const res = await api.get(
-    `/api/admin/users?page=${page}&limit=${limit}${role ? `&role=${role}` : ""}`
+    `/admin/users?page=${page}&limit=${limit}${role ? `&role=${role}` : ""}`
   );
   return res.data;
 };
 
 export const deleteUser = async (id: string) => {
-  const res = await api.delete(`/api/admin/users/${id}`);
+  const res = await api.delete(`/admin/users/${id}`);
   return res.data;
 };
 
 export const toggleUserStatus = async (id: string) => {
-    const res = await api.patch(`/api/admin/users/${id}/toggle`);
+    const res = await api.patch(`/admin/users/${id}/toggle`);
     return res.data;
 };
 
 export const getAcademicOptions = async (signal?: AbortSignal) => {
-  const res = await api.get("/api/admin/academic-options", { signal });
+  const res = await api.get("/admin/academic-options", { signal });
   return res.data;
 };
 
 export const updateUser = async (id: string, updates: any) => {
-  const res = await api.patch(`/api/admin/users/${id}`, updates);
+  const res = await api.patch(`/admin/users/${id}`, updates);
   return res.data;
 };

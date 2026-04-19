@@ -5,7 +5,7 @@ import { getToken, clearToken } from "../services/tokenStorage";
 const API_URL = process.env.EXPO_PUBLIC_API_URL;
 
 const api = axios.create({
-  baseURL: API_URL,
+  baseURL: `${API_URL ?? ""}/api/v1`,
   headers: {
     "Content-Type": "application/json",
   },

@@ -1,7 +1,7 @@
 import api from "../config/clientAPI";
 import { clearToken } from "./tokenStorage";
 export const login = async (email: string, password: string) => {
-  const response = await api.post("/api/auth/login", {
+  const response = await api.post("/auth/login", {
     email,
     password,
   });
@@ -17,7 +17,7 @@ export const register = async (
   email: string,
   password: string
 ) => {
-  const response = await api.post("/api/auth/register", {
+  const response = await api.post("/auth/register", {
     name,
     email,
     password,
@@ -26,7 +26,7 @@ export const register = async (
 };
 
 export const forgotPassword = async (email: string) => {
-  const response = await api.post("/api/auth/forgot-password", { email });
+  const response = await api.post("/auth/forgot-password", { email });
   return response.data as {
     message: string;
     otp?: string;
@@ -35,7 +35,7 @@ export const forgotPassword = async (email: string) => {
 };
 
 export const resetPassword = async (email: string, otp: string, newPassword: string) => {
-  const response = await api.post("/api/auth/reset-password", {
+  const response = await api.post("/auth/reset-password", {
     email,
     otp,
     newPassword,

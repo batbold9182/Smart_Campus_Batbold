@@ -4,7 +4,7 @@ export const assignSchedule = async (
   studentId: string,
   scheduleId: string
 ) => {
-  const res = await api.post("/api/admin/assign-schedule", {
+  const res = await api.post("/admin/assign-schedule", {
     studentId,
     scheduleId,
   });
@@ -12,12 +12,12 @@ export const assignSchedule = async (
 };
 
 export const getStudents = async () => {
-  const res = await api.get("/api/admin/students");
+  const res = await api.get("/admin/students");
   return res.data;
 };
 
 export const getSchedules = async (page = 1, limit = 100) => {
-  const res = await api.get("/api/admin/schedules", {
+  const res = await api.get("/admin/schedules", {
     params: { page, limit },
   });
 

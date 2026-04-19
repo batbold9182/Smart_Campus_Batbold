@@ -7,17 +7,17 @@ export const createCourse = async (data: {
   credits?: number;
   facultyId: string;
 }) => {
-  const res = await api.post("/api/courses", data);
+  const res = await api.post("/courses", data);
   return res.data;
 };
 
 export const getMyCourses = async () => {
-  const res = await api.get("/api/courses/my");
+  const res = await api.get("/courses/my");
   return res.data;
 };
 
 export const getAllCourses = async (page = 1, limit = 50) => {
-  const res = await api.get("/api/courses", {
+  const res = await api.get("/courses", {
     params: { page, limit },
   });
 
@@ -25,11 +25,11 @@ export const getAllCourses = async (page = 1, limit = 50) => {
 };
 
 export const assignCourse = async (courseId: string, facultyId: string) => {
-  const res = await api.patch(`/api/courses/${courseId}/assign`, { facultyId });
+  const res = await api.patch(`/courses/${courseId}/assign`, { facultyId });
   return res.data;
 };
 
 export const deleteCourse = async (courseId: string) => {
-  const res = await api.delete(`/api/courses/${courseId}`);
+  const res = await api.delete(`/courses/${courseId}`);
   return res.data;
 };

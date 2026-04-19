@@ -31,7 +31,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL ?? "";
 const SOCKET_BASE_URL = API_BASE_URL.replace(/\/api\/?$/, "");
 
 export const getLearningBuddyMessages = async (limit = 50) => {
-  const response = await api.get<HistoryResponse>("/api/learning-buddy/messages", {
+  const response = await api.get<HistoryResponse>("/learning-buddy/messages", {
     params: { limit },
   });
 

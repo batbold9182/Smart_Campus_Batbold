@@ -60,21 +60,21 @@ export type StudentGradesResponse = {
 };
 
 export const getFacultyGradeCourses = async () => {
-  const response = await api.get<{ courses: FacultyGradeCourse[] }>("/api/grades/faculty/courses");
+  const response = await api.get<{ courses: FacultyGradeCourse[] }>("/grades/faculty/courses");
   return response.data.courses;
 };
 
 export const getFacultyCourseGrades = async (courseId: string) => {
-  const response = await api.get<FacultyGradeCourseDetail>(`/api/grades/faculty/courses/${courseId}/students`);
+  const response = await api.get<FacultyGradeCourseDetail>(`/grades/faculty/courses/${courseId}/students`);
   return response.data;
 };
 
 export const saveStudentGrade = async (courseId: string, studentId: string, payload: { value: number; remarks?: string }) => {
-  const response = await api.put(`/api/grades/faculty/courses/${courseId}/students/${studentId}`, payload);
+  const response = await api.put(`/grades/faculty/courses/${courseId}/students/${studentId}`, payload);
   return response.data;
 };
 
 export const getStudentGrades = async () => {
-  const response = await api.get<StudentGradesResponse>("/api/grades/student");
+  const response = await api.get<StudentGradesResponse>("/grades/student");
   return response.data;
 };
