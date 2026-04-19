@@ -1,6 +1,6 @@
 const express = require("express");
 const auth = require("../../middleware/authMiddleware");
-const role = require("../../middleware/roleMiddleware");
+const authorizeRoles = require("../../middleware/roleMiddleware");
 const PartyBuddyMessage = require("../../models/studentModels/partyBuddyMessage");
 
 const router = express.Router();
@@ -21,7 +21,7 @@ const formatMessage = (message) => ({
   },
 });
 
-router.get("/messages", auth, role("student"), async (req, res, next) => {
+router.get("/messages", auth, authorizeRoles("student"), async (req, res, next) => {
   try {
     const requestedLimit = Number(req.query.limit);
     const limit = Number.isFinite(requestedLimit) && requestedLimit > 0

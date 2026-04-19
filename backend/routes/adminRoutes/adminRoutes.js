@@ -3,7 +3,7 @@ const bcrypt = require("bcryptjs");
 const User = require("../../models/adminModels/user");
 const Course = require("../../models/adminModels/course");
 const auth = require("../../middleware/authMiddleware");
-const role = require("../../middleware/roleMiddleware");
+const authorizeRoles = require("../../middleware/roleMiddleware");
 const academicHierarchy = require("../../config/academicHierarchy");
 
 const router = express.Router();
@@ -18,7 +18,7 @@ const isValidAcademicSelection = (school, department, program) => {
   return programs.includes(program);
 };
 
-router.get("/academic-options", auth, role("admin"), async (req, res, next) => {
+router.get("/academic-options", auth, authorizeRoles("admin"), async (req, res, next) => {
   return res.json(academicHierarchy);
 });
 
@@ -26,7 +26,7 @@ router.get("/academic-options", auth, role("admin"), async (req, res, next) => {
 router.post(
   "/create-faculty",
   auth,
-  role("admin"),
+  authorizeRoles("admin"),
   async (req, res, next) => {
     try {
       const {
@@ -133,7 +133,7 @@ router.post(
   }
 );
 // ✅ Admin gets all users
-router.get("/users", auth, role("admin"), async (req, res, next) => {
+router.get("/users", auth, authorizeRoles("admin"), async (req, res, next) => {
   const page = Math.max(parseInt(req.query.page, 10) || 1, 1);
   const limit = Math.min(Math.max(parseInt(req.query.limit, 10) || 5, 1), 100);
   const role = req.query.role; // faculty or student
@@ -166,7 +166,7 @@ router.get("/users", auth, role("admin"), async (req, res, next) => {
 
 
 // ❌ DELETE USER (admin only)
-router.delete("/users/:id", auth, role("admin"), async (req, res, next) => {
+router.delete("/users/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
     // prevent admin deleting themselves
     if (req.params.id === req.user.id) {
@@ -182,7 +182,7 @@ router.delete("/users/:id", auth, role("admin"), async (req, res, next) => {
 });
 
 // ✅ Update user information (admin only)
-router.patch("/users/:id", auth, role("admin"), async (req, res, next) => {
+router.patch("/users/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
     const { name, email, school, department, title, employeeId, studentId, program, yearLevel } = req.body;
     const user = await User.findById(req.params.id);
@@ -235,7 +235,7 @@ router.patch("/users/:id", auth, role("admin"), async (req, res, next) => {
 
 //Disable / Enable user (admin only)
 
-router.patch("/users/:id/toggle", auth, role("admin"), async (req, res, next) => {
+router.patch("/users/:id/toggle", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ message: "User not found" });
@@ -250,7 +250,7 @@ router.patch("/users/:id/toggle", auth, role("admin"), async (req, res, next) =>
 });
 
 // ✅ Get all students (for enrollment)
-router.get("/students", auth, role("admin"), async (req, res, next) => {
+router.get("/students", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
     const students = await User.find({ role: "student", isActive: true })
       .select("name email")
@@ -264,7 +264,7 @@ router.get("/students", auth, role("admin"), async (req, res, next) => {
 });
 
 // ✅ Get all courses (for enrollment)
-router.get("/courses", auth, role("admin"), async (req, res, next) => {
+router.get("/courses", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
     const courses = await Course.find({ isActive: true })
       .select("title code credits")

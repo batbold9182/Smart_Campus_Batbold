@@ -1,7 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const auth = require("../middleware/authMiddleware");
-const role = require("../middleware/roleMiddleware");
+const authorizeRoles = require("../middleware/roleMiddleware");
 const User = require("../models/adminModels/user");
 const { cloudinary, hasCloudinaryConfig } = require("../config/cloudinary");
 
@@ -96,12 +96,12 @@ router.patch("/profile/picture", auth, async (req, res, next) => {
   }
 });
 
-router.get("/admin", auth, role("admin"), (req, res) => {
+router.get("/admin", auth, authorizeRoles("admin"), (req, res) => {
   res.json({ message: "Welcome, admin!" });
 }
 );
 
-router.get("/student", auth, role("student"), (req, res) => {
+router.get("/student", auth, authorizeRoles("student"), (req, res) => {
   res.json({ message: "Welcome, student!" });
 }
 );
