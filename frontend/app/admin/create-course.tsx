@@ -44,6 +44,7 @@ export default function AdminCreateCourse() {
   const [faculty, setFaculty] = useState<Faculty[]>([]);
   const [courses, setCourses] = useState<Course[]>([]);
   const [selectedFacultyId, setSelectedFacultyId] = useState<string | null>(null);
+  const [facultySearch, setFacultySearch] = useState("");
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const [loadingFaculty, setLoadingFaculty] = useState(true);
@@ -186,8 +187,20 @@ export default function AdminCreateCourse() {
         {loadingFaculty && (
           <ActivityIndicator size="small" className="mb-2" />
         )}
+        {!loadingFaculty && faculty.length > 0 && (
+          <AppInput
+            placeholder="Search faculty by name or email"
+            value={facultySearch}
+            onChangeText={setFacultySearch}
+            className="mb-2 rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text"
+          />
+        )}
         <FlatList
-          data={faculty}
+          data={faculty.filter((f) => {
+            if (!facultySearch.trim()) return true;
+            const q = facultySearch.trim().toLowerCase();
+            return f.name.toLowerCase().includes(q) || f.email.toLowerCase().includes(q);
+          })}
           keyExtractor={(item) => item._id}
           scrollEnabled={false}
           ListEmptyComponent={

@@ -91,7 +91,7 @@ export default function AdminUsersScreen() {
 
           <View className="mb-3 flex-row items-center justify-between">
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-primary"}`}
+              className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-app-primary"}`}
               disabled={page === 1}
               onPress={() => setPage(page - 1)}
             >
@@ -102,7 +102,7 @@ export default function AdminUsersScreen() {
             </Text>
             <TouchableOpacity
               className={`rounded-lg px-4 py-2 ${
-                page === pagination?.totalPages ? "bg-app-disabled" : "bg-primary"
+                page === pagination?.totalPages ? "bg-app-disabled" : "bg-app-primary"
               }`}
               disabled={page === pagination?.totalPages}
               onPress={() => setPage(page + 1)}
