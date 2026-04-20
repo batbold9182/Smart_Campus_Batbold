@@ -1,4 +1,15 @@
 import api from "../../config/clientAPI";
+
+export const getEnrollments = async (page = 1, limit = 20) => {
+  const res = await api.get("/admin/enrollments", { params: { page, limit } });
+  return res.data;
+};
+
+export const enrollStudent = async (studentId: string, courseId: string) => {
+  const res = await api.post("/admin/enroll", { studentId, courseId });
+  return res.data;
+};
+
 export const unenrollStudent = async (enrollmentId: string) => {
   const res = await api.delete(`/admin/enrollments/${enrollmentId}`);
   return res.data;

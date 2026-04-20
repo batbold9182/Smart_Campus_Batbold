@@ -3,16 +3,21 @@ import logger from "../../utils/logger";
 import {
   View,
   Text,
-  Alert,
   ScrollView,
   TouchableOpacity,
 } from "react-native";
 import Toast from "react-native-toast-message";
-import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SkeletonList } from "../../components/Skeleton";
 import { AppButton, AppCard, AppModal } from "../../components/ui";
+import {
+  enrollStudent,
+  getEnrollments,
+  getUsers,
+  unenrollStudent,
+} from "../../services/adminServices/adminService";
+import { getAllCourses } from "../../services/courseService";
 
 export default function AdminEnrollScreen() {
   const ENROLLMENTS_LIMIT = 20;
@@ -35,19 +40,17 @@ export default function AdminEnrollScreen() {
   const [enrollSuccess, setEnrollSuccess] = useState("");
 
   const loadEnrollments = useCallback(async (page = 1) => {
-    const enrollmentsRes = await api.get("/api/admin/enrollments", {
-      params: { page, limit: ENROLLMENTS_LIMIT },
-    });
+    const data = await getEnrollments(page, ENROLLMENTS_LIMIT);
 
-    if (Array.isArray(enrollmentsRes.data)) {
-      setEnrollments(enrollmentsRes.data);
+    if (Array.isArray(data)) {
+      setEnrollments(data);
       setEnrollmentsPage(1);
       setEnrollmentsTotalPages(1);
       return;
     }
 
-    const items = enrollmentsRes.data?.items || [];
-    const totalPages = Math.max(Number(enrollmentsRes.data?.pagination?.totalPages) || 1, 1);
+    const items = data?.items || [];
+    const totalPages = Math.max(Number(data?.pagination?.totalPages) || 1, 1);
     setEnrollments(items);
     setEnrollmentsPage(page);
     setEnrollmentsTotalPages(totalPages);
@@ -58,11 +61,11 @@ export default function AdminEnrollScreen() {
       setInitialLoading(true);
       setLoadError("");
 
-      const studentsRes = await api.get("/api/admin/students");
-      const coursesRes = await api.get("/api/admin/courses");
+      const studentsData = await getUsers(1, "student", 100);
+      const coursesData = await getAllCourses();
 
-      setStudents(studentsRes.data || []);
-      setCourses(coursesRes.data || []);
+      setStudents(studentsData.users || []);
+      setCourses(Array.isArray(coursesData) ? coursesData : []);
       await loadEnrollments(1);
     } catch (err: any) {
       logger.error("Data loading error:", err);
@@ -95,18 +98,13 @@ export default function AdminEnrollScreen() {
     setEnrollSuccess("");
 
     if (!studentId || !courseId) {
-      const message = "Please select student and course";
-      setEnrollError(message);
-      Alert.alert("Validation", message);
+      setEnrollError("Please select student and course");
       return;
     }
 
     try {
       setLoading(true);
-      await api.post("/api/admin/enroll", {
-        studentId,
-        courseId
-      });
+      await enrollStudent(studentId, courseId);
 
       setEnrollSuccess("Student enrolled successfully");
       Toast.show({ type: "success", text1: "Student enrolled successfully" });
@@ -146,7 +144,7 @@ export default function AdminEnrollScreen() {
 
     try {
       setLoading(true);
-      await api.delete(`/api/admin/enrollments/${enrollmentId}`);
+      await unenrollStudent(enrollmentId);
 
       await loadEnrollments(enrollmentsPage);
       setEnrollSuccess("Student unenrolled successfully");
@@ -258,7 +256,7 @@ export default function AdminEnrollScreen() {
       <View className="flex-1 items-center justify-center bg-app-bg p-5">
         <Text className="mb-4 text-2xl font-bold text-app-text">Enroll Student</Text>
         <Text className="mb-3 text-app-error">{loadError}</Text>
-        <TouchableOpacity className="rounded-lg bg-blue-500 px-4 py-2" onPress={loadData}>
+        <TouchableOpacity className="rounded-lg bg-app-primary px-4 py-2" onPress={loadData}>
           <Text className="font-semibold text-white">Retry</Text>
         </TouchableOpacity>
       </View>
@@ -312,7 +310,7 @@ export default function AdminEnrollScreen() {
             title="Enroll Student"
             onPress={handleEnroll}
             loading={loading}
-            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-app-primary-loading" : "bg-blue-500"}`}
+            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-app-primary-loading" : "bg-app-primary"}`}
             textClassName="font-semibold text-white"
           />
           <View className="h-[10px]" />
@@ -356,7 +354,7 @@ export default function AdminEnrollScreen() {
                   variant="danger"
                   loading={loading}
                   onPress={() => handleUnenroll(enrollment._id)}
-                  className="items-center rounded-lg bg-red-500 px-3 py-2"
+                  className="items-center rounded-lg bg-app-danger px-3 py-2"
                   textClassName="font-semibold text-white"
                 />
               </AppCard>
@@ -365,7 +363,7 @@ export default function AdminEnrollScreen() {
 
           <View className="mb-3 mt-2 flex-row items-center justify-between">
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage <= 1 ? "bg-app-disabled" : "bg-blue-500"}`}
+              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage <= 1 ? "bg-app-disabled" : "bg-app-primary"}`}
               onPress={() => loadEnrollments(enrollmentsPage - 1)}
               disabled={loading || enrollmentsPage <= 1}
             >
@@ -373,7 +371,7 @@ export default function AdminEnrollScreen() {
             </TouchableOpacity>
             <Text className="text-[13px] text-app-text">Page {enrollmentsPage} / {enrollmentsTotalPages}</Text>
             <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage >= enrollmentsTotalPages ? "bg-app-disabled" : "bg-blue-500"}`}
+              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage >= enrollmentsTotalPages ? "bg-app-disabled" : "bg-app-primary"}`}
               onPress={() => loadEnrollments(enrollmentsPage + 1)}
               disabled={loading || enrollmentsPage >= enrollmentsTotalPages}
             >

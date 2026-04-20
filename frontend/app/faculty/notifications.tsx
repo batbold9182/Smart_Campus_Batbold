@@ -1,6 +1,6 @@
 ﻿import { useCallback, useEffect, useState } from "react";
-import api from "../../config/clientAPI";
 import { useRouter } from "expo-router";
+import { getNotifications, markNotificationRead } from "../../services/notificationService";
 import { useFocusEffect } from "@react-navigation/native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { facultyStyles } from "../../styles/facultyStyles";
@@ -20,19 +20,17 @@ export default function NotificationsScreen() {
       setLoading(true);
       setError("");
 
-      const res = await api.get("/api/notifications", {
-        params: { page: nextPage, limit: NOTIFICATIONS_LIMIT },
-      });
+      const data = await getNotifications(nextPage, NOTIFICATIONS_LIMIT);
 
-      if (Array.isArray(res.data)) {
-        setNotifications(res.data);
+      if (Array.isArray(data)) {
+        setNotifications(data);
         setPage(1);
         setTotalPages(1);
         return;
       }
 
-      const items = res.data?.items || [];
-      const pages = Math.max(Number(res.data?.pagination?.totalPages) || 1, 1);
+      const items = data?.items || [];
+      const pages = Math.max(Number(data?.pagination?.totalPages) || 1, 1);
       setNotifications(items);
       setPage(nextPage);
       setTotalPages(pages);
@@ -56,7 +54,7 @@ export default function NotificationsScreen() {
 
   const markAsRead = async (id: string) => {
     try {
-      await api.patch(`/api/notifications/${id}/read`);
+      await markNotificationRead(id);
       setNotifications((prev) =>
         prev.map((item) => (item._id === id ? { ...item, isRead: true } : item))
       );

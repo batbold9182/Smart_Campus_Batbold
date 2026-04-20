@@ -2,9 +2,9 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import api from "../../config/clientAPI";
 import { studentStyles } from "../../styles/studentStyles";
 import NotificationFeed, { type NotificationItem } from "../../components/notificationFeed";
+import { getNotifications, markNotificationRead } from "../../services/notificationService";
 
 const LIMIT = 6;
 
@@ -14,13 +14,13 @@ type NotificationsPage = {
 };
 
 const fetchStudentNotifications = async (page: number): Promise<NotificationsPage> => {
-  const res = await api.get("/api/notifications", { params: { page, limit: LIMIT } });
-  if (Array.isArray(res.data)) {
-    return { items: res.data, totalPages: 1 };
+  const data = await getNotifications(page, LIMIT);
+  if (Array.isArray(data)) {
+    return { items: data, totalPages: 1 };
   }
   return {
-    items: res.data?.items || [],
-    totalPages: Math.max(Number(res.data?.pagination?.totalPages) || 1, 1),
+    items: data?.items || [],
+    totalPages: Math.max(Number(data?.pagination?.totalPages) || 1, 1),
   };
 };
 
@@ -41,7 +41,7 @@ export default function NotificationsScreen() {
 
   const markAsRead = async (id: string) => {
     try {
-      await api.patch(`/api/notifications/${id}/read`);
+      await markNotificationRead(id);
       // Optimistic update in cache
       queryClient.setQueryData(
         ["student-notifications", page],
