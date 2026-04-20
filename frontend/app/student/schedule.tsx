@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import { View, Text, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, FlatList } from "react-native";
 import { getStudentSchedule } from "../../services/scheduleService";
 import { useRouter } from "expo-router";
-import { SafeAreaView } from "react-native-safe-area-context";
+import ScreenLayout from "../../components/ScreenLayout";
 import { SkeletonList } from "../../components/Skeleton";
 import { AppButton } from "../../components/ui";
 
@@ -32,44 +32,39 @@ export default function StudentScheduleScreen() {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
-      <View className="flex-1 px-5 pb-4">
-        <Text className="mb-4 text-[22px] font-bold text-app-text">My Schedule</Text>
+    <ScreenLayout title="My Schedule" backRoute="/student/dashboard">
+      {loading ? (
+        <SkeletonList rows={4} />
+      ) : error ? (
+        <View className="mb-3 rounded-xl bg-app-surface p-4 shadow-card">
+          <Text className="mb-3 text-center text-app-error">{error}</Text>
+          <AppButton onPress={() => loadSchedule()}>Retry</AppButton>
+        </View>
+      ) : schedule.length === 0 ? (
+        <View className="items-center rounded-xl bg-app-surface p-8 shadow-card">
+          <Text className="text-app-base font-semibold text-app-text">No schedule assigned yet</Text>
+          <Text className="mt-1 text-app-sm text-app-muted">Your timetable will appear here once it is set up.</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={schedule}
+          keyExtractor={(item) => item._id}
+          scrollEnabled={false}
+          renderItem={({ item }) => (
+            <View className="mb-3 rounded-xl bg-app-surface p-4 shadow-card border border-app-border-light">
+              <Text className="text-app-base font-bold text-app-text">{item.course?.title || item.course?.name || "Untitled Course"}</Text>
+              <Text className="mt-2 text-app-sm text-app-muted">
+                {item.day} · {item.startTime} – {item.endTime}
+              </Text>
+              <Text className="mt-1 text-app-sm text-app-placeholder">Room {item.room}</Text>
+            </View>
+          )}
+        />
+      )}
 
-        {loading ? (
-          <SkeletonList rows={4} />
-        ) : error ? (
-          <View className="mb-3 rounded-xl bg-app-surface p-4 shadow">
-            <Text className="mb-3 text-center text-red-500">{error}</Text>
-            <AppButton onPress={() => loadSchedule()}>Retry</AppButton>
-          </View>
-        ) : schedule.length === 0 ? (
-          <View className="items-center rounded-xl bg-app-surface p-8 shadow">
-            <Text className="text-[16px] font-semibold text-app-text">No schedule assigned yet</Text>
-            <Text className="mt-1 text-[13px] text-app-muted">Your timetable will appear here once it is set up.</Text>
-          </View>
-        ) : (
-          <FlatList
-            data={schedule}
-            keyExtractor={(item) => item._id}
-            renderItem={({ item }) => (
-              <View className="mb-3 rounded-xl bg-app-surface p-4 shadow">
-                <Text className="text-[16px] font-bold text-app-text">{item.course?.title || item.course?.name || "Untitled Course"}</Text>
-                <Text className="mt-1 text-app-muted">Day: {item.day}</Text>
-                <Text className="text-app-muted">Time: {item.startTime} - {item.endTime}</Text>
-                <Text className="text-app-muted">Room: {item.room}</Text>
-              </View>
-            )}
-          />
-        )}
-
-        <TouchableOpacity
-          className="mt-3 items-center rounded-lg bg-blue-500 p-[14px]"
-          onPress={() => router.push("/student/dashboard")}
-        >
-          <Text className="font-semibold text-white">Back to Dashboard</Text>
-        </TouchableOpacity>
-      </View>
-    </SafeAreaView>
+      <AppButton onPress={() => router.push("/student/dashboard")}>
+        Back to Dashboard
+      </AppButton>
+    </ScreenLayout>
   );
 }

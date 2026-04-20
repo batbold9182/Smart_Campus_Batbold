@@ -133,38 +133,36 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
     <AppModal open={editingUserId !== null} onClose={() => { setErrors({}); onClose(); }} layout="center">
       <ScrollView className="rounded-2xl bg-app-surface p-5">
         <View className="mb-4">
-          <Text className="text-[20px] font-bold text-app-text">Edit User</Text>
-          <Text className="mt-1 text-[13px] text-app-muted">{editingUser?.name}</Text>
+          <Text className="text-app-lg font-bold text-app-text">Edit User</Text>
+          <Text className="mt-1 text-app-sm text-app-muted">{editingUser?.name}</Text>
         </View>
 
-        <View className="mb-4">
-          <Text className="mb-2 text-[12px] font-semibold text-app-text">Name *</Text>
+        <View className="mb-3">
           <AppInput
+            label="Name *"
             value={editForm.name}
-            onChangeText={(text) => setEditForm({ ...editForm, name: text })}
+            onChangeText={(text) => { setEditForm({ ...editForm, name: text }); if (errors.name) setErrors((e) => ({ ...e, name: "" })); }}
             placeholder="Enter name"
-            className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
+            error={errors.name}
           />
-          {errors.name ? <Text className="mt-1 text-[12px] text-red-500">{errors.name}</Text> : null}
         </View>
 
-        <View className="mb-4">
-          <Text className="mb-2 text-[12px] font-semibold text-app-text">Email *</Text>
+        <View className="mb-3">
           <AppInput
+            label="Email *"
             value={editForm.email}
-            onChangeText={(text) => setEditForm({ ...editForm, email: text })}
+            onChangeText={(text) => { setEditForm({ ...editForm, email: text }); if (errors.email) setErrors((e) => ({ ...e, email: "" })); }}
             placeholder="Enter email"
             keyboardType="email-address"
-            className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
+            error={errors.email}
           />
-          {errors.email ? <Text className="mt-1 text-[12px] text-red-500">{errors.email}</Text> : null}
         </View>
 
-        <View className="mb-4">
-          <Text className="mb-2 text-[12px] font-semibold text-app-text">School</Text>
+        <View className="mb-3">
+          <Text className="mb-1 text-app-xs font-semibold text-app-muted">School</Text>
           <TouchableOpacity
             activeOpacity={0.7}
-            className="min-h-[48px] flex-row items-center justify-between rounded-lg border border-app-border bg-app-surface px-3 py-2"
+            className="min-h-[48px] flex-row items-center justify-between rounded-app-md border border-app-input-border bg-app-surface px-3 py-2"
             onPress={() =>
               openPicker("School", schoolOptions, editForm.school, (value) => {
                 setEditForm({ ...editForm, school: value, department: "", program: "" });
@@ -175,18 +173,18 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
             <Text className={editForm.school ? "text-app-text" : "text-app-placeholder"}>
               {editForm.school || "Select school"}
             </Text>
-            <Text className="text-[16px] text-app-muted">▾</Text>
+            <Text className="text-app-base text-app-muted">▾</Text>
           </TouchableOpacity>
         </View>
 
-        <View className="mb-4">
-          <Text className="mb-2 text-[12px] font-semibold text-app-text">Department</Text>
+        <View className="mb-3">
+          <Text className="mb-1 text-app-xs font-semibold text-app-muted">Department</Text>
           <TouchableOpacity
             activeOpacity={editForm.school ? 0.7 : 0.5}
             disabled={!editForm.school}
-            className={`min-h-[48px] flex-row items-center justify-between rounded-lg border px-3 py-2 ${
+            className={`min-h-[48px] flex-row items-center justify-between rounded-app-md border px-3 py-2 ${
               editForm.school
-                ? "border-app-border bg-app-surface"
+                ? "border-app-input-border bg-app-surface"
                 : "border-app-border-light bg-app-bg-subtle"
             }`}
             onPress={() =>
@@ -199,28 +197,26 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
             <Text className={editForm.department ? "text-app-text" : "text-app-placeholder"}>
               {editForm.department || "Select department"}
             </Text>
-            <Text className={`text-[16px] ${editForm.school ? "text-app-muted" : "text-app-border"}`}>▾</Text>
+            <Text className={`text-app-base ${editForm.school ? "text-app-muted" : "text-app-border"}`}>▾</Text>
           </TouchableOpacity>
         </View>
 
         {editingUser?.role === "faculty" && (
           <>
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Title</Text>
+            <View className="mb-3">
               <AppInput
+                label="Title"
                 value={editForm.title}
                 onChangeText={(text) => setEditForm({ ...editForm, title: text })}
                 placeholder="Enter title"
-                className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
               />
             </View>
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Employee ID</Text>
+            <View className="mb-3">
               <AppInput
+                label="Employee ID"
                 value={editForm.employeeId}
                 onChangeText={(text) => setEditForm({ ...editForm, employeeId: text })}
                 placeholder="Enter employee ID"
-                className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
               />
             </View>
           </>
@@ -228,24 +224,23 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
 
         {editingUser?.role === "student" && (
           <>
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Student ID</Text>
+            <View className="mb-3">
               <AppInput
+                label="Student ID"
                 value={editForm.studentId}
                 onChangeText={(text) => setEditForm({ ...editForm, studentId: text })}
                 placeholder="Enter student ID"
-                className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
               />
             </View>
 
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Program</Text>
+            <View className="mb-3">
+              <Text className="mb-1 text-app-xs font-semibold text-app-muted">Program</Text>
               <TouchableOpacity
                 activeOpacity={editForm.school && editForm.department ? 0.7 : 0.5}
                 disabled={!editForm.school || !editForm.department}
-                className={`min-h-[48px] flex-row items-center justify-between rounded-lg border px-3 py-2 ${
+                className={`min-h-[48px] flex-row items-center justify-between rounded-app-md border px-3 py-2 ${
                   editForm.school && editForm.department
-                    ? "border-app-border bg-app-surface"
+                    ? "border-app-input-border bg-app-surface"
                     : "border-app-border-light bg-app-bg-subtle"
                 }`}
                 onPress={() =>
@@ -258,45 +253,40 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
                 <Text className={editForm.program ? "text-app-text" : "text-app-placeholder"}>
                   {editForm.program || "Select program"}
                 </Text>
-                <Text
-                  className={`text-[16px] ${
-                    editForm.school && editForm.department ? "text-app-muted" : "text-app-border"
-                  }`}
-                >
+                <Text className={`text-app-base ${editForm.school && editForm.department ? "text-app-muted" : "text-app-border"}`}>
                   ▾
                 </Text>
               </TouchableOpacity>
             </View>
 
-            <View className="mb-4">
-              <Text className="mb-2 text-[12px] font-semibold text-app-text">Year Level</Text>
+            <View className="mb-3">
               <AppInput
+                label="Year Level"
                 value={editForm.yearLevel}
                 onChangeText={(text) => setEditForm({ ...editForm, yearLevel: text })}
                 placeholder="Enter year level"
                 keyboardType="number-pad"
-                className="rounded-lg border border-app-border bg-app-surface px-3 py-2"
               />
             </View>
           </>
         )}
 
         <View className="mt-6 flex-row gap-3">
-          <AppButton
-            title="Cancel"
-            variant="outline"
-            onPress={() => { setErrors({}); onClose(); }}
-            loading={updating}
-            className="flex-1 items-center rounded-lg bg-app-surface border border-app-border px-4 py-3"
-            textClassName="font-semibold text-app-text"
-          />
-          <AppButton
-            title={updating ? "Saving..." : "Save"}
-            loading={updating}
-            onPress={handleSave}
-            className="flex-1 items-center rounded-lg bg-primary px-4 py-3"
-            textClassName="font-semibold text-white"
-          />
+          <View className="flex-1">
+            <AppButton
+              title="Cancel"
+              variant="outline"
+              onPress={() => { setErrors({}); onClose(); }}
+              loading={updating}
+            />
+          </View>
+          <View className="flex-1">
+            <AppButton
+              title="Save"
+              loading={updating}
+              onPress={handleSave}
+            />
+          </View>
         </View>
       </ScrollView>
 
@@ -305,9 +295,9 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
           <TouchableOpacity className="absolute inset-0" activeOpacity={1} onPress={closePicker} />
           <View className="max-h-[60%] rounded-t-3xl bg-app-surface p-5">
             <View className="mb-4 flex-row items-center justify-between">
-              <Text className="text-[18px] font-bold text-app-text">{pickerState.title}</Text>
+              <Text className="text-app-md font-bold text-app-text">{pickerState.title}</Text>
               <TouchableOpacity onPress={closePicker}>
-                <Text className="text-[24px] text-app-muted">X</Text>
+                <Text className="text-app-xl text-app-muted">✕</Text>
               </TouchableOpacity>
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -323,7 +313,7 @@ export default function EditUserModal({ editingUserId, editingUser, onClose, onS
                   }}
                 >
                   <Text
-                    className={`text-[16px] ${
+                    className={`text-app-base ${
                       pickerState.selectedValue === option
                         ? "font-bold text-app-primary"
                         : "text-app-text"

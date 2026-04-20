@@ -268,15 +268,15 @@ export default function AdminEnrollScreen() {
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6">
         <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
-        <Text className="text-[24px] font-bold text-app-text">Enroll Student</Text>
-        <Text className="mb-5 mt-1 text-[13px] text-app-muted">
+        <Text className="text-app-xl font-bold text-app-text">Enroll Student</Text>
+        <Text className="mb-5 mt-1 text-app-sm text-app-muted">
           Assign students to courses and manage active enrollments.
         </Text>
 
       {!!enrollError && <Text className="mb-3 text-app-error">{enrollError}</Text>}
       {!!enrollSuccess && <Text className="mb-3 text-app-success">{enrollSuccess}</Text>}
 
-      <Text className="mb-2 text-[14px] font-semibold text-app-text">Select Student</Text>
+      <Text className="mb-2 text-app-sm font-semibold text-app-text">Select Student</Text>
       <TouchableOpacity
         className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
           !loading && students.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
@@ -285,10 +285,10 @@ export default function AdminEnrollScreen() {
         disabled={loading || students.length === 0}
       >
         <Text className={studentId ? "text-app-text" : "text-app-muted"}>{selectedStudentLabel}</Text>
-        <Text className="text-[18px] text-app-muted">▾</Text>
+        <Text className="text-app-md text-app-muted">▾</Text>
       </TouchableOpacity>
 
-      <Text className="mb-2 text-[14px] font-semibold text-app-text">Select Course</Text>
+      <Text className="mb-2 text-app-sm font-semibold text-app-text">Select Course</Text>
       <TouchableOpacity
         className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
           !loading && courses.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
@@ -297,39 +297,28 @@ export default function AdminEnrollScreen() {
         disabled={loading || courses.length === 0}
       >
         <Text className={courseId ? "text-app-text" : "text-app-muted"}>{selectedCourseLabel}</Text>
-        <Text className="text-[18px] text-app-muted">▾</Text>
+        <Text className="text-app-md text-app-muted">▾</Text>
       </TouchableOpacity>
 
-      {loading ? (
-        <View className="items-center py-4">
-          <Text className="text-app-muted">Processing...</Text>
-        </View>
-      ) : (
-        <>
+      {!loading && (
+        <View className="gap-3">
           <AppButton
             title="Enroll Student"
             onPress={handleEnroll}
             loading={loading}
-            className={`items-center rounded-xl px-4 py-3 ${students.length === 0 || courses.length === 0 ? "bg-app-primary-loading" : "bg-app-primary"}`}
-            textClassName="font-semibold text-white"
           />
-          <View className="h-[10px]" />
           <AppButton
             title={showEnrollments ? "Hide Enrollments List" : "Show Enrollments List"}
             variant="outline"
-            onPress={() => {
-              setShowEnrollments((prev) => !prev);
-            }}
-            className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
-            textClassName="font-semibold text-app-text"
+            onPress={() => setShowEnrollments((prev) => !prev)}
           />
-        </>
+        </View>
       )}
 
       {showEnrollments && (
         <>
-          <Text className="mb-2 mt-6 text-[20px] font-bold text-app-text">Enrollments List</Text>
-          <Text className="mb-2 text-[14px] font-semibold text-app-text">View by Course</Text>
+          <Text className="mb-2 mt-6 text-app-lg font-bold text-app-text">Enrollments List</Text>
+          <Text className="mb-2 text-app-sm font-semibold text-app-text">View by Course</Text>
           <TouchableOpacity
             className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
               courses.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
@@ -338,7 +327,7 @@ export default function AdminEnrollScreen() {
             disabled={courses.length === 0}
           >
             <Text className={viewCourseId ? "text-app-text" : "text-app-muted"}>{selectedFilterCourseLabel}</Text>
-            <Text className="text-[18px] text-app-muted">▾</Text>
+            <Text className="text-app-md text-app-muted">▾</Text>
           </TouchableOpacity>
 
           {filteredEnrollments.length === 0 ? (
@@ -346,56 +335,52 @@ export default function AdminEnrollScreen() {
           ) : (
             filteredEnrollments.map((enrollment) => (
               <AppCard key={enrollment._id} variant="bordered" className="mb-3 gap-2 rounded-xl border border-app-border bg-app-surface p-[10px]">
-                <Text className="text-[14px]">
+                <Text className="text-app-sm">
                   {enrollment.student?.name || "Unknown Student"} → {enrollment.course?.title || "Unknown Course"}
                 </Text>
                 <AppButton
                   title="Unenroll"
+                  size="sm"
                   variant="danger"
                   loading={loading}
                   onPress={() => handleUnenroll(enrollment._id)}
-                  className="items-center rounded-lg bg-app-danger px-3 py-2"
-                  textClassName="font-semibold text-white"
                 />
               </AppCard>
             ))
           )}
 
-          <View className="mb-3 mt-2 flex-row items-center justify-between">
-            <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage <= 1 ? "bg-app-disabled" : "bg-app-primary"}`}
-              onPress={() => loadEnrollments(enrollmentsPage - 1)}
+          <View className="mb-3 mt-2 flex-row items-center justify-between gap-3">
+            <AppButton
+              title="Previous"
+              size="sm"
+              variant={loading || enrollmentsPage <= 1 ? "outline" : "primary"}
               disabled={loading || enrollmentsPage <= 1}
-            >
-              <Text className="font-semibold text-white">Previous</Text>
-            </TouchableOpacity>
-            <Text className="text-[13px] text-app-text">Page {enrollmentsPage} / {enrollmentsTotalPages}</Text>
-            <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${loading || enrollmentsPage >= enrollmentsTotalPages ? "bg-app-disabled" : "bg-app-primary"}`}
-              onPress={() => loadEnrollments(enrollmentsPage + 1)}
+              onPress={() => loadEnrollments(enrollmentsPage - 1)}
+            />
+            <Text className="text-app-sm text-app-text">Page {enrollmentsPage} / {enrollmentsTotalPages}</Text>
+            <AppButton
+              title="Next"
+              size="sm"
+              variant={loading || enrollmentsPage >= enrollmentsTotalPages ? "outline" : "primary"}
               disabled={loading || enrollmentsPage >= enrollmentsTotalPages}
-            >
-              <Text className="font-semibold text-white">Next</Text>
-            </TouchableOpacity>
+              onPress={() => loadEnrollments(enrollmentsPage + 1)}
+            />
           </View>
         </>
       )}
 
       <AppButton
         title="Back to Dashboard"
-        variant="outline"
         onPress={() => router.push("/admin/dashboard")}
-        className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
-        textClassName="font-semibold text-app-text"
       />
       </AppCard>
     </ScrollView>
 
     <AppModal open={activeSelector !== null} onClose={() => setActiveSelector(null)} layout="bottom">
       <View className="mb-2 flex-row items-center justify-between">
-        <Text className="text-[17px] font-bold text-app-text">{selectorTitle}</Text>
+        <Text className="text-app-md font-bold text-app-text">{selectorTitle}</Text>
         <TouchableOpacity onPress={() => setActiveSelector(null)}>
-          <Text className="text-[14px] font-semibold text-app-primary">{selectorCloseLabel}</Text>
+          <Text className="text-app-sm font-semibold text-app-primary">{selectorCloseLabel}</Text>
         </TouchableOpacity>
       </View>
       <ScrollView showsVerticalScrollIndicator={false}>

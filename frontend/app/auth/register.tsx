@@ -100,76 +100,62 @@ export default function RegisterScreen() {
           showsVerticalScrollIndicator={false}
         >
           <AppCard className="bg-app-surface rounded-[18px] p-5 elevation-4">
-            <Text className="text-[28px] font-bold text-app-text text-center">Create Account</Text>
+            <Text className="text-app-2xl font-bold text-app-text text-center">Create Account</Text>
             <Text className="mt-1 mb-[18px] text-app-muted text-center">Register to access Vizja Smart Campus</Text>
 
-            <AppInput
-              placeholder="Full name"
-              value={name}
-              onChangeText={(value) => {
-                setName(value);
-                if (message) {
-                  setMessage("");
-                }
-              }}
-              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-              autoCapitalize="words"
-              autoCorrect={false}
-              maxLength={100}
-            />
+            <View className="mb-3">
+              <AppInput
+                label="Full Name"
+                placeholder="Enter your full name"
+                value={name}
+                onChangeText={(value) => { setName(value); if (message) setMessage(""); }}
+                autoCapitalize="words"
+                autoCorrect={false}
+                maxLength={100}
+              />
+            </View>
 
-            <AppInput
-              placeholder="Email"
-              value={email}
-              onChangeText={(value) => {
-                setEmail(value);
-                if (message) {
-                  setMessage("");
-                }
-              }}
-              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoCorrect={false}
-              maxLength={255}
-            />
+            <View className="mb-3">
+              <AppInput
+                label="Email"
+                placeholder="Enter your email"
+                value={email}
+                onChangeText={(value) => { setEmail(value); if (message) setMessage(""); }}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoCorrect={false}
+                maxLength={255}
+              />
+            </View>
 
-            <AppInput
-              placeholder="Password"
-              value={password}
-              onChangeText={(value) => {
-                setPassword(value);
-                if (message) {
-                  setMessage("");
-                }
-              }}
-              secureTextEntry
-              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-              autoCorrect={false}
-              maxLength={128}
-            />
+            <View className="mb-3">
+              <AppInput
+                label="Password"
+                placeholder="Min. 9 chars, upper, number, symbol"
+                value={password}
+                onChangeText={(value) => { setPassword(value); if (message) setMessage(""); }}
+                secureTextEntry
+                autoCorrect={false}
+                maxLength={128}
+              />
+            </View>
 
-            <AppInput
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChangeText={(value) => {
-                setConfirmPassword(value);
-                if (message) {
-                  setMessage("");
-                }
-              }}
-              secureTextEntry
-              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-              autoCorrect={false}
-              maxLength={128}
-            />
+            <View className="mb-4">
+              <AppInput
+                label="Confirm Password"
+                placeholder="Re-enter your password"
+                value={confirmPassword}
+                onChangeText={(value) => { setConfirmPassword(value); if (message) setMessage(""); }}
+                secureTextEntry
+                autoCorrect={false}
+                maxLength={128}
+              />
+            </View>
 
             <AppButton
               title="Register"
               loading={isLoading}
               onPress={handleRegister}
-              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
-              textClassName="text-white text-[16px] font-bold"
             />
 
             {message ? <Text className="mt-[14px] text-center text-app-error">{message}</Text> : null}
@@ -179,8 +165,6 @@ export default function RegisterScreen() {
               variant="ghost"
               onPress={() => router.replace("/auth/login")}
               disabled={isLoading}
-              className="mt-[10px] items-center justify-center min-h-[42px]"
-              textClassName="text-blue-600 text-[14px] font-semibold"
             />
           </AppCard>
         </ScrollView>
@@ -188,5 +172,3 @@ export default function RegisterScreen() {
     </SafeAreaView>
   );
 }
-
-

@@ -16,6 +16,7 @@ import { StatusBar } from "expo-status-bar";
 import { getDashboardStyles } from "../styles/dashboardStyles";
 import { useTheme } from "../contexts/ThemeContext";
 import { haptic } from "../utils/haptics";
+import { gradients, palette } from "../styles/tokens";
 import type { AppUserProfile } from "../services/userService";
 
 export type QuickAction = {
@@ -58,8 +59,8 @@ export default function DashboardTemplate({
   const { width } = useWindowDimensions();
   const insets = useSafeAreaInsets();
   const router = useRouter();
-  const { isDark, toggleTheme } = useTheme();
-  const s = getDashboardStyles(useTheme().t, width, isDark);
+  const { isDark, toggleTheme, t } = useTheme();
+  const s = getDashboardStyles(t, width, isDark);
 
   const getScheduleStatus = useCallback((startTime: string, endTime: string) => {
     const now = new Date();
@@ -86,7 +87,7 @@ export default function DashboardTemplate({
       >
         {/* Header gradient */}
         <LinearGradient
-          colors={["#6b21a8", "#a21caf", "#db2777"]}
+          colors={gradients.brand}
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 0 }}
           style={[s.headerGradient, { paddingTop: insets.top + 4 }]}
@@ -113,7 +114,7 @@ export default function DashboardTemplate({
                     <Image source={{ uri: profileUri }} style={s.profileAvatarImage} />
                   ) : (
                     <View style={s.profileAvatarFallback}>
-                      <Ionicons name="person" size={24} color="#a78bfa" />
+                      <Ionicons name="person" size={24} color={t.accentBar} />
                     </View>
                   )}
                 </View>
@@ -130,7 +131,7 @@ export default function DashboardTemplate({
                 <Ionicons
                   name={isDark ? "sunny" : "moon"}
                   size={20}
-                  color={isDark ? "#facc15" : "#6b21a8"}
+                  color={isDark ? t.warningIcon : t.accentBar}
                 />
               </TouchableOpacity>
               <TouchableOpacity
@@ -139,7 +140,7 @@ export default function DashboardTemplate({
                 accessibilityLabel={unreadCount > 0 ? `Notifications, ${unreadCount} unread` : "Notifications"}
               >
                 <View>
-                  <Ionicons name="notifications" size={26} color="#facc15" />
+                  <Ionicons name="notifications" size={26} color={t.warningIcon} />
                   {unreadCount > 0 && (
                     <View style={s.badge} importantForAccessibility="no">
                       <Text style={s.badgeText}>{unreadCount}</Text>
@@ -153,21 +154,21 @@ export default function DashboardTemplate({
           {/* Stats row */}
           <View style={s.statsRow}>
             <View style={s.statsCard}>
-              <View style={s.statsIconWrap("#2563eb")}>
-                <Ionicons name="calendar" size={16} color="#fff" />
+              <View style={s.statsIconWrap(palette.blue600)}>
+                <Ionicons name="calendar" size={16} color={palette.white} />
               </View>
               <Text style={s.statsValue}>{todaySchedule.length}</Text>
               <Text style={s.statsLabel}>Today Classes</Text>
             </View>
             <View style={s.statsCard}>
-              <View style={s.statsIconWrap("#eab308")}>
-                <Ionicons name="notifications" size={16} color="#fff" />
+              <View style={s.statsIconWrap(palette.yellow400)}>
+                <Ionicons name="notifications" size={16} color={palette.white} />
               </View>
               <Text style={s.statsValue}>{unreadCount}</Text>
               <Text style={s.statsLabel}>Unread Alerts</Text>
             </View>
             <View style={s.statsCardGreen}>
-              <View style={s.statsIconWrap("#22c55e")}>{roleIcon}</View>
+              <View style={s.statsIconWrap(palette.green500)}>{roleIcon}</View>
               <Text style={s.statsValue}>{roleLabel}</Text>
               <Text style={s.statsLabel}>Your Role</Text>
             </View>
@@ -273,7 +274,7 @@ export default function DashboardTemplate({
 
           {/* Logout */}
           <LinearGradient
-            colors={["#e11d48", "#db2777"]}
+            colors={gradients.danger}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 0 }}
             style={s.logoutGradient}
@@ -288,7 +289,7 @@ export default function DashboardTemplate({
               <Ionicons
                 name="log-out-outline"
                 size={20}
-                color="#fff"
+                color={palette.white}
                 style={{ marginRight: 8 }}
               />
               <Text style={s.logoutText}>Logout</Text>

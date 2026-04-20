@@ -3,7 +3,6 @@ import { Alert } from "react-native";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { adminStyles } from "../../styles/adminStyles";
 import { type NotificationItem } from "../../components/notificationFeed";
 import NotificationFeed from "../../components/notificationFeed";
 import NotificationForm, {
@@ -210,7 +209,7 @@ export default function NotificationsScreen() {
         error={error}
         page={page}
         totalPages={totalPages}
-        styles={adminStyles}
+
         onRetry={() => queryClient.invalidateQueries({ queryKey: ["admin-notifications", page] })}
         onMarkAsRead={markAsRead}
         onPrevious={() => setPage((p) => p - 1)}
@@ -237,7 +236,7 @@ export default function NotificationsScreen() {
                 setRecipientModalOpen(true);
               }
             }}
-            styles={adminStyles}
+
           />
         }
       />

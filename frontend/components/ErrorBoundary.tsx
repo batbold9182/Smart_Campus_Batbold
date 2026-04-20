@@ -25,12 +25,12 @@ export class ErrorBoundary extends React.Component<Props, State> {
     if (this.state.hasError) {
       return (
         <View className="flex-1 items-center justify-center bg-app-bg px-8">
-          <Text className="mb-2 text-[22px] font-bold text-app-text">Something went wrong</Text>
+          <Text className="mb-2 text-app-xl font-bold text-app-text">Something went wrong</Text>
           <Text className="mb-6 text-center text-app-muted">
             An unexpected error occurred. Please reload the app.
           </Text>
           <TouchableOpacity
-            className="rounded-xl bg-blue-600 px-6 py-3"
+            className="rounded-xl bg-app-primary px-6 py-3"
             onPress={this.handleReload}
           >
             <Text className="font-semibold text-white">Reload</Text>

@@ -32,7 +32,6 @@ const initialSelectState: SelectState = {
 };
 
 export default function CreateUserScreen() {
-  const inputClassName = "mb-3 rounded-xl border border-app-placeholder bg-app-surface px-3 py-3 text-[16px] text-app-text";
   const [selectedRole, setSelectedRole] = useState<"faculty" | "student">("faculty");
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -176,7 +175,7 @@ export default function CreateUserScreen() {
     disabled?: boolean;
   }) => (
     <View className="mb-3">
-      <Text className="mb-1 text-[13px] font-semibold text-app-text-secondary">{label}</Text>
+      <Text className="mb-1 text-app-sm font-semibold text-app-text-secondary">{label}</Text>
       <TouchableOpacity
         className={`min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
           disabled
@@ -189,7 +188,7 @@ export default function CreateUserScreen() {
         <Text className={value ? "text-app-text" : "text-app-placeholder"}>
           {value || placeholder}
         </Text>
-        <Text className="text-[18px] text-app-muted">▾</Text>
+        <Text className="text-app-md text-app-muted">▾</Text>
       </TouchableOpacity>
     </View>
   );
@@ -207,8 +206,8 @@ export default function CreateUserScreen() {
           showsVerticalScrollIndicator={false}
         >
           <View className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
-            <Text className="text-[26px] font-bold text-app-text">Create User</Text>
-            <Text className="mb-4 mt-1 text-[13px] text-app-text-subtle">
+            <Text className="text-app-xl font-bold text-app-text">Create User</Text>
+            <Text className="mb-4 mt-1 text-app-sm text-app-text-subtle">
               Add faculty or student accounts from one form.
             </Text>
 
@@ -241,24 +240,26 @@ export default function CreateUserScreen() {
               </TouchableOpacity>
             </View>
 
-            <Text className="text-app-muted text-[11px] mb-3">* Required fields</Text>
+            <Text className="text-app-muted text-app-xs mb-3">* Required fields</Text>
 
-            <Text className="text-app-text text-[13px] mb-1">Full Name *</Text>
-            <AppInput
-              placeholder="Full Name"
-              value={name}
-              onChangeText={setName}
-              className={inputClassName}
-            />
-            <Text className="text-app-text text-[13px] mb-1">Email *</Text>
-            <AppInput
-              placeholder="Email"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-              className={inputClassName}
-            />
+            <View className="mb-3">
+              <AppInput
+                label="Full Name *"
+                placeholder="Enter full name"
+                value={name}
+                onChangeText={setName}
+              />
+            </View>
+            <View className="mb-3">
+              <AppInput
+                label="Email *"
+                placeholder="Enter email address"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
 
             <SelectField
               label="School / Faculty *"
@@ -289,20 +290,22 @@ export default function CreateUserScreen() {
 
             {selectedRole === "faculty" ? (
               <>
-                <Text className="text-app-text text-[13px] mb-1">Title *</Text>
-                <AppInput
-                  placeholder="Title (e.g. Instructor)"
-                  value={facultyTitle}
-                  onChangeText={setFacultyTitle}
-                  className={inputClassName}
-                />
-                <Text className="text-app-text text-[13px] mb-1">Employee ID *</Text>
-                <AppInput
-                  placeholder="Employee ID"
-                  value={employeeId}
-                  onChangeText={setEmployeeId}
-                  className={inputClassName}
-                />
+                <View className="mb-3">
+                  <AppInput
+                    label="Title *"
+                    placeholder="e.g. Instructor, Professor"
+                    value={facultyTitle}
+                    onChangeText={setFacultyTitle}
+                  />
+                </View>
+                <View className="mb-3">
+                  <AppInput
+                    label="Employee ID *"
+                    placeholder="Enter employee ID"
+                    value={employeeId}
+                    onChangeText={setEmployeeId}
+                  />
+                </View>
               </>
             ) : (
               <>
@@ -315,51 +318,50 @@ export default function CreateUserScreen() {
                   }
                   disabled={programOptions.length === 0}
                 />
-                <Text className="text-app-text text-[13px] mb-1">Year Level *</Text>
-                <AppInput
-                  placeholder="Year Level (e.g. 2)"
-                  value={yearLevel}
-                  onChangeText={setYearLevel}
-                  keyboardType="number-pad"
-                  className={inputClassName}
-                />
-                <Text className="text-app-text text-[13px] mb-1">Student ID *</Text>
-                <AppInput
-                  placeholder="Student ID"
-                  value={studentId}
-                  onChangeText={setStudentId}
-                  className={inputClassName}
-                />
+                <View className="mb-3">
+                  <AppInput
+                    label="Year Level *"
+                    placeholder="e.g. 2"
+                    value={yearLevel}
+                    onChangeText={setYearLevel}
+                    keyboardType="number-pad"
+                  />
+                </View>
+                <View className="mb-3">
+                  <AppInput
+                    label="Student ID *"
+                    placeholder="Enter student ID"
+                    value={studentId}
+                    onChangeText={setStudentId}
+                  />
+                </View>
               </>
             )}
 
-            <Text className="text-app-text text-[13px] mb-1">Password *</Text>
-            <AppInput
-              placeholder="Password"
-              value={password}
-              onChangeText={setPassword}
-              secureTextEntry
-              className={`${inputClassName} mb-4`}
-            />
+            <View className="mb-4">
+              <AppInput
+                label="Password *"
+                placeholder="Enter password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+              />
+            </View>
 
             {message ? (
-              <Text className="mb-3 text-center text-[13px] text-app-text-subtle">{message}</Text>
+              <Text className="mb-3 text-center text-app-sm text-app-text-subtle">{message}</Text>
             ) : null}
 
             <AppButton
               title={submitLabel}
               loading={isSubmitting}
               onPress={handleCreate}
-              className="mb-2 items-center rounded-xl bg-app-primary px-4 py-3"
-              textClassName="text-[15px] font-semibold text-white"
             />
 
             <AppButton
               title="Back to Dashboard"
               variant="outline"
               onPress={() => router.push("/admin/dashboard")}
-              className="items-center rounded-xl border border-app-disabled bg-app-surface px-4 py-3"
-              textClassName="text-[15px] font-semibold text-app-text"
             />
           </View>
         </ScrollView>
@@ -367,9 +369,9 @@ export default function CreateUserScreen() {
 
       <AppModal open={selectState.visible} onClose={closePicker} layout="bottom">
         <View className="mb-2 flex-row items-center justify-between">
-          <Text className="text-[17px] font-bold text-app-text">{selectState.title}</Text>
+          <Text className="text-app-md font-bold text-app-text">{selectState.title}</Text>
           <TouchableOpacity onPress={closePicker}>
-            <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
+            <Text className="text-app-sm font-semibold text-app-primary">Done</Text>
           </TouchableOpacity>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>

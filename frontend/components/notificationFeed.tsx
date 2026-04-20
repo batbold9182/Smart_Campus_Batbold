@@ -6,27 +6,15 @@ import {
   TouchableOpacity,
   ScrollView,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { SkeletonList } from "./Skeleton";
+import { AppButton } from "./ui";
 
 export type NotificationItem = {
   _id: string;
   title: string;
   message: string;
   isRead: boolean;
-};
-
-type NotificationFeedStyles = {
-  loadingScreen: string;
-  title: string;
-  errorText: string;
-  muted: string;
-  notificationCardRead: string;
-  notificationCardUnread: string;
-  paginationButtonEnabled: string;
-  paginationButtonDisabled: string;
-  paginationMeta: string;
-  buttonPrimary: string;
-  buttonPrimaryText: string;
 };
 
 type NotificationFeedProps = {
@@ -36,7 +24,6 @@ type NotificationFeedProps = {
   error: string;
   page: number;
   totalPages: number;
-  styles: NotificationFeedStyles;
   onRetry: () => void;
   onMarkAsRead: (id: string) => void;
   onPrevious: () => void;
@@ -53,7 +40,6 @@ export default function NotificationFeed({
   error,
   page,
   totalPages,
-  styles,
   onRetry,
   onMarkAsRead,
   onPrevious,
@@ -62,10 +48,12 @@ export default function NotificationFeed({
   topContent,
   backLabel = "Back to Dashboard",
 }: NotificationFeedProps) {
+  const insets = useSafeAreaInsets();
+
   if (loading) {
     return (
-      <View className={styles.loadingScreen}>
-        <Text className={`mb-3 ${styles.title}`}>{title}</Text>
+      <View className="flex-1 bg-app-bg p-5" style={{ paddingTop: insets.top + 20 }}>
+        <Text className="mb-3 text-app-xl font-bold text-app-text">{title}</Text>
         <SkeletonList rows={4} />
       </View>
     );
@@ -73,58 +61,65 @@ export default function NotificationFeed({
 
   if (error) {
     return (
-      <View className={styles.loadingScreen}>
-        <Text className={`mb-3 ${styles.title}`}>{title}</Text>
-        <Text className={styles.errorText}>{error}</Text>
-        <TouchableOpacity className={styles.paginationButtonEnabled} onPress={onRetry}>
-          <Text className={styles.buttonPrimaryText}>Retry</Text>
-        </TouchableOpacity>
+      <View className="flex-1 bg-app-bg p-5" style={{ paddingTop: insets.top + 20 }}>
+        <Text className="mb-3 text-app-xl font-bold text-app-text">{title}</Text>
+        <Text className="mb-4 text-app-sm text-app-error">{error}</Text>
+        <AppButton title="Retry" onPress={onRetry} />
       </View>
     );
   }
 
   return (
-    <ScrollView className="flex-1 bg-app-bg" contentContainerClassName="p-5 pb-6">
+    <ScrollView
+      className="flex-1 bg-app-bg"
+      contentContainerStyle={{ padding: 20, paddingTop: insets.top + 20, paddingBottom: insets.bottom + 24 }}
+    >
       {topContent}
 
       <FlatList
         data={notifications}
         keyExtractor={(item) => item._id}
         scrollEnabled={false}
-        ListEmptyComponent={<Text className={`mt-5 text-center ${styles.muted}`}>No notifications found</Text>}
+        ListEmptyComponent={
+          <Text className="mt-5 text-center text-app-sm text-app-muted">No notifications found</Text>
+        }
         renderItem={({ item }) => (
           <TouchableOpacity
             onPress={() => onMarkAsRead(item._id)}
-            className={item.isRead ? styles.notificationCardRead : styles.notificationCardUnread}
+            className={`mb-2 rounded-xl border p-4 ${item.isRead ? "border-app-border-light bg-app-bg" : "border-app-primary bg-app-primary-bg"}`}
           >
-            <Text className="mb-[6px] text-[16px] font-bold text-app-text">{item.title}</Text>
-            <Text className="mb-2 text-[14px] text-app-text">{item.message}</Text>
-            <Text className={`text-[12px] ${styles.muted}`}>{item.isRead ? "Read" : "Tap to mark as read"}</Text>
+            <Text className="mb-[6px] text-app-base font-bold text-app-text">{item.title}</Text>
+            <Text className="mb-2 text-app-sm text-app-text">{item.message}</Text>
+            <Text className={`text-app-xs ${item.isRead ? "text-app-muted" : "text-app-primary"}`}>
+              {item.isRead ? "Read" : "Tap to mark as read"}
+            </Text>
           </TouchableOpacity>
         )}
       />
 
-      <View className="mb-3 mt-2 flex-row items-center justify-between">
-        <TouchableOpacity
-          className={loading || page <= 1 ? styles.paginationButtonDisabled : styles.paginationButtonEnabled}
-          onPress={onPrevious}
-          disabled={loading || page <= 1}
-        >
-          <Text className={styles.buttonPrimaryText}>Previous</Text>
-        </TouchableOpacity>
-        <Text className={styles.paginationMeta}>Page {page} / {totalPages}</Text>
-        <TouchableOpacity
-          className={loading || page >= totalPages ? styles.paginationButtonDisabled : styles.paginationButtonEnabled}
-          onPress={onNext}
-          disabled={loading || page >= totalPages}
-        >
-          <Text className={styles.buttonPrimaryText}>Next</Text>
-        </TouchableOpacity>
+      <View className="mb-3 mt-2 flex-row items-center justify-between gap-3">
+        <View className="flex-1">
+          <AppButton
+            title="Previous"
+            variant="outline"
+            size="sm"
+            disabled={page <= 1}
+            onPress={onPrevious}
+          />
+        </View>
+        <Text className="text-app-sm text-app-muted">Page {page} / {totalPages}</Text>
+        <View className="flex-1">
+          <AppButton
+            title="Next"
+            variant="outline"
+            size="sm"
+            disabled={page >= totalPages}
+            onPress={onNext}
+          />
+        </View>
       </View>
 
-      <TouchableOpacity className={styles.buttonPrimary} onPress={onBack}>
-        <Text className={styles.buttonPrimaryText}>{backLabel}</Text>
-      </TouchableOpacity>
+      <AppButton title={backLabel} variant="outline" onPress={onBack} />
     </ScrollView>
   );
 }

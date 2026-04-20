@@ -30,27 +30,28 @@ export default function RecipientPickerModal({
   return (
     <AppModal open={open} onClose={onClose} layout="bottom">
       <View className="mb-2 flex-row items-center justify-between">
-        <Text className="text-[17px] font-bold text-app-text">Select Recipient</Text>
+        <Text className="text-app-md font-bold text-app-text">Select Recipient</Text>
         <TouchableOpacity onPress={onClose}>
-          <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
+          <Text className="text-app-sm font-semibold text-app-primary">Done</Text>
         </TouchableOpacity>
       </View>
 
-      <AppInput
-        value={recipientSearch}
-        onChangeText={setRecipientSearch}
-        placeholder="Search by name, email, ID"
-        className="mb-3 rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[15px] text-app-text"
-      />
+      <View className="mb-3">
+        <AppInput
+          value={recipientSearch}
+          onChangeText={setRecipientSearch}
+          placeholder="Search by name, email, ID"
+        />
+      </View>
 
-      <Text className="mb-3 text-[12px] text-app-muted">
+      <Text className="mb-3 text-app-xs text-app-muted">
         {filteredOptions.length} result{filteredOptions.length === 1 ? "" : "s"}
       </Text>
 
       <ScrollView showsVerticalScrollIndicator={false}>
         {filteredOptions.length === 0 ? (
           <View className="rounded-xl border border-dashed border-app-border bg-app-surface px-4 py-5">
-            <Text className="text-center text-[14px] text-app-muted">No recipients match your search.</Text>
+            <Text className="text-center text-app-sm text-app-muted">No recipients match your search.</Text>
           </View>
         ) : (
           filteredOptions.map((recipient) => {
@@ -66,11 +67,11 @@ export default function RecipientPickerModal({
                 <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>
                   {recipient.name}
                 </Text>
-                <Text className={`mt-1 text-[13px] ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
+                <Text className={`mt-1 text-app-sm ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
                   {recipient.email}
                 </Text>
                 {recipient.identifier ? (
-                  <Text className={`mt-1 text-[12px] ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
+                  <Text className={`mt-1 text-app-xs ${active ? "text-app-primary-dark" : "text-app-text-subtle"}`}>
                     ID: {recipient.identifier}
                   </Text>
                 ) : null}

@@ -61,7 +61,7 @@ export default function StudentAssignments() {
 
           {!data?.items.length ? (
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-              <Text className="mb-2 text-[16px] font-semibold text-app-text">No Assignments Yet</Text>
+              <Text className="mb-2 text-app-base font-semibold text-app-text">No Assignments Yet</Text>
               <Text className="text-app-muted">
                 Assignments from your enrolled courses will appear here once faculty publish them.
               </Text>
@@ -69,7 +69,7 @@ export default function StudentAssignments() {
           ) : (
             data.items.map((item) => (
               <View key={item.course.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-                <Text className="text-[16px] font-semibold text-app-text">{item.course.title}</Text>
+                <Text className="text-app-base font-semibold text-app-text">{item.course.title}</Text>
                 <Text className="mt-1 text-app-muted">
                   {item.course.code} · {item.course.credits} credits
                 </Text>

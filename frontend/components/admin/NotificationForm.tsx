@@ -32,7 +32,6 @@ type Props = {
   loadingRecipients: boolean;
   recipientOptions: RecipientOption[];
   onOpenRecipientSelector: () => void;
-  styles: any;
 };
 
 export default function NotificationForm({
@@ -49,37 +48,41 @@ export default function NotificationForm({
   loadingRecipients,
   recipientOptions,
   onOpenRecipientSelector,
-  styles,
 }: Props) {
   const selectedAudienceMeta = audienceOptions.find((o) => o.value === audience);
 
   return (
     <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
       <Text className="text-2xl font-bold text-app-text">Notifications</Text>
-      <Text className="mb-5 mt-1 text-[13px] text-app-muted">
+      <Text className="mb-5 mt-1 text-app-sm text-app-muted">
         Send announcements to all users or target a single faculty member or student by ID.
       </Text>
 
       <View className="mb-[14px] rounded-lg border border-app-border bg-app-bg p-3">
-        <Text className="mb-[10px] text-[16px] font-bold text-app-text">Send Notification</Text>
+        <Text className="mb-[10px] text-app-base font-bold text-app-text">Send Notification</Text>
 
-        <AppInput
-          value={title}
-          onChangeText={setTitle}
-          placeholder="Title"
-          className="mb-[10px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
-        />
+        <View className="mb-3">
+          <AppInput
+            label="Title"
+            value={title}
+            onChangeText={setTitle}
+            placeholder="Notification title"
+          />
+        </View>
 
-        <AppInput
-          value={message}
-          onChangeText={setMessage}
-          placeholder="Message"
-          className="mb-[10px] min-h-[80px] rounded-md border border-app-border bg-app-surface px-[10px] py-2"
-          multiline
-          textAlignVertical="top"
-        />
+        <View className="mb-3">
+          <AppInput
+            label="Message"
+            value={message}
+            onChangeText={setMessage}
+            placeholder="Notification message"
+            multiline
+            textAlignVertical="top"
+            style={{ minHeight: 80 }}
+          />
+        </View>
 
-        <Text className="mb-[6px] text-[14px] text-app-text">Audience</Text>
+        <Text className="mb-[6px] text-app-sm text-app-text">Audience</Text>
         <View className="mb-[10px] flex-row flex-wrap gap-2">
           {audienceOptions.map((option) => {
             const isActive = audience === option.value;
@@ -87,15 +90,15 @@ export default function NotificationForm({
               <TouchableOpacity
                 key={option.value}
                 className={`flex-1 rounded-xl border px-3 py-3 ${
-                  isActive ? "border-blue-500 bg-app-primary-light" : "border-app-border bg-app-surface"
+                  isActive ? "border-app-primary bg-app-primary-light" : "border-app-border bg-app-surface"
                 }`}
                 style={{ minWidth: "45%" }}
                 onPress={() => setAudience(option.value)}
               >
-                <Text className={`text-[14px] font-semibold ${isActive ? "text-blue-700" : "text-app-text"}`}>
+                <Text className={`text-app-sm font-semibold ${isActive ? "text-app-primary" : "text-app-text"}`}>
                   {option.label}
                 </Text>
-                <Text className={`mt-1 text-[12px] ${isActive ? "text-blue-700" : "text-app-muted"}`}>
+                <Text className={`mt-1 text-app-xs ${isActive ? "text-app-primary" : "text-app-muted"}`}>
                   {option.description}
                 </Text>
               </TouchableOpacity>
@@ -104,19 +107,19 @@ export default function NotificationForm({
         </View>
 
         <View className="mb-[10px] rounded-xl border border-app-border bg-app-surface px-3 py-3">
-          <Text className="text-[12px] uppercase tracking-[0.6px] text-app-muted">Current Audience</Text>
-          <Text className="mt-1 text-[15px] font-semibold text-app-text">{selectedAudienceMeta?.label}</Text>
-          <Text className="mt-1 text-[13px] text-app-muted">{selectedAudienceMeta?.description}</Text>
+          <Text className="text-app-xs uppercase tracking-[0.6px] text-app-muted">Current Audience</Text>
+          <Text className="mt-1 text-app-base font-semibold text-app-text">{selectedAudienceMeta?.label}</Text>
+          <Text className="mt-1 text-app-sm text-app-muted">{selectedAudienceMeta?.description}</Text>
         </View>
 
         {isSpecificAudience ? (
           <View className="mb-[10px]">
-            <Text className="mb-[6px] text-[14px] text-app-text">Recipient</Text>
+            <Text className="mb-[6px] text-app-sm text-app-text">Recipient</Text>
             {loadingRecipients ? (
               <View className="rounded-xl border border-app-border bg-app-surface px-3 py-4">
                 <View className="flex-row items-center gap-2">
                   <ActivityIndicator size="small" />
-                  <Text className="text-[14px] text-app-muted">Loading recipients...</Text>
+                  <Text className="text-app-sm text-app-muted">Loading recipients...</Text>
                 </View>
               </View>
             ) : (
@@ -127,36 +130,34 @@ export default function NotificationForm({
               >
                 <View className="flex-row items-center justify-between">
                   <View className="flex-1 pr-3">
-                    <Text className="text-[12px] uppercase tracking-[0.6px] text-app-muted">Selected Recipient</Text>
+                    <Text className="text-app-xs uppercase tracking-[0.6px] text-app-muted">Selected Recipient</Text>
                     <Text
-                      className={`mt-1 text-[15px] font-semibold ${
+                      className={`mt-1 text-app-base font-semibold ${
                         selectedRecipient ? "text-app-text" : "text-app-muted"
                       }`}
                     >
                       {selectedRecipient ? selectedRecipient.name : "Tap to choose a recipient"}
                     </Text>
-                    <Text className="mt-1 text-[13px] text-app-muted">
+                    <Text className="mt-1 text-app-sm text-app-muted">
                       {selectedRecipient
                         ? [selectedRecipient.email, selectedRecipient.identifier].filter(Boolean).join(" • ")
                         : "Opens a list of matching users"}
                     </Text>
                   </View>
-                  <Text className="text-[18px] text-app-muted">▾</Text>
+                  <Text className="text-app-md text-app-muted">▾</Text>
                 </View>
               </TouchableOpacity>
             )}
             {!loadingRecipients && recipientOptions.length === 0 ? (
-              <Text className="mt-[6px] text-[12px] text-app-muted">No users found for this audience.</Text>
+              <Text className="mt-[6px] text-app-xs text-app-muted">No users found for this audience.</Text>
             ) : null}
           </View>
         ) : null}
 
         <AppButton
-          title={sending ? "Sending..." : "Send Notification"}
+          title="Send Notification"
           loading={sending}
           onPress={onSend}
-          className={styles.buttonPrimary}
-          textClassName={styles.buttonPrimaryText}
         />
       </View>
     </AppCard>

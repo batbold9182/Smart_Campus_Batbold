@@ -17,8 +17,8 @@ type Props = {
 function StatCard({ value, label }: { value: number; label: string }) {
   return (
     <View className="flex-1 rounded-xl bg-app-surface p-4 shadow-card" style={{ minWidth: "30%" }}>
-      <Text className="text-[20px] font-bold text-app-text">{value}</Text>
-      <Text className="mt-1 text-[12px] text-app-muted">{label}</Text>
+      <Text className="text-app-lg font-bold text-app-text">{value}</Text>
+      <Text className="mt-1 text-app-xs text-app-muted">{label}</Text>
     </View>
   );
 }

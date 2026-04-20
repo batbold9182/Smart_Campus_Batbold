@@ -4,6 +4,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { gradients, palette, radius, space, type as typeScale } from "../styles/tokens";
 
 type Props = {
   title: string;
@@ -16,21 +17,11 @@ type Props = {
   scrollable?: boolean;
 };
 
-/**
- * Shared wrapper for inner (non-dashboard) screens.
- * Provides: SafeAreaView, gradient title bar with optional back button,
- * and an optional ScrollView around `children`.
- *
- * Usage:
- *   <ScreenLayout title="Grades" backRoute="/student/dashboard">
- *     <YourContent />
- *   </ScreenLayout>
- */
 export default function ScreenLayout({
   title,
   children,
   backRoute,
-  headerColors = ["#2563eb", "#7c3aed"],
+  headerColors = gradients.primary,
   scrollable = true,
 }: Props) {
   const router = useRouter();
@@ -38,7 +29,7 @@ export default function ScreenLayout({
   const content = scrollable ? (
     <ScrollView
       className="flex-1 px-5"
-      contentContainerStyle={{ paddingBottom: 20, paddingTop: 16 }}
+      contentContainerStyle={{ paddingBottom: space[5], paddingTop: space[4] }}
       showsVerticalScrollIndicator={false}
     >
       {children}
@@ -54,21 +45,23 @@ export default function ScreenLayout({
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 0 }}
         style={{
-          paddingHorizontal: 20,
-          paddingVertical: 18,
-          borderBottomLeftRadius: 24,
-          borderBottomRightRadius: 24,
+          paddingHorizontal: space[5],
+          paddingVertical: space[4] + 2,
+          borderBottomLeftRadius: radius.xl,
+          borderBottomRightRadius: radius.xl,
           flexDirection: backRoute ? "row" : undefined,
           alignItems: backRoute ? "center" : undefined,
-          gap: backRoute ? 8 : undefined,
+          gap: backRoute ? space[2] : undefined,
         }}
       >
         {backRoute && (
           <TouchableOpacity onPress={() => router.push(backRoute as any)}>
-            <Ionicons name="arrow-back" size={22} color="#fff" />
+            <Ionicons name="arrow-back" size={22} color={palette.white} />
           </TouchableOpacity>
         )}
-        <Text style={{ fontSize: 22, fontWeight: "bold", color: "#ffffff" }}>{title}</Text>
+        <Text style={{ fontSize: typeScale.xl.size, fontWeight: "bold", color: palette.white }}>
+          {title}
+        </Text>
       </LinearGradient>
       {content}
     </SafeAreaView>

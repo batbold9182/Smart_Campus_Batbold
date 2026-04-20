@@ -174,20 +174,19 @@ export default function Attendance() {
     <ScreenLayout title="Attendance" backRoute="/faculty/dashboard">
 
         <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-          <Text className="mb-2 text-[16px] font-semibold text-app-text">Attendance Date</Text>
+          <Text className="mb-2 text-app-base font-semibold text-app-text">Attendance Date</Text>
           <AppInput
             value={selectedDate}
             onChangeText={setSelectedDate}
             placeholder="YYYY-MM-DD"
-            className="rounded-lg border border-app-border px-4 py-3 text-app-text"
             autoCapitalize="none"
             autoCorrect={false}
           />
-          <Text className="mt-2 text-[12px] text-app-muted">Use YYYY-MM-DD. Example: 2026-03-22</Text>
+          <Text className="mt-2 text-app-xs text-app-muted">Use YYYY-MM-DD. Example: 2026-03-22</Text>
         </View>
 
         <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-          <Text className="mb-2 text-[16px] font-semibold text-app-text">Schedule For Selected Date</Text>
+          <Text className="mb-2 text-app-base font-semibold text-app-text">Schedule For Selected Date</Text>
           {!selectedDayName ? (
             <Text className="text-app-muted">Enter a valid date to view schedule.</Text>
           ) : schedulesForDate.length === 0 ? (
@@ -200,13 +199,13 @@ export default function Attendance() {
                 onPress={() => item.course?._id && openCourse(item.course._id, item._id)}
                 disabled={!item.course?._id}
               >
-                <Text className="text-[15px] font-semibold text-app-text">
+                <Text className="text-app-base font-semibold text-app-text">
                   {item.course?.title || item.course?.name || "Untitled Course"}
                 </Text>
                 <Text className="mt-1 text-app-muted">
                   {item.course?.code || "No code"} � {item.startTime} - {item.endTime} � Room {item.room}
                 </Text>
-                <Text className="mt-2 text-[12px] font-semibold text-app-primary">Open attendance</Text>
+                <Text className="mt-2 text-app-xs font-semibold text-app-primary">Open attendance</Text>
               </TouchableOpacity>
             ))
           )}
@@ -215,7 +214,7 @@ export default function Attendance() {
         {!selectedCourse ? (
           <>
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-              <Text className="mb-2 text-[16px] font-semibold text-app-text">Assigned Courses</Text>
+              <Text className="mb-2 text-app-base font-semibold text-app-text">Assigned Courses</Text>
               <Text className="text-app-muted">Choose a course and manually mark each student.</Text>
             </View>
 
@@ -233,19 +232,19 @@ export default function Attendance() {
                 >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
-                      <Text className="text-[16px] font-semibold text-app-text">{course.title}</Text>
+                      <Text className="text-app-base font-semibold text-app-text">{course.title}</Text>
                       <Text className="mt-1 text-app-muted">{course.code} � {course.credits} credits</Text>
                     </View>
-                    <Text className="text-[12px] font-semibold text-app-primary">
+                    <Text className="text-app-xs font-semibold text-app-primary">
                       {loadingCourseId === course.id ? "Loading..." : "Open"}
                     </Text>
                   </View>
                   <View className="mt-3 flex-row gap-2">
                     <View className="rounded-full bg-app-primary-bg px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-app-primary-dark">{course.enrolledCount} enrolled</Text>
+                      <Text className="text-app-xs font-semibold text-app-primary-dark">{course.enrolledCount} enrolled</Text>
                     </View>
                     <View className="rounded-full bg-app-success-bg-subtle px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-app-success">
+                      <Text className="text-app-xs font-semibold text-app-success">
                         {course.markedTodayCount} marked today
                       </Text>
                     </View>
@@ -259,7 +258,7 @@ export default function Attendance() {
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
-                  <Text className="text-[18px] font-semibold text-app-text">{selectedCourse.course.title}</Text>
+                  <Text className="text-app-md font-semibold text-app-text">{selectedCourse.course.title}</Text>
                   <Text className="mt-1 text-app-muted">{selectedCourse.course.code} � {selectedCourse.course.credits} credits</Text>
                 </View>
                 <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-app-primary-bg px-3 py-2">
@@ -268,7 +267,7 @@ export default function Attendance() {
               </View>
 
               {selectedScheduleId ? (
-                <Text className="mt-2 text-[12px] text-app-primary">Session-specific attendance mode</Text>
+                <Text className="mt-2 text-app-xs text-app-primary">Session-specific attendance mode</Text>
               ) : null}
 
               <TouchableOpacity onPress={handleReloadForDate} className="mt-3 self-start rounded-lg bg-app-border-light px-3 py-2">
@@ -283,11 +282,11 @@ export default function Attendance() {
             ) : (
               selectedCourse.students.map((item) => (
                 <View key={item.student.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-                  <Text className="text-[16px] font-semibold text-app-text">{item.student.name}</Text>
+                  <Text className="text-app-base font-semibold text-app-text">{item.student.name}</Text>
                   <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` � Year ${item.student.yearLevel}` : ""}</Text>
                   <Text className="mt-1 text-app-placeholder">{item.student.email}</Text>
 
-                  <Text className="mb-2 mt-4 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Status</Text>
+                  <Text className="mb-2 mt-4 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Status</Text>
                   <View className="flex-row flex-wrap gap-2">
                     {ATTENDANCE_STATUSES.map((status) => {
                       const isActive = (draftStatus[item.student.id] || "present") === status;
@@ -295,9 +294,9 @@ export default function Attendance() {
                         <TouchableOpacity
                           key={status}
                           onPress={() => setDraftStatus((current) => ({ ...current, [item.student.id]: status }))}
-                          className={`rounded-full px-3 py-2 ${isActive ? "bg-blue-500" : "bg-app-border-light"}`}
+                          className={`rounded-full px-3 py-2 ${isActive ? "bg-app-primary" : "bg-app-border-light"}`}
                         >
-                          <Text className={`text-[12px] font-semibold ${isActive ? "text-white" : "text-app-text-secondary"}`}>
+                          <Text className={`text-app-xs font-semibold ${isActive ? "text-white" : "text-app-text-secondary"}`}>
                             {formatStatusLabel(status)}
                           </Text>
                         </TouchableOpacity>
@@ -306,23 +305,23 @@ export default function Attendance() {
                   </View>
 
                   <View className="mt-4">
-                    <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Remarks</Text>
+                    <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Remarks</Text>
                     <AppInput
                       multiline
                       value={draftRemarks[item.student.id] || ""}
                       onChangeText={(value) => setDraftRemarks((current) => ({ ...current, [item.student.id]: value }))}
                       placeholder="Optional note"
-                      className="min-h-[84px] rounded-lg border border-app-border px-4 py-3 text-app-text"
+                      style={{ minHeight: 84 }}
                       textAlignVertical="top"
                     />
                   </View>
 
                   {item.attendance ? (
-                    <Text className="mt-3 text-[12px] text-app-muted">
+                    <Text className="mt-3 text-app-xs text-app-muted">
                       Current saved attendance: {formatStatusLabel(item.attendance.status)}
                     </Text>
                   ) : (
-                    <Text className="mt-3 text-[12px] text-app-placeholder">No attendance saved for this date</Text>
+                    <Text className="mt-3 text-app-xs text-app-placeholder">No attendance saved for this date</Text>
                   )}
 
                   <AppButton

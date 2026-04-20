@@ -1,15 +1,16 @@
 import { StyleSheet } from "react-native";
+import { palette, radius, space } from "../tokens";
 import { ThemeMode } from "../theme";
 
-export const getProfileCardStyles = (t: ThemeMode, isDark: boolean) => {
+export const getProfileCardStyles = (t: ThemeMode, _isDark: boolean) => {
   const styles = StyleSheet.create({
     card: {
-      marginTop: 20,
-      borderRadius: 16,
+      marginTop: space[5],
+      borderRadius: radius.lg,
       backgroundColor: t.surface,
       borderWidth: 1,
       borderColor: t.cardBorder,
-      padding: 20,
+      padding: space[5],
     },
     title: {
       fontSize: 20,
@@ -20,7 +21,7 @@ export const getProfileCardStyles = (t: ThemeMode, isDark: boolean) => {
     avatar: {
       width: 72,
       height: 72,
-      borderRadius: 36,
+      borderRadius: radius.full,
       marginBottom: 10,
       alignSelf: "center",
       borderWidth: 2,
@@ -39,34 +40,34 @@ export const getProfileCardStyles = (t: ThemeMode, isDark: boolean) => {
     },
     sectionWrap: {
       marginTop: 10,
-      paddingTop: 8,
+      paddingTop: space[2],
       borderTopWidth: 1,
       borderTopColor: t.cardBorder,
     },
     sectionTitle: {
       fontWeight: "700",
-      marginBottom: 4,
+      marginBottom: space[1],
       color: t.text,
     },
     actionsBox: {
-      marginTop: 8,
+      marginTop: space[2],
     },
     button: {
-      marginTop: 8,
+      marginTop: space[2],
       backgroundColor: t.accentBar,
-      borderRadius: 8,
+      borderRadius: radius.sm,
       alignItems: "center",
       paddingVertical: 10,
     },
     buttonText: {
-      color: "#ffffff",
+      color: palette.white,
       fontWeight: "600",
     },
     secondaryButton: {
-      marginTop: 8,
+      marginTop: space[2],
       borderWidth: 1,
       borderColor: t.cardBorder,
-      borderRadius: 8,
+      borderRadius: radius.sm,
       alignItems: "center",
       paddingVertical: 10,
       backgroundColor: t.bg,
@@ -76,7 +77,7 @@ export const getProfileCardStyles = (t: ThemeMode, isDark: boolean) => {
       fontWeight: "600",
     },
     message: {
-      marginTop: 8,
+      marginTop: space[2],
       color: t.muted,
       textAlign: "center",
     },

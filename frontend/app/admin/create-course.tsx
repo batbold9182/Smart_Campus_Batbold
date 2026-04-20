@@ -152,48 +152,36 @@ export default function AdminCreateCourse() {
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-4" showsVerticalScrollIndicator={false}>
       <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
-        <Text className="text-[24px] font-bold text-app-text">Create Course</Text>
-        <Text className="mb-4 mt-1 text-[13px] text-app-muted">
+        <Text className="text-app-xl font-bold text-app-text">Create Course</Text>
+        <Text className="mb-4 mt-1 text-app-sm text-app-muted">
           Add new courses and assign responsible faculty members.
         </Text>
 
-        <AppInput
-          placeholder="Title"
-          value={title}
-          onChangeText={setTitle}
-          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-        />
-        <AppInput
-          placeholder="Code (e.g. CS101)"
-          value={code}
-          onChangeText={setCode}
-          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-        />
-        <AppInput
-          placeholder="Description"
-          value={description}
-          onChangeText={setDescription}
-          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-        />
-        <AppInput
-          placeholder="Credits"
-          value={credits}
-          onChangeText={setCredits}
-          keyboardType="numeric"
-          className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-4"
-        />
+        <View className="mb-3">
+          <AppInput label="Title" placeholder="Course title" value={title} onChangeText={setTitle} />
+        </View>
+        <View className="mb-3">
+          <AppInput label="Code" placeholder="e.g. CS101" value={code} onChangeText={setCode} />
+        </View>
+        <View className="mb-3">
+          <AppInput label="Description" placeholder="Optional description" value={description} onChangeText={setDescription} />
+        </View>
+        <View className="mb-4">
+          <AppInput label="Credits" placeholder="e.g. 3" value={credits} onChangeText={setCredits} keyboardType="numeric" />
+        </View>
 
-        <Text className="mb-2 text-[16px] font-semibold text-app-text">Assign to Faculty</Text>
+        <Text className="mb-2 text-app-base font-semibold text-app-text">Assign to Faculty</Text>
         {loadingFaculty && (
           <ActivityIndicator size="small" className="mb-2" />
         )}
         {!loadingFaculty && faculty.length > 0 && (
-          <AppInput
-            placeholder="Search faculty by name or email"
-            value={facultySearch}
-            onChangeText={setFacultySearch}
-            className="mb-2 rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text"
-          />
+          <View className="mb-2">
+            <AppInput
+              placeholder="Search faculty by name or email"
+              value={facultySearch}
+              onChangeText={setFacultySearch}
+            />
+          </View>
         )}
         <FlatList
           data={faculty.filter((f) => {
@@ -221,17 +209,15 @@ export default function AdminCreateCourse() {
 
         <View className="mt-2 mb-3">
           <AppButton
-            title={loading ? "Creating..." : "Create and Assign"}
+            title="Create and Assign"
             loading={loading}
             onPress={handleCreate}
-            className={`items-center rounded-xl px-4 py-3 ${loading ? "bg-app-primary-loading" : "bg-app-primary"}`}
-            textClassName="font-semibold text-white"
           />
         </View>
 
         {message ? <Text className="mb-3 text-app-muted">{message}</Text> : null}
 
-        <Text className="mb-2 text-[16px] font-semibold text-app-text">Manage Courses</Text>
+        <Text className="mb-2 text-app-base font-semibold text-app-text">Manage Courses</Text>
         <FlatList
           data={courses}
           keyExtractor={(item) => item._id}
@@ -246,21 +232,19 @@ export default function AdminCreateCourse() {
                   Faculty: {item.faculty?.name || "Unassigned"}
                 </Text>
               </View>
-              <View className="gap-2">
+              <View className="gap-2 mt-2">
                 <AppButton
-                  title={assigningId === item._id ? "Assigning..." : "Assign"}
+                  title="Assign"
+                  size="sm"
                   loading={assigningId === item._id}
                   onPress={() => handleAssign(item._id)}
-                  className={`items-center rounded-lg px-3 py-2 ${assigningId === item._id ? "bg-app-primary-loading" : "bg-app-primary"}`}
-                  textClassName="font-semibold text-white"
                 />
                 <AppButton
-                  title={deletingId === item._id ? "Deleting..." : "Delete"}
+                  title="Delete"
+                  size="sm"
                   variant="danger"
                   loading={deletingId === item._id}
                   onPress={() => handleDelete(item._id)}
-                  className={`items-center rounded-lg px-3 py-2 ${deletingId === item._id ? "bg-app-error-loading" : "bg-app-danger"}`}
-                  textClassName="font-semibold text-white"
                 />
               </View>
             </AppCard>
@@ -269,10 +253,7 @@ export default function AdminCreateCourse() {
 
         <AppButton
           title="Back to Dashboard"
-          variant="outline"
           onPress={() => router.push("/admin/dashboard")}
-          className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
-          textClassName="font-semibold text-app-text"
         />
       </AppCard>
     </ScrollView>

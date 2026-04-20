@@ -11,7 +11,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton, AppInput, AppCard, AppModal } from "../../components/ui";
 
 export default function CreateScheduleScreen() {
-  const inputClassName = "mb-3 rounded-xl border border-app-placeholder bg-app-surface px-3 py-3 text-[16px] text-app-text";
   const [courses, setCourses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
   const [course, setCourse] = useState("");
@@ -98,12 +97,12 @@ export default function CreateScheduleScreen() {
     <SafeAreaView className="flex-1 bg-app-bg">
       <ScrollView contentContainerClassName="p-5 pb-6">
         <View className="rounded-xl bg-app-surface p-4 shadow">
-          <Text className="text-[24px] font-bold text-app-text">Create Schedule</Text>
-          <Text className="mb-4 mt-1 text-[13px] text-app-muted">
+          <Text className="text-app-xl font-bold text-app-text">Create Schedule</Text>
+          <Text className="mb-4 mt-1 text-app-sm text-app-muted">
             Build class slots with time and room details.
           </Text>
 
-          <Text className="mb-1 text-[13px] font-semibold text-app-text-secondary">Course</Text>
+          <Text className="mb-1 text-app-sm font-semibold text-app-text-secondary">Course</Text>
           <TouchableOpacity
             className={`mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border px-3 ${
               courses.length > 0 ? "border-app-border bg-app-surface" : "border-app-border-light bg-app-bg-muted"
@@ -112,23 +111,29 @@ export default function CreateScheduleScreen() {
             disabled={courses.length === 0}
           >
             <Text className={course ? "text-app-text" : "text-app-muted"}>{selectedCourseLabel}</Text>
-            <Text className="text-[18px] text-app-muted">▾</Text>
+            <Text className="text-app-md text-app-muted">▾</Text>
           </TouchableOpacity>
 
-          <AppInput placeholder="Day (e.g. Monday)" value={day} onChangeText={setDay} className={inputClassName} />
-          <AppInput placeholder="Start Time (09:00)" value={startTime} onChangeText={setStartTime} className={inputClassName} />
-          <AppInput placeholder="End Time (10:30)" value={endTime} onChangeText={setEndTime} className={inputClassName} />
-          <AppInput placeholder="Room" value={room} onChangeText={setRoom} className={`${inputClassName} mb-4`} />
+          <View className="mb-3">
+            <AppInput label="Day" placeholder="e.g. Monday" value={day} onChangeText={setDay} />
+          </View>
+          <View className="mb-3">
+            <AppInput label="Start Time" placeholder="09:00" value={startTime} onChangeText={setStartTime} />
+          </View>
+          <View className="mb-3">
+            <AppInput label="End Time" placeholder="10:30" value={endTime} onChangeText={setEndTime} />
+          </View>
+          <View className="mb-4">
+            <AppInput label="Room" placeholder="e.g. A101" value={room} onChangeText={setRoom} />
+          </View>
 
           <AppButton
-            title={isCreating ? "Creating..." : "Create Schedule"}
+            title="Create Schedule"
             loading={isCreating}
             onPress={handleCreate}
-            className={`mb-2 items-center rounded-xl px-4 py-3 ${isCreating ? "bg-app-primary-loading" : "bg-blue-500"}`}
-            textClassName="font-semibold text-white"
           />
 
-          <Text className="mb-2 mt-5 text-[16px] font-semibold text-app-text">Existing Schedules</Text>
+          <Text className="mb-2 mt-5 text-app-base font-semibold text-app-text">Existing Schedules</Text>
           {schedules.length === 0 ? (
             <Text className="mb-3 text-app-muted">No schedules found</Text>
           ) : (
@@ -139,12 +144,11 @@ export default function CreateScheduleScreen() {
                 </Text>
                 <Text className="mb-2 text-app-muted">{item.day} • {item.startTime}-{item.endTime} • Room {item.room}</Text>
                 <AppButton
-                  title={loadingDeleteId === item._id ? "Deleting..." : "Delete"}
+                  title="Delete"
+                  size="sm"
                   variant="danger"
                   loading={loadingDeleteId === item._id}
                   onPress={() => handleDelete(item._id)}
-                  className={`items-center rounded-lg px-3 py-2 ${loadingDeleteId === item._id ? "bg-app-error-loading" : "bg-red-500"}`}
-                  textClassName="font-semibold text-white"
                 />
               </AppCard>
             ))
@@ -152,25 +156,22 @@ export default function CreateScheduleScreen() {
 
           <AppButton
             title="Back to Dashboard"
-            variant="outline"
             onPress={() => router.push("/admin/dashboard")}
-            className="mt-2 items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
-            textClassName="font-semibold text-app-text"
           />
         </View>
 
         <View className="mt-3 rounded-xl bg-app-surface p-4 shadow-sm">
-          <Text className="text-[16px] font-semibold text-app-text">Hint</Text>
-          <Text className="mt-2 text-[13px] text-app-muted">
+          <Text className="text-app-base font-semibold text-app-text">Hint</Text>
+          <Text className="mt-2 text-app-sm text-app-muted">
             Create schedules only after courses are assigned to faculty.
           </Text>
         </View>
 
         <AppModal open={courseSelectorOpen} onClose={() => setCourseSelectorOpen(false)} layout="bottom">
           <View className="mb-2 flex-row items-center justify-between">
-            <Text className="text-[17px] font-bold text-app-text">Select Course</Text>
+            <Text className="text-app-md font-bold text-app-text">Select Course</Text>
             <TouchableOpacity onPress={() => setCourseSelectorOpen(false)}>
-              <Text className="text-[14px] font-semibold text-app-primary">Done</Text>
+              <Text className="text-app-sm font-semibold text-app-primary">Done</Text>
             </TouchableOpacity>
           </View>
           <ScrollView showsVerticalScrollIndicator={false}>

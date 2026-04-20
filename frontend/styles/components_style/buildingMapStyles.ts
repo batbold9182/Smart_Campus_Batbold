@@ -1,4 +1,5 @@
 import { StyleSheet } from "react-native";
+import { palette, radius, space } from "../tokens";
 import { ThemeMode } from "../theme";
 
 export const getBuildingMapStyles = (t: ThemeMode, isWide: boolean, isDark: boolean) => {
@@ -11,48 +12,48 @@ export const getBuildingMapStyles = (t: ThemeMode, isWide: boolean, isDark: bool
           borderRightWidth: 1,
           borderRightColor: t.cardBorder,
           backgroundColor: t.surface,
-          paddingHorizontal: 12,
-          paddingVertical: 16,
+          paddingHorizontal: space[3],
+          paddingVertical: space[4],
         }
       : {
-          paddingHorizontal: 16,
-          paddingBottom: 8,
-          paddingTop: 12,
+          paddingHorizontal: space[4],
+          paddingBottom: space[2],
+          paddingTop: space[3],
           backgroundColor: t.bg,
         },
     sidebarTitle: { fontSize: 18, fontWeight: "bold", color: t.text },
-    sidebarSubtitle: { marginTop: 4, fontSize: 12, color: t.muted },
-    scroll: { marginTop: isWide ? 16 : 12 },
+    sidebarSubtitle: { marginTop: space[1], fontSize: 12, color: t.muted },
+    scroll: { marginTop: isWide ? space[4] : space[3] },
     scrollContent: isWide
-      ? { gap: 8, paddingBottom: 24 }
-      : { gap: 8, paddingRight: 8 },
+      ? { gap: space[2], paddingBottom: space[6] }
+      : { gap: space[2], paddingRight: space[2] },
     floorBtn: {
       minWidth: isWide ? undefined : 90,
       width: isWide ? "100%" : undefined,
-      borderRadius: 12,
+      borderRadius: radius.md,
       borderWidth: 1,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+      paddingHorizontal: space[3],
+      paddingVertical: space[2],
     },
-    contentArea: { flex: 1, backgroundColor: t.bg, padding: 12 },
+    contentArea: { flex: 1, backgroundColor: t.bg, padding: space[3] },
     topBar: {
-      marginBottom: 8,
+      marginBottom: space[2],
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
-      gap: 8,
-      borderRadius: 12,
+      gap: space[2],
+      borderRadius: radius.md,
       backgroundColor: t.surface,
       borderWidth: 1,
       borderColor: t.cardBorder,
-      paddingHorizontal: 12,
-      paddingVertical: 8,
+      paddingHorizontal: space[3],
+      paddingVertical: space[2],
     },
     topBarTitle: { fontSize: 16, fontWeight: "bold", color: t.text },
     themeToggle: {
       width: 36,
       height: 36,
-      borderRadius: 18,
+      borderRadius: radius.full,
       backgroundColor: t.avatarBg,
       alignItems: "center",
       justifyContent: "center",
@@ -60,17 +61,17 @@ export const getBuildingMapStyles = (t: ThemeMode, isWide: boolean, isDark: bool
       borderColor: t.cardBorder,
     },
     backButton: {
-      borderRadius: 8,
-      paddingHorizontal: 12,
-      paddingVertical: 6,
-      backgroundColor: isDark ? t.accentBar : "#111827",
+      borderRadius: radius.sm,
+      paddingHorizontal: space[3],
+      paddingVertical: space[1] + 2,
+      backgroundColor: isDark ? t.accentBar : palette.gray900,
     },
-    backButtonText: { fontSize: 12, fontWeight: "600", color: "#ffffff" },
+    backButtonText: { fontSize: 12, fontWeight: "600", color: palette.white },
     imageWrap: {
       flex: 1,
       alignItems: "center",
       justifyContent: "center",
-      borderRadius: 12,
+      borderRadius: radius.md,
       backgroundColor: t.surface,
       borderWidth: 1,
       borderColor: t.cardBorder,
@@ -86,13 +87,13 @@ export const getBuildingMapStyles = (t: ThemeMode, isWide: boolean, isDark: bool
     textAlign: "center" as const,
     fontSize: 20,
     fontWeight: "bold" as const,
-    color: active ? "#ffffff" : t.text,
+    color: active ? palette.white : t.text,
   });
 
   const floorBtnSub = (active: boolean) => ({
     textAlign: "center" as const,
     fontSize: 11,
-    color: active ? "rgba(255,255,255,0.7)" : t.muted,
+    color: active ? t.overlayLight : t.muted,
   });
 
   return { ...styles, floorBtnDynamic, floorBtnTitle, floorBtnSub };

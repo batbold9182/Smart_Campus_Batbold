@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   View,
   Text,
-  TouchableOpacity,
   ScrollView,
   Alert,
 } from "react-native";
@@ -45,25 +44,25 @@ export default function ForgotPasswordScreen() {
     <SafeAreaView className="flex-1 bg-app-bg">
       <ScrollView contentContainerClassName="flex-grow justify-center p-5" keyboardShouldPersistTaps="handled">
         <AppCard className="bg-app-surface rounded-2xl p-5 elevation-3">
-          <Text className="text-[24px] font-bold text-app-text mb-[6px]">Forgot Password</Text>
-          <Text className="text-app-muted mb-4">Enter your account email to receive a 6-digit OTP.</Text>
+          <Text className="text-app-xl font-bold text-app-text mb-[6px]">Forgot Password</Text>
+          <Text className="text-app-muted mb-5">Enter your account email to receive a 6-digit OTP.</Text>
 
-          <AppInput
-            className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-            placeholder="Email"
-            autoCapitalize="none"
-            keyboardType="email-address"
-            value={email}
-            onChangeText={setEmail}
-            maxLength={255}
-          />
+          <View className="mb-4">
+            <AppInput
+              label="Email"
+              placeholder="Enter your email"
+              autoCapitalize="none"
+              keyboardType="email-address"
+              value={email}
+              onChangeText={setEmail}
+              maxLength={255}
+            />
+          </View>
 
           <AppButton
             title="Send OTP"
             loading={loading}
             onPress={handleRequestReset}
-            className={`bg-blue-600 rounded-[10px] min-h-[48px] items-center justify-center${loading ? " opacity-75" : ""}`}
-            textClassName="text-white text-[15px] font-bold"
           />
 
           {message ? <Text className="mt-3 text-app-muted">{message}</Text> : null}
@@ -76,8 +75,6 @@ export default function ForgotPasswordScreen() {
                 title="Continue to Reset Password"
                 variant="outline"
                 onPress={() => router.push({ pathname: "/auth/reset-password", params: { email: email.trim() } })}
-                className="items-center justify-center rounded-lg border border-blue-600 py-[10px]"
-                textClassName="text-blue-600 font-bold"
               />
             </View>
           ) : null}
@@ -86,8 +83,6 @@ export default function ForgotPasswordScreen() {
             title="Back"
             variant="ghost"
             onPress={() => router.replace("/auth/reset-password")}
-            className="mt-[14px] items-center"
-            textClassName="text-blue-600 font-semibold"
           />
         </AppCard>
       </ScrollView>

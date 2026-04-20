@@ -298,7 +298,7 @@ export default function Assignments() {
         {!selectedCourse ? (
           <>
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-              <Text className="mb-2 text-[16px] font-semibold text-app-text">Assigned Courses</Text>
+              <Text className="mb-2 text-app-base font-semibold text-app-text">Assigned Courses</Text>
               <Text className="text-app-muted">Select a course to create, review, and manage assignments.</Text>
             </View>
 
@@ -316,20 +316,20 @@ export default function Assignments() {
                 >
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
-                      <Text className="text-[16px] font-semibold text-app-text">{course.title}</Text>
+                      <Text className="text-app-base font-semibold text-app-text">{course.title}</Text>
                       <Text className="mt-1 text-app-muted">{course.code} � {course.credits} credits</Text>
                     </View>
-                    <Text className="text-[12px] font-semibold text-app-primary">
+                    <Text className="text-app-xs font-semibold text-app-primary">
                       {loadingCourseId === course.id ? "Loading..." : "Open"}
                     </Text>
                   </View>
 
                   <View className="mt-3 flex-row gap-2">
                     <View className="rounded-full bg-app-primary-bg px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-app-primary-dark">{course.enrolledCount} enrolled</Text>
+                      <Text className="text-app-xs font-semibold text-app-primary-dark">{course.enrolledCount} enrolled</Text>
                     </View>
                     <View className="rounded-full bg-app-success-bg-subtle px-3 py-2">
-                      <Text className="text-[12px] font-semibold text-app-success">{course.assignmentCount} assignments</Text>
+                      <Text className="text-app-xs font-semibold text-app-success">{course.assignmentCount} assignments</Text>
                     </View>
                   </View>
                 </TouchableOpacity>
@@ -341,7 +341,7 @@ export default function Assignments() {
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
-                  <Text className="text-[18px] font-semibold text-app-text">{selectedCourse.course.title}</Text>
+                  <Text className="text-app-md font-semibold text-app-text">{selectedCourse.course.title}</Text>
                   <Text className="mt-1 text-app-muted">
                     {selectedCourse.course.code} � {selectedCourse.course.credits} credits
                   </Text>
@@ -353,50 +353,47 @@ export default function Assignments() {
             </View>
 
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-              <Text className="mb-3 text-[16px] font-semibold text-app-text">Create Assignment</Text>
+              <Text className="mb-3 text-app-base font-semibold text-app-text">Create Assignment</Text>
 
               <View className="mb-3">
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Title</Text>
+                <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Title</Text>
                 <AppInput
                   value={draftTitle}
                   onChangeText={setDraftTitle}
                   placeholder="Midterm reflection"
-                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                 />
               </View>
 
               <View className="mb-3">
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Description</Text>
+                <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Description</Text>
                 <AppInput
                   multiline
                   value={draftDescription}
                   onChangeText={setDraftDescription}
                   placeholder="Describe the requirements and expected submission."
-                  className="min-h-[96px] rounded-lg border border-app-border px-4 py-3 text-app-text"
+                  style={{ minHeight: 96 }}
                   textAlignVertical="top"
                 />
               </View>
 
               <View className="mb-3">
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Due Date</Text>
+                <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Due Date</Text>
                 <AppInput
                   value={draftDueDate}
                   onChangeText={setDraftDueDate}
                   placeholder="YYYY-MM-DD"
                   autoCapitalize="none"
                   autoCorrect={false}
-                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                 />
               </View>
 
               <View>
-                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Max Points</Text>
+                <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Max Points</Text>
                 <AppInput
                   keyboardType="numeric"
                   value={draftMaxPoints}
                   onChangeText={setDraftMaxPoints}
                   placeholder="100"
-                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
                 />
               </View>
 
@@ -410,7 +407,7 @@ export default function Assignments() {
             </View>
 
             <View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
-              <Text className="mb-2 text-[16px] font-semibold text-app-text">Published Assignments</Text>
+              <Text className="mb-2 text-app-base font-semibold text-app-text">Published Assignments</Text>
               <Text className="text-app-muted">Track due dates and remove outdated work items when needed.</Text>
             </View>
 
@@ -427,13 +424,13 @@ export default function Assignments() {
                   <View key={assignment.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                     <View className="flex-row items-start justify-between gap-3">
                       <View className="flex-1">
-                        <Text className="text-[16px] font-semibold text-app-text">{assignment.title}</Text>
+                        <Text className="text-app-base font-semibold text-app-text">{assignment.title}</Text>
                         <Text className="mt-1 text-app-muted">
                           Due {formatReadableDate(assignment.dueDate)} � {assignment.maxPoints} points
                         </Text>
                       </View>
                       <View className={`rounded-full px-3 py-2 ${status.chip}`}>
-                        <Text className={`text-[12px] font-semibold ${status.tone}`}>{status.label}</Text>
+                        <Text className={`text-app-xs font-semibold ${status.tone}`}>{status.label}</Text>
                       </View>
                     </View>
 
@@ -443,16 +440,16 @@ export default function Assignments() {
                       <Text className="mt-3 text-app-placeholder">No description provided.</Text>
                     )}
 
-                    <Text className="mt-3 text-[12px] text-app-placeholder">Created {formatReadableDate(assignment.createdAt)}</Text>
+                    <Text className="mt-3 text-app-xs text-app-placeholder">Created {formatReadableDate(assignment.createdAt)}</Text>
 
                     <View className="mt-3 flex-row gap-2">
                       <View className="rounded-full bg-app-primary-bg px-3 py-2">
-                        <Text className="text-[12px] font-semibold text-app-primary-dark">
+                        <Text className="text-app-xs font-semibold text-app-primary-dark">
                           {assignment.submissionCount || 0} submitted
                         </Text>
                       </View>
                       <View className="rounded-full bg-app-success-bg-subtle px-3 py-2">
-                        <Text className="text-[12px] font-semibold text-app-success">
+                        <Text className="text-app-xs font-semibold text-app-success">
                           {assignment.reviewedCount || 0} reviewed
                         </Text>
                       </View>
@@ -469,7 +466,7 @@ export default function Assignments() {
 
                     {isSelectedAssignment ? (
                       <View className="mt-4 rounded-lg bg-app-bg-subtle p-4">
-                        <Text className="text-[16px] font-semibold text-app-text">Submissions</Text>
+                        <Text className="text-app-base font-semibold text-app-text">Submissions</Text>
                         <Text className="mt-1 text-app-muted">Review student uploads, add scores, and publish feedback.</Text>
 
                         {selectedAssignmentDetail?.submissions.length ? (
@@ -477,7 +474,7 @@ export default function Assignments() {
                             <View key={submission.id} className="mt-4 rounded-lg border border-app-border-light bg-app-surface p-4">
                               <View className="flex-row items-start justify-between gap-3">
                                 <View className="flex-1">
-                                  <Text className="text-[15px] font-semibold text-app-text">{submission.student.name}</Text>
+                                  <Text className="text-app-base font-semibold text-app-text">{submission.student.name}</Text>
                                   <Text className="mt-1 text-app-muted">{submission.student.email}</Text>
                                   <Text className="mt-1 text-app-placeholder">
                                     {submission.student.program || "Program not set"}
@@ -485,7 +482,7 @@ export default function Assignments() {
                                   </Text>
                                 </View>
                                 <View className="rounded-full bg-app-primary-bg px-3 py-2">
-                                  <Text className="text-[12px] font-semibold text-app-primary-dark">
+                                  <Text className="text-app-xs font-semibold text-app-primary-dark">
                                     Submitted {formatReadableDate(submission.submittedAt)}
                                   </Text>
                                 </View>
@@ -493,7 +490,7 @@ export default function Assignments() {
 
                               {submission.notes ? (
                                 <View className="mt-3 rounded-lg bg-app-bg-subtle p-3">
-                                  <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Student Notes</Text>
+                                  <Text className="text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Student Notes</Text>
                                   <Text className="mt-2 text-app-text-secondary">{submission.notes}</Text>
                                 </View>
                               ) : null}
@@ -503,7 +500,7 @@ export default function Assignments() {
                                   onPress={() => openFile(submission.id, submission.fileUrl || "", submission.fileName)}
                                   className="mt-3 self-start rounded-full bg-app-primary-bg px-3 py-2"
                                 >
-                                  <Text className="text-[12px] font-semibold text-app-primary">
+                                  <Text className="text-app-xs font-semibold text-app-primary">
                                     {submission.fileName || "Download uploaded file"}
                                   </Text>
                                 </TouchableOpacity>
@@ -512,35 +509,34 @@ export default function Assignments() {
                               )}
 
                               <View className="mt-4">
-                                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Score</Text>
+                                <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Score</Text>
                                 <AppInput
                                   keyboardType="numeric"
                                   value={draftScores[submission.id] || ""}
                                   onChangeText={(value) => setDraftScores((current) => ({ ...current, [submission.id]: value }))}
                                   placeholder={`0 - ${assignment.maxPoints}`}
-                                  className="rounded-lg border border-app-border px-4 py-3 text-app-text"
-                                />
+                                                />
                               </View>
 
                               <View className="mt-4">
-                                <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">Feedback</Text>
+                                <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">Feedback</Text>
                                 <AppInput
                                   multiline
                                   value={draftFeedback[submission.id] || ""}
                                   onChangeText={(value) => setDraftFeedback((current) => ({ ...current, [submission.id]: value }))}
                                   placeholder="Share grading notes or revision guidance."
-                                  className="min-h-[84px] rounded-lg border border-app-border px-4 py-3 text-app-text"
+                                  style={{ minHeight: 84 }}
                                   textAlignVertical="top"
                                 />
                               </View>
 
                               {submission.reviewedAt ? (
-                                <Text className="mt-3 text-[12px] text-app-muted">
+                                <Text className="mt-3 text-app-xs text-app-muted">
                                   Reviewed {formatReadableDate(submission.reviewedAt)}
                                   {submission.score !== null ? ` � Score ${submission.score}/${assignment.maxPoints}` : ""}
                                 </Text>
                               ) : (
-                                <Text className="mt-3 text-[12px] text-app-placeholder">Not reviewed yet</Text>
+                                <Text className="mt-3 text-app-xs text-app-placeholder">Not reviewed yet</Text>
                               )}
 
                               <AppButton

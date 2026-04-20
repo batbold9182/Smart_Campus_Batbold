@@ -103,8 +103,8 @@ export default function VizjaFriends() {
         <View className="border-b border-app-border-light bg-app-surface px-5 pb-4 pt-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
-              <Text className="text-[22px] font-bold text-app-text">{headerTitle}</Text>
-              <Text className="mt-1 text-[13px] text-app-muted">{headerDescription}</Text>
+              <Text className="text-app-xl font-bold text-app-text">{headerTitle}</Text>
+              <Text className="mt-1 text-app-sm text-app-muted">{headerDescription}</Text>
             </View>
             <AppButton
               title={selectedSection === "hub" ? "Back" : "Sections"}
@@ -124,20 +124,20 @@ export default function VizjaFriends() {
           <View className="mt-4 flex-row flex-wrap gap-2">
             {selectedSectionMeta ? (
               <View className={`rounded-full px-3 py-2 ${selectedSectionMeta.accentClassName}`}>
-                <Text className="text-[12px] font-semibold text-app-text">{selectedSectionMeta.badgeLabel}</Text>
+                <Text className="text-app-xs font-semibold text-app-text">{selectedSectionMeta.badgeLabel}</Text>
               </View>
             ) : null}
             <View className="rounded-full bg-app-success-light px-3 py-2">
-              <Text className="text-[12px] font-semibold text-app-success-dark">{statusLabel}</Text>
+              <Text className="text-app-xs font-semibold text-app-success-dark">{statusLabel}</Text>
             </View>
             {selectedSection === "lunch" ? (
               <View className="rounded-full bg-app-primary-light px-3 py-2">
-                <Text className="text-[12px] font-semibold text-app-primary-dark">{onlineCount} students online</Text>
+                <Text className="text-app-xs font-semibold text-app-primary-dark">{onlineCount} students online</Text>
               </View>
             ) : null}
             {user?.program ? (
               <View className="rounded-full bg-app-bg-muted px-3 py-2">
-                <Text className="text-[12px] font-semibold text-app-text-secondary">{user.program}</Text>
+                <Text className="text-app-xs font-semibold text-app-text-secondary">{user.program}</Text>
               </View>
             ) : null}
           </View>
@@ -157,8 +157,8 @@ export default function VizjaFriends() {
             showsVerticalScrollIndicator={false}
           >
             <View className="rounded-[28px] bg-app-text p-5">
-              <Text className="text-[12px] font-semibold uppercase tracking-[1px] text-app-primary-loading">Student spaces</Text>
-              <Text className="mt-2 text-[24px] font-bold text-white">Choose your vibe</Text>
+              <Text className="text-app-xs font-semibold uppercase tracking-[1px] text-app-primary-loading">Student spaces</Text>
+              <Text className="mt-2 text-app-xl font-bold text-white">Choose your vibe</Text>
               <Text className="mt-2 leading-6 text-app-border">
                 Vizja Friends separates social chat into focused sections, so students can join the right conversation instead of one noisy room.
               </Text>
@@ -180,17 +180,17 @@ export default function VizjaFriends() {
               >
                 <View className="flex-row items-start justify-between">
                   <View className="flex-1 pr-4">
-                    <Text className="text-[28px]">{section.icon}</Text>
-                    <Text className="mt-3 text-[20px] font-bold text-app-text">{section.title}</Text>
+                    <Text className="text-app-2xl">{section.icon}</Text>
+                    <Text className="mt-3 text-app-lg font-bold text-app-text">{section.title}</Text>
                     <Text className="mt-2 leading-6 text-app-muted">{section.description}</Text>
                   </View>
                   <View className={`rounded-full px-3 py-2 ${section.accentClassName}`}>
-                    <Text className="text-[12px] font-semibold text-app-text">{section.badgeLabel}</Text>
+                    <Text className="text-app-xs font-semibold text-app-text">{section.badgeLabel}</Text>
                   </View>
                 </View>
                 <View className="mt-5 flex-row items-center justify-between border-t border-app-bg-muted pt-4">
-                  <Text className="text-[13px] font-semibold text-app-primary-dark">Open section</Text>
-                  <Text className="text-[18px] text-app-placeholder">›</Text>
+                  <Text className="text-app-sm font-semibold text-app-primary-dark">Open section</Text>
+                  <Text className="text-app-md text-app-placeholder">›</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -199,7 +199,7 @@ export default function VizjaFriends() {
           <>
             {chatLoading ? (
               <View className="flex-1 items-center justify-center px-5">
-                <AppButton title="Connecting to Lunch Buddy..." loading={true} className="bg-transparent" textClassName="mt-3 text-[15px] text-app-muted" onPress={() => {}} />
+                <AppButton title="Connecting to Lunch Buddy..." loading={true} className="bg-transparent" textClassName="mt-3 text-app-base text-app-muted" onPress={() => {}} />
               </View>
             ) : (
               <>
@@ -212,7 +212,7 @@ export default function VizjaFriends() {
                 >
                   {messages.length === 0 ? (
                     <View className="mt-10 rounded-2xl bg-app-surface p-5 shadow-sm">
-                      <Text className="text-[16px] font-semibold text-app-text">Start the conversation</Text>
+                      <Text className="text-app-base font-semibold text-app-text">Start the conversation</Text>
                       <Text className="mt-2 leading-6 text-app-muted">
                         Ask who is free for lunch, suggest a cafe, or find classmates nearby.
                       </Text>
@@ -227,15 +227,15 @@ export default function VizjaFriends() {
                         className={`max-w-[88%] rounded-2xl px-4 py-3 ${isMine ? "self-end bg-app-primary" : "self-start bg-app-surface"}`}
                       >
                         {!isMine ? (
-                          <Text className="mb-1 text-[12px] font-semibold text-app-primary-dark">
+                          <Text className="mb-1 text-app-xs font-semibold text-app-primary-dark">
                             {message.sender.name}
                             {message.sender.program ? ` • ${message.sender.program}` : ""}
                           </Text>
                         ) : null}
-                        <Text className={isMine ? "text-[15px] leading-6 text-white" : "text-[15px] leading-6 text-app-text"}>
+                        <Text className={isMine ? "text-app-base leading-6 text-white" : "text-app-base leading-6 text-app-text"}>
                           {message.text}
                         </Text>
-                        <Text className={`mt-2 text-[11px] ${isMine ? "text-app-primary-light" : "text-app-placeholder"}`}>
+                        <Text className={`mt-2 text-app-xs ${isMine ? "text-app-primary-light" : "text-app-placeholder"}`}>
                           {formatMessageTime(message.createdAt)}
                         </Text>
                       </View>
@@ -251,12 +251,12 @@ export default function VizjaFriends() {
                       placeholder="Ask who wants to grab lunch..."
                       value={draft}
                       onChangeText={setDraft}
-                      className="min-h-[44px] text-[15px] leading-6 text-app-text"
+                      className="min-h-[44px] text-app-base leading-6 text-app-text"
                       textAlignVertical="top"
                     />
                   </View>
                   <View className="mt-3 flex-row items-center justify-between">
-                    <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
+                    <Text className="text-app-xs text-app-muted">{draft.trim().length}/400 characters</Text>
                     <AppButton
                       title={sending ? "Sending..." : "Send"}
                       loading={sending}

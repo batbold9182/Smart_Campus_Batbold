@@ -8,6 +8,7 @@ import AnimatedScreen from "./AnimatedScreen";
 import ProfileCard from "./profileCard";
 import { SkeletonRow, SkeletonCard } from "./Skeleton";
 import type { AppUserProfile } from "../services/userService";
+import { gradients, palette, radius, space, type as typeScale } from "../styles/tokens";
 
 type Props = {
   user: AppUserProfile | null;
@@ -19,16 +20,18 @@ export default function SharedProfileScreen({ user, loading = false, dashboardRo
   const { isDark, t, toggleTheme } = useTheme();
   const router = useRouter();
 
+  const headerGradient = isDark ? gradients.primaryDark : gradients.primary;
+
   const header = (showToggle: boolean) => (
     <LinearGradient
-      colors={isDark ? ["#7c3aed", "#a855f7"] : ["#2563eb", "#7c3aed"]}
+      colors={headerGradient}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 0 }}
       style={{
-        paddingHorizontal: 20,
-        paddingVertical: 18,
-        borderBottomLeftRadius: 24,
-        borderBottomRightRadius: 24,
+        paddingHorizontal: space[5],
+        paddingVertical: space[4] + 2,
+        borderBottomLeftRadius: radius.xl,
+        borderBottomRightRadius: radius.xl,
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "space-between",
@@ -39,29 +42,31 @@ export default function SharedProfileScreen({ user, loading = false, dashboardRo
         style={{
           width: 44,
           height: 44,
-          borderRadius: 22,
-          backgroundColor: "rgba(255,255,255,0.2)",
+          borderRadius: radius.full,
+          backgroundColor: t.overlayLight,
           alignItems: "center",
           justifyContent: "center",
         }}
         accessibilityLabel="Go back to dashboard"
       >
-        <Ionicons name="arrow-back" size={22} color="#ffffff" />
+        <Ionicons name="arrow-back" size={22} color={palette.white} />
       </TouchableOpacity>
-      <Text style={{ fontSize: 22, fontWeight: "bold", color: "#ffffff" }}>My Profile</Text>
+      <Text style={{ fontSize: typeScale.xl.size, fontWeight: "bold", color: palette.white }}>
+        My Profile
+      </Text>
       {showToggle ? (
         <TouchableOpacity
           onPress={toggleTheme}
           style={{
             width: 44,
             height: 44,
-            borderRadius: 22,
-            backgroundColor: "rgba(255,255,255,0.2)",
+            borderRadius: radius.full,
+            backgroundColor: t.overlayLight,
             alignItems: "center",
             justifyContent: "center",
           }}
         >
-          <Ionicons name={isDark ? "sunny" : "moon"} size={18} color="#ffffff" />
+          <Ionicons name={isDark ? "sunny" : "moon"} size={18} color={palette.white} />
         </TouchableOpacity>
       ) : (
         <View style={{ width: 44 }} />
@@ -73,7 +78,7 @@ export default function SharedProfileScreen({ user, loading = false, dashboardRo
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: t.bg }} edges={["top"]}>
         {header(false)}
-        <View style={{ paddingHorizontal: 20, paddingTop: 16 }}>
+        <View style={{ paddingHorizontal: space[5], paddingTop: space[4] }}>
           <SkeletonRow />
           <SkeletonCard />
           <SkeletonCard />
@@ -87,21 +92,21 @@ export default function SharedProfileScreen({ user, loading = false, dashboardRo
       {header(true)}
       <AnimatedScreen>
         <ScrollView
-          style={{ flex: 1, paddingHorizontal: 20 }}
-          contentContainerStyle={{ paddingBottom: 20, paddingTop: 16 }}
+          style={{ flex: 1, paddingHorizontal: space[5] }}
+          contentContainerStyle={{ paddingBottom: space[5], paddingTop: space[4] }}
         >
           <ProfileCard user={user} />
           <TouchableOpacity
             style={{
-              marginTop: 16,
+              marginTop: space[4],
               alignItems: "center",
-              borderRadius: 8,
+              borderRadius: radius.sm,
               backgroundColor: t.accentBar,
-              padding: 14,
+              padding: space[4] - 2,
             }}
             onPress={() => router.push(dashboardRoute as any)}
           >
-            <Text style={{ fontWeight: "600", color: "#ffffff" }}>Back to Dashboard</Text>
+            <Text style={{ fontWeight: "600", color: palette.white }}>Back to Dashboard</Text>
           </TouchableOpacity>
         </ScrollView>
       </AnimatedScreen>

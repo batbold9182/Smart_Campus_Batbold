@@ -3,7 +3,7 @@ import { View, Text, FlatList, ActivityIndicator } from "react-native";
 import { getMyCourses } from "../../services/courseService";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { facultyStyles } from "../../styles/facultyStyles";
+import { rootStyles as facultyStyles } from "../../styles/rootStyles";
 import { AppButton } from "../../components/ui";
 
 export default function FacultyCoursesScreen() {
@@ -59,7 +59,7 @@ export default function FacultyCoursesScreen() {
               }
               renderItem={({ item }) => (
                 <View className={`mb-3 ${facultyStyles.card}`}>
-                  <Text className="text-[16px] font-bold text-app-text">{item.title || "Untitled Course"}</Text>
+                  <Text className="text-app-base font-bold text-app-text">{item.title || "Untitled Course"}</Text>
                   <Text className={`mt-1 ${facultyStyles.muted}`}>Code: {item.code || "-"}</Text>
                 </View>
               )}

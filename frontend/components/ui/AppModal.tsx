@@ -1,17 +1,15 @@
-import { Modal, Pressable, Text, type ModalProps } from "react-native";
+import { Modal, Pressable, Text, View, TouchableOpacity, type ModalProps } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { useTheme } from "../../contexts/ThemeContext";
+import { radius } from "../../styles/tokens";
 
 type Layout = "bottom" | "center";
 
 interface AppModalProps extends Omit<ModalProps, "transparent" | "animationType"> {
-  /** Whether the modal is visible */
   open: boolean;
-  /** Called when the backdrop is pressed or back button is pressed */
   onClose: () => void;
-  /** Modal title (optional) */
   title?: string;
-  /** Presentation style */
   layout?: Layout;
-  /** Override inner container className */
   className?: string;
   children: React.ReactNode;
 }
@@ -25,24 +23,70 @@ export function AppModal({
   children,
   ...rest
 }: AppModalProps) {
-  const wrapperCls =
-    layout === "bottom"
-      ? "flex-1 items-center justify-end bg-black/40 px-4 pb-6"
-      : "flex-1 items-center justify-center bg-black/50 px-5";
-
-  const innerCls =
-    className ??
-    (layout === "bottom"
-      ? "max-h-[70%] w-full rounded-2xl bg-app-surface p-4"
-      : "w-full rounded-2xl bg-app-surface p-5");
+  const { t } = useTheme();
 
   return (
     <Modal transparent visible={open} animationType="fade" onRequestClose={onClose} {...rest}>
-      <Pressable className={wrapperCls} onPress={onClose}>
-        <Pressable className={innerCls} onPress={() => {}}>
-          {title && (
-            <Text className="mb-3 text-[18px] font-bold text-app-text">{title}</Text>
+      <Pressable
+        style={{
+          flex: 1,
+          backgroundColor: t.glassOverlay,
+          alignItems: "center",
+          justifyContent: layout === "bottom" ? "flex-end" : "center",
+          paddingHorizontal: layout === "bottom" ? 16 : 20,
+          paddingBottom: layout === "bottom" ? 24 : 0,
+        }}
+        onPress={onClose}
+      >
+        <Pressable
+          style={{
+            width: "100%",
+            maxHeight: layout === "bottom" ? "70%" : undefined,
+            borderRadius: radius.xl,
+            backgroundColor: t.surface,
+            borderWidth: 1,
+            borderColor: t.cardBorder,
+            padding: layout === "bottom" ? 16 : 20,
+          }}
+          onPress={() => {}}
+        >
+          {/* Drag handle for bottom sheet */}
+          {layout === "bottom" && (
+            <View
+              style={{
+                width: 32,
+                height: 3,
+                borderRadius: radius.full,
+                backgroundColor: t.divider,
+                alignSelf: "center",
+                marginBottom: 12,
+              }}
+            />
           )}
+
+          {/* Header row for center modal */}
+          {layout === "center" && (title || true) && (
+            <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "space-between", marginBottom: title ? 12 : 0 }}>
+              {title ? (
+                <Text style={{ fontSize: 18, fontWeight: "bold", color: t.text, flex: 1 }}>
+                  {title}
+                </Text>
+              ) : (
+                <View style={{ flex: 1 }} />
+              )}
+              <TouchableOpacity onPress={onClose} hitSlop={8}>
+                <Ionicons name="close" size={22} color={t.muted} />
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* Title for bottom sheet */}
+          {layout === "bottom" && title && (
+            <Text style={{ fontSize: 18, fontWeight: "bold", color: t.text, marginBottom: 12 }}>
+              {title}
+            </Text>
+          )}
+
           {children}
         </Pressable>
       </Pressable>

@@ -48,8 +48,8 @@ export default function AdminUsersScreen() {
     <SafeAreaView className="flex-1 bg-app-bg" edges={["top"]}>
       <ScrollView className="flex-1 px-5" contentContainerClassName="pb-6">
         <AppCard className="rounded-2xl border border-app-border-light bg-app-surface p-4 shadow-sm">
-          <Text className="text-[24px] font-bold text-app-text">User Management</Text>
-          <Text className="mb-4 mt-1 text-[13px] text-app-muted">
+          <Text className="text-app-xl font-bold text-app-text">User Management</Text>
+          <Text className="mb-4 mt-1 text-app-sm text-app-muted">
             Browse, filter, and manage faculty and student accounts.
           </Text>
 
@@ -76,56 +76,55 @@ export default function AdminUsersScreen() {
 
           <View className="mb-4 flex-row justify-between gap-2">
             <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
-              <Text className="text-[16px] font-bold text-app-text">{counters?.faculty ?? 0}</Text>
-              <Text className="text-[11px] text-app-muted">Faculty</Text>
+              <Text className="text-app-base font-bold text-app-text">{counters?.faculty ?? 0}</Text>
+              <Text className="text-app-xs text-app-muted">Faculty</Text>
             </View>
             <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
-              <Text className="text-[16px] font-bold text-app-text">{counters?.students ?? 0}</Text>
-              <Text className="text-[11px] text-app-muted">Students</Text>
+              <Text className="text-app-base font-bold text-app-text">{counters?.students ?? 0}</Text>
+              <Text className="text-app-xs text-app-muted">Students</Text>
             </View>
             <View className="flex-1 items-center rounded-xl bg-app-surface py-3">
-              <Text className="text-[16px] font-bold text-app-text">{counters?.disabled ?? 0}</Text>
-              <Text className="text-[11px] text-app-muted">Disabled</Text>
+              <Text className="text-app-base font-bold text-app-text">{counters?.disabled ?? 0}</Text>
+              <Text className="text-app-xs text-app-muted">Disabled</Text>
             </View>
           </View>
 
-          <View className="mb-3 flex-row items-center justify-between">
-            <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${page === 1 ? "bg-app-disabled" : "bg-app-primary"}`}
+          <View className="mb-3 flex-row items-center justify-between gap-3">
+            <AppButton
+              title="Prev"
+              size="sm"
+              variant={page === 1 ? "outline" : "primary"}
               disabled={page === 1}
               onPress={() => setPage(page - 1)}
-            >
-              <Text className="font-semibold text-white">Prev</Text>
-            </TouchableOpacity>
-            <Text className="text-[13px] text-app-text">
+            />
+            <Text className="text-app-sm text-app-text">
               Page {page} / {pagination?.totalPages || 1}
             </Text>
-            <TouchableOpacity
-              className={`rounded-lg px-4 py-2 ${
-                page === pagination?.totalPages ? "bg-app-disabled" : "bg-app-primary"
-              }`}
+            <AppButton
+              title="Next"
+              size="sm"
+              variant={page === pagination?.totalPages ? "outline" : "primary"}
               disabled={page === pagination?.totalPages}
               onPress={() => setPage(page + 1)}
-            >
-              <Text className="font-semibold text-white">Next</Text>
-            </TouchableOpacity>
+            />
           </View>
 
-          <AppInput
-            placeholder={`Search ${activeTab}`}
-            value={search}
-            onChangeText={setSearch}
-            className="mb-3 rounded-lg border border-app-border bg-app-surface px-3 py-3"
-          />
+          <View className="mb-3">
+            <AppInput
+              placeholder={`Search ${activeTab}`}
+              value={search}
+              onChangeText={setSearch}
+            />
+          </View>
 
           {loading ? (
             <SkeletonList rows={5} />
           ) : filteredUsers.length === 0 ? (
             <View className="items-center rounded-xl border border-dashed border-app-border bg-app-surface py-10">
-              <Text className="text-[16px] font-semibold text-app-text">
+              <Text className="text-app-base font-semibold text-app-text">
                 No {activeTab === "faculty" ? "faculty" : "students"} found
               </Text>
-              <Text className="mt-1 text-[13px] text-app-muted">
+              <Text className="mt-1 text-app-sm text-app-muted">
                 {search ? "Try a different search term" : "No accounts have been created yet"}
               </Text>
             </View>
@@ -152,10 +151,7 @@ export default function AdminUsersScreen() {
 
           <AppButton
             title="Back to Dashboard"
-            variant="outline"
             onPress={() => router.push("/admin/dashboard")}
-            className="items-center rounded-xl border border-app-border bg-app-surface px-4 py-3"
-            textClassName="font-semibold text-app-text"
           />
         </AppCard>
       </ScrollView>

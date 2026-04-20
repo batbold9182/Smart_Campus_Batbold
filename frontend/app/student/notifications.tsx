@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { studentStyles } from "../../styles/studentStyles";
+import { rootStyles as studentStyles } from "../../styles/rootStyles";
 import NotificationFeed, { type NotificationItem } from "../../components/notificationFeed";
 import { getNotifications, markNotificationRead } from "../../services/notificationService";
 

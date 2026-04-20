@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -E \"\\\\.tsx$\")",
+      "Bash(awk '{print $NF}')",
+      "Bash(grep -E \"\\\\.\\(ts|tsx|js\\)$\")"
+    ]
+  }
+}

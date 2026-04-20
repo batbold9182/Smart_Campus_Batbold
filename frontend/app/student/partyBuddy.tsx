@@ -40,7 +40,7 @@ export default function PartyBuddy() {
   if (loading) {
     return (
       <SafeAreaView className="flex-1 items-center justify-center bg-app-bg" edges={["top"]}>
-        <AppButton title="Loading Party Buddy..." loading={true} className="bg-transparent" textClassName="mt-3 text-[15px] text-app-muted" onPress={() => {}} />
+        <AppButton title="Loading Party Buddy..." loading={true} className="bg-transparent" textClassName="mt-3 text-app-base text-app-muted" onPress={() => {}} />
       </SafeAreaView>
     );
   }
@@ -51,8 +51,8 @@ export default function PartyBuddy() {
         <View className="border-b border-app-border-light bg-app-surface px-5 pb-4 pt-2">
           <View className="flex-row items-center justify-between">
             <View className="flex-1 pr-3">
-              <Text className="text-[22px] font-bold text-app-text">🎉 Party Buddy</Text>
-              <Text className="mt-1 text-[13px] text-app-muted">
+              <Text className="text-app-xl font-bold text-app-text">🎉 Party Buddy</Text>
+              <Text className="mt-1 text-app-sm text-app-muted">
                 Plan events, invite friends, and discover social hangouts on campus.
               </Text>
             </View>
@@ -67,14 +67,14 @@ export default function PartyBuddy() {
 
           <View className="mt-4 flex-row flex-wrap gap-2">
             <View className="rounded-full bg-app-error-bg px-3 py-2">
-              <Text className="text-[12px] font-semibold text-app-danger">{statusLabel}</Text>
+              <Text className="text-app-xs font-semibold text-app-danger">{statusLabel}</Text>
             </View>
             <View className="rounded-full bg-app-error-light px-3 py-2">
-              <Text className="text-[12px] font-semibold text-app-error-dark">{onlineCount} students online</Text>
+              <Text className="text-app-xs font-semibold text-app-error-dark">{onlineCount} students online</Text>
             </View>
             {user?.program ? (
               <View className="rounded-full bg-app-bg-muted px-3 py-2">
-                <Text className="text-[12px] font-semibold text-app-text-secondary">{user.program}</Text>
+                <Text className="text-app-xs font-semibold text-app-text-secondary">{user.program}</Text>
               </View>
             ) : null}
           </View>
@@ -96,7 +96,7 @@ export default function PartyBuddy() {
         >
           {messages.length === 0 ? (
             <View className="mt-10 rounded-2xl bg-app-surface p-5 shadow-sm">
-              <Text className="text-[16px] font-semibold text-app-text">Start the conversation</Text>
+              <Text className="text-app-base font-semibold text-app-text">Start the conversation</Text>
               <Text className="mt-2 leading-6 text-app-muted">
                 Share plans, suggest hangout spots, or find people going to the same event.
               </Text>
@@ -111,15 +111,15 @@ export default function PartyBuddy() {
                 className={`max-w-[88%] rounded-2xl px-4 py-3 ${isMine ? "self-end bg-app-danger" : "self-start bg-app-surface"}`}
               >
                 {!isMine ? (
-                  <Text className="mb-1 text-[12px] font-semibold text-app-danger">
+                  <Text className="mb-1 text-app-xs font-semibold text-app-danger">
                     {message.sender.name}
                     {message.sender.program ? ` • ${message.sender.program}` : ""}
                   </Text>
                 ) : null}
-                <Text className={isMine ? "text-[15px] leading-6 text-white" : "text-[15px] leading-6 text-app-text"}>
+                <Text className={isMine ? "text-app-base leading-6 text-white" : "text-app-base leading-6 text-app-text"}>
                   {message.text}
                 </Text>
-                <Text className={`mt-2 text-[11px] ${isMine ? "text-app-error-light" : "text-app-placeholder"}`}>
+                <Text className={`mt-2 text-app-xs ${isMine ? "text-app-error-light" : "text-app-placeholder"}`}>
                   {formatMessageTime(message.createdAt)}
                 </Text>
               </View>
@@ -135,12 +135,12 @@ export default function PartyBuddy() {
               placeholder="Share plans, suggest a hangout spot..."
               value={draft}
               onChangeText={setDraft}
-              className="min-h-[44px] text-[15px] leading-6 text-app-text"
+              className="min-h-[44px] text-app-base leading-6 text-app-text"
               textAlignVertical="top"
             />
           </View>
           <View className="mt-3 flex-row items-center justify-between">
-            <Text className="text-[12px] text-app-muted">{draft.trim().length}/400 characters</Text>
+            <Text className="text-app-xs text-app-muted">{draft.trim().length}/400 characters</Text>
             <AppButton
               title={sending ? "Sending..." : "Send"}
               loading={sending}

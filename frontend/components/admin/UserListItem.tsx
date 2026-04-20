@@ -25,23 +25,23 @@ export default function UserListItem({
   return (
     <View className="mb-3 rounded-xl border border-app-border bg-app-surface p-3">
       <TouchableOpacity activeOpacity={0.8} onPress={() => onToggle(item._id)}>
-        <Text className="mb-1 text-[16px] font-semibold text-app-text">{item.name}</Text>
-        <Text className="mb-1 text-[13px] text-app-muted">{item.email}</Text>
+        <Text className="mb-1 text-app-base font-semibold text-app-text">{item.name}</Text>
+        <Text className="mb-1 text-app-sm text-app-muted">{item.email}</Text>
         {activeTab === "faculty" ? (
           <View className="mb-2 gap-1">
-            <Text className="text-[12px] text-app-text-secondary">School: {item.school || "-"}</Text>
-            <Text className="text-[12px] text-app-text-secondary">Department: {item.department || "-"}</Text>
-            <Text className="text-[12px] text-app-text-secondary">Title: {item.title || "-"}</Text>
-            <Text className="text-[12px] text-app-text-secondary">Employee ID: {item.employeeId || "-"}</Text>
+            <Text className="text-app-xs text-app-text-secondary">School: {item.school || "-"}</Text>
+            <Text className="text-app-xs text-app-text-secondary">Department: {item.department || "-"}</Text>
+            <Text className="text-app-xs text-app-text-secondary">Title: {item.title || "-"}</Text>
+            <Text className="text-app-xs text-app-text-secondary">Employee ID: {item.employeeId || "-"}</Text>
           </View>
         ) : (
           <View className="mb-2 gap-1">
-            <Text className="text-[12px] text-app-text-secondary">Program: {item.program || "-"}</Text>
-            <Text className="text-[12px] text-app-text-secondary">Year: {item.yearLevel || "-"}</Text>
-            <Text className="text-[12px] text-app-text-secondary">Student ID: {item.studentId || "-"}</Text>
+            <Text className="text-app-xs text-app-text-secondary">Program: {item.program || "-"}</Text>
+            <Text className="text-app-xs text-app-text-secondary">Year: {item.yearLevel || "-"}</Text>
+            <Text className="text-app-xs text-app-text-secondary">Student ID: {item.studentId || "-"}</Text>
           </View>
         )}
-        <Text className="mb-2 text-[12px] font-medium text-app-primary">
+        <Text className="mb-2 text-app-xs font-medium text-app-primary">
           {isExpanded ? "Hide actions" : "Show actions"}
         </Text>
       </TouchableOpacity>

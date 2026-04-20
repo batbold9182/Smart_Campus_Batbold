@@ -142,13 +142,13 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
     <View className="mt-4 rounded-lg border border-app-border-light p-4">
       <View className="flex-row items-start justify-between gap-3">
         <View className="flex-1">
-          <Text className="text-[15px] font-semibold text-app-text">{assignment.title}</Text>
+          <Text className="text-app-base font-semibold text-app-text">{assignment.title}</Text>
           <Text className="mt-1 text-app-muted">
             Due {formatReadableDate(assignment.dueDate)} · {assignment.maxPoints} points
           </Text>
         </View>
         <View className={`rounded-full px-3 py-2 ${status.chip}`}>
-          <Text className={`text-[12px] font-semibold ${status.text}`}>{status.label}</Text>
+          <Text className={`text-app-xs font-semibold ${status.text}`}>{status.label}</Text>
         </View>
       </View>
 
@@ -160,7 +160,7 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
 
       {assignment.submission ? (
         <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
-          <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">
+          <Text className="text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">
             Current Submission
           </Text>
           <Text className="mt-2 text-app-text-secondary">
@@ -176,7 +176,7 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
           ) : null}
           {assignment.submission.feedback ? (
             <View className="mt-3 rounded-lg bg-app-surface p-3">
-              <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">
+              <Text className="text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">
                 Faculty Feedback
               </Text>
               <Text className="mt-2 text-app-text-secondary">{assignment.submission.feedback}</Text>
@@ -193,7 +193,7 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
               }
               className="mt-3 self-start rounded-full bg-app-primary-bg px-3 py-2"
             >
-              <Text className="text-[12px] font-semibold text-app-primary">
+              <Text className="text-app-xs font-semibold text-app-primary">
                 {assignment.submission.fileName || "Download uploaded file"}
               </Text>
             </TouchableOpacity>
@@ -202,7 +202,7 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
       ) : null}
 
       <View className="mt-4">
-        <Text className="mb-2 text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">
+        <Text className="mb-2 text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">
           Submission Notes
         </Text>
         <AppInput
@@ -210,13 +210,13 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
           value={notes}
           onChangeText={setNotes}
           placeholder="Add notes, links, or short submission details."
-          className="min-h-[84px] rounded-lg border border-app-border px-4 py-3 text-app-text"
+          style={{ minHeight: 84 }}
           textAlignVertical="top"
         />
       </View>
 
       <View className="mt-4 rounded-lg bg-app-bg-subtle p-3">
-        <Text className="text-[12px] font-semibold uppercase tracking-[0.5px] text-app-muted">File Upload</Text>
+        <Text className="text-app-xs font-semibold uppercase tracking-[0.5px] text-app-muted">File Upload</Text>
         <Text className="mt-2 text-app-muted">
           {selectedFile
             ? `${selectedFile.name}${selectedFile.size ? ` · ${Math.ceil(selectedFile.size / 1024)} KB` : ""}`
@@ -246,7 +246,7 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
         title={submitting ? "Submitting..." : assignment.submission ? "Resubmit Assignment" : "Submit Assignment"}
         loading={submitting}
         onPress={handleSubmit}
-        className="mt-4 items-center rounded-lg bg-blue-500 p-[14px]"
+        className="mt-4 items-center rounded-lg bg-app-primary p-[14px]"
         textClassName="font-semibold text-white"
       />
     </View>

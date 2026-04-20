@@ -48,7 +48,7 @@ export default function LoginScreen() {
     setPasswordError(nextPasswordError);
     if (nextEmailError || nextPasswordError) {
       haptic.error();
-      setMessage("? Please fix the errors below.");
+      setMessage("Please fix the errors below.");
       return;
     }
 
@@ -58,12 +58,12 @@ export default function LoginScreen() {
       const data = await login(trimmedEmail, password);
       if (data?.user?.isActive === false) {
         haptic.error();
-        setMessage("? Your account is deactivated. Please contact admin.");
+        setMessage("Your account is deactivated. Please contact admin.");
         return;
       }
       if (!data?.token || !data?.user?.role) {
         haptic.error();
-        setMessage("? Login failed. Please try again.");
+        setMessage("Login failed. Please try again.");
         return;
       }
 
@@ -82,15 +82,15 @@ export default function LoginScreen() {
       const status = err?.response?.status;
       const serverMessage = err?.response?.data?.message;
       if (status === 403 && serverMessage) {
-        setMessage(`? ${serverMessage}`);
+        setMessage(serverMessage);
       } else if (status === 404) {
-        setMessage("? User does not exist.");
+        setMessage("User does not exist.");
       } else if (status === 401) {
-        setMessage("? Wrong password. Please try again.");
+        setMessage("Wrong password. Please try again.");
       } else if (!err?.response) {
-        setMessage("? Network error. Check your connection and try again.");
+        setMessage("Network error. Check your connection and try again.");
       } else {
-        setMessage("? Login failed");
+        setMessage("Login failed");
       }
       logger.error(err?.response?.data || err?.message || err);
     } finally {
@@ -105,8 +105,9 @@ export default function LoginScreen() {
         className="flex-1 px-5 relative overflow-hidden"
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
-        <View className="absolute top-[-120px] right-[-100px] w-[260px] h-[260px] rounded-full bg-[#c7dcff]" />
-        <View className="absolute bottom-[-130px] left-[-120px] w-[280px] h-[280px] rounded-full bg-[#d9e8ff]" />
+        {/* Decorative gradient orbs */}
+        <View className="absolute top-[-120px] right-[-100px] w-[260px] h-[260px] rounded-full bg-app-primary-bg opacity-60" />
+        <View className="absolute bottom-[-130px] left-[-120px] w-[280px] h-[280px] rounded-full bg-app-primary-bg opacity-40" />
 
         <ScrollView
           contentContainerClassName="flex-grow justify-center py-6"
@@ -119,67 +120,61 @@ export default function LoginScreen() {
               style={{ width: logoSize, height: logoSize, alignSelf: "center", marginBottom: 8 }}
               resizeMode="contain"
             />
-            <Text className="text-[14px] font-bold text-blue-600 mb-[6px] text-center">Vizja Smart Campus</Text>
-            <Text className="text-[28px] font-bold text-app-text text-center">Welcome Back</Text>
+            <Text className="text-app-sm font-bold text-app-primary mb-[6px] text-center">Vizja Smart Campus</Text>
+            <Text className="text-app-2xl font-bold text-app-text text-center">Welcome Back</Text>
             <Text className="mt-1 mb-[18px] text-app-muted text-center">Sign in to continue to your dashboard</Text>
 
-            <AppInput
-              placeholder="Email"
-              value={email}
-              onChangeText={(value) => {
-                setEmail(value);
-                if (emailError) {
-                  setEmailError("");
-                }
-                if (message) {
-                  setMessage("");
-                }
-              }}
-              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              autoCorrect={false}
-              textContentType="emailAddress"
-              autoComplete="email"
-              maxLength={255}
-            />
-            {emailError ? <Text className="text-app-error -mt-1.5 mb-[10px]">{emailError}</Text> : null}
+            <View className="mb-3">
+              <AppInput
+                label="Email"
+                placeholder="Enter your email"
+                value={email}
+                error={emailError}
+                onChangeText={(value) => {
+                  setEmail(value);
+                  if (emailError) setEmailError("");
+                  if (message) setMessage("");
+                }}
+                autoCapitalize="none"
+                keyboardType="email-address"
+                autoCorrect={false}
+                textContentType="emailAddress"
+                autoComplete="email"
+                maxLength={255}
+              />
+            </View>
 
-            <AppInput
-              placeholder="Password"
-              value={password}
-              onChangeText={(value) => {
-                setPassword(value);
-                if (passwordError) {
-                  setPasswordError("");
-                }
-                if (message) {
-                  setMessage("");
-                }
-              }}
-              secureTextEntry
-              className="rounded-xl border border-app-border bg-app-surface px-3 py-3 text-[16px] text-app-text mb-3"
-              autoCorrect={false}
-              textContentType="password"
-              autoComplete="password"
-              maxLength={128}
-            />
-            {passwordError ? <Text className="text-app-error -mt-1.5 mb-[10px]">{passwordError}</Text> : null}
+            <View className="mb-2">
+              <AppInput
+                label="Password"
+                placeholder="Enter your password"
+                value={password}
+                error={passwordError}
+                onChangeText={(value) => {
+                  setPassword(value);
+                  if (passwordError) setPasswordError("");
+                  if (message) setMessage("");
+                }}
+                secureTextEntry
+                autoCorrect={false}
+                textContentType="password"
+                autoComplete="password"
+                maxLength={128}
+              />
+            </View>
 
             <TouchableOpacity
-              className="self-end mb-2"
+              className="self-end mb-3"
               onPress={() => router.push("/auth/reset-password")}
               disabled={isLoading}
             >
-              <Text className="text-blue-600 font-semibold">Reset password?</Text>
+              <Text className="text-app-primary font-semibold">Reset password?</Text>
             </TouchableOpacity>
 
             <AppButton
               title="Login"
               loading={isLoading}
               onPress={handleLogin}
-              className={`mt-[6px] bg-blue-600 rounded-[10px] items-center justify-center min-h-[48px]${isLoading ? " opacity-70" : ""}`}
-              textClassName="text-white text-[16px] font-bold"
             />
 
             {message ? <Text className="mt-[14px] text-center text-app-error">{message}</Text> : null}
@@ -189,8 +184,6 @@ export default function LoginScreen() {
               variant="ghost"
               onPress={() => router.push("/auth/register")}
               disabled={isLoading}
-              className="mt-3 items-center"
-              textClassName="text-blue-600 font-semibold"
             />
           </AppCard>
         </ScrollView>
@@ -198,4 +191,3 @@ export default function LoginScreen() {
     </SafeAreaView>
   );
 }
-

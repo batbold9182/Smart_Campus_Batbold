@@ -1,26 +1,27 @@
 import { StyleSheet } from "react-native";
+import { palette, radius, space } from "./tokens";
 import { ThemeMode } from "./theme";
 
 export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean) => {
-  const quickActionCardWidth = Math.max((width - 52) / 2, 140);
+  const quickActionCardWidth = Math.max((width - space[4] * 3) / 2, 140);
 
   const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: t.bg },
-    scrollContent: { paddingBottom: 24 },
+    scrollContent: { paddingBottom: space[6] },
     headerGradient: {
-      paddingHorizontal: 20,
-      paddingBottom: 8,
-      borderBottomLeftRadius: 24,
-      borderBottomRightRadius: 24,
+      paddingHorizontal: space[5],
+      paddingBottom: space[2],
+      borderBottomLeftRadius: radius.xl,
+      borderBottomRightRadius: radius.xl,
     },
     headerLogoWrap: { alignItems: "center", justifyContent: "center" },
     headerLogo: { width: Math.round(width * 0.9), height: Math.round(width * 0.9 * (80 / 360)) },
-    contentPadding: { paddingHorizontal: 20 },
+    contentPadding: { paddingHorizontal: space[5] },
 
     // Profile row
     profileRow: {
-      marginTop: 20,
-      marginBottom: 16,
+      marginTop: space[5],
+      marginBottom: space[4],
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "space-between",
@@ -30,13 +31,13 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
     profileAvatar: {
       width: 48,
       height: 48,
-      borderRadius: 24,
+      borderRadius: radius.full,
       borderWidth: 2,
-      borderColor: "#22c55e",
+      borderColor: t.online,
       overflow: "hidden",
       backgroundColor: t.avatarBg,
     },
-    profileAvatarImage: { width: 44, height: 44, borderRadius: 22 },
+    profileAvatarImage: { width: 44, height: 44, borderRadius: radius.full },
     profileAvatarFallback: { flex: 1, alignItems: "center", justifyContent: "center" },
     onlineDot: {
       position: "absolute",
@@ -44,8 +45,8 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
       left: 0,
       width: 12,
       height: 12,
-      borderRadius: 6,
-      backgroundColor: "#22c55e",
+      borderRadius: radius.full,
+      backgroundColor: t.online,
       borderWidth: 2,
       borderColor: t.greenBorderBg,
     },
@@ -59,7 +60,7 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
       marginRight: 12,
       width: 36,
       height: 36,
-      borderRadius: 18,
+      borderRadius: radius.full,
       backgroundColor: t.avatarBg,
       alignItems: "center",
       justifyContent: "center",
@@ -70,22 +71,22 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
       position: "absolute",
       top: -4,
       right: -6,
-      backgroundColor: "#ef4444",
-      borderRadius: 10,
+      backgroundColor: t.error,
+      borderRadius: radius.full,
       minWidth: 18,
       height: 18,
       alignItems: "center",
       justifyContent: "center",
-      paddingHorizontal: 4,
+      paddingHorizontal: space[1],
     },
-    badgeText: { color: "#fff", fontSize: 10, fontWeight: "bold" },
+    badgeText: { color: palette.white, fontSize: 10, fontWeight: "bold" },
 
     // Stats row
-    statsRow: { marginBottom: 16, flexDirection: "row", gap: 8 },
+    statsRow: { marginBottom: space[4], flexDirection: "row", gap: space[2] },
     statsCard: {
       flex: 1,
       backgroundColor: t.surface,
-      borderRadius: 12,
+      borderRadius: radius.md,
       borderWidth: 1,
       borderColor: t.cardBorder,
       paddingVertical: 10,
@@ -94,9 +95,9 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
     statsCardGreen: {
       flex: 1,
       backgroundColor: t.surface,
-      borderRadius: 12,
+      borderRadius: radius.md,
       borderWidth: 1,
-      borderColor: "#22c55e",
+      borderColor: t.online,
       paddingVertical: 10,
       alignItems: "center",
     },
@@ -106,11 +107,11 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
     // Schedule section
     scheduleCard: {
       backgroundColor: t.surface,
-      borderRadius: 16,
+      borderRadius: radius.lg,
       borderWidth: 1,
       borderColor: t.cardBorder,
-      padding: 16,
-      marginBottom: 24,
+      padding: space[4],
+      marginBottom: space[6],
     },
     scheduleHeader: {
       marginBottom: 12,
@@ -124,14 +125,14 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
       height: 20,
       backgroundColor: t.accentBar,
       borderRadius: 2,
-      marginRight: 8,
+      marginRight: space[2],
     },
     sectionTitle: { fontSize: 18, fontWeight: "bold", color: t.text },
     viewAllLink: { color: t.scheduleLink, fontSize: 13 },
 
     // Empty schedule
-    emptyScheduleWrap: { alignItems: "center", paddingVertical: 16 },
-    emptyScheduleEmoji: { fontSize: 40, marginBottom: 8 },
+    emptyScheduleWrap: { alignItems: "center", paddingVertical: space[4] },
+    emptyScheduleEmoji: { fontSize: 40, marginBottom: space[2] },
     emptyScheduleTitle: { fontSize: 15, fontWeight: "600", color: t.text },
     emptyScheduleSubtitle: { color: t.muted, fontSize: 13, marginTop: 2 },
 
@@ -141,12 +142,12 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
     scheduleCourseName: { fontWeight: "600", color: t.text },
     scheduleProf: { color: t.prof, fontSize: 12, marginTop: 2 },
     scheduleRoom: { color: t.muted, fontSize: 12 },
-    scheduleBadgeText: { color: "#fff", fontSize: 11, fontWeight: "bold" },
+    scheduleBadgeText: { color: palette.white, fontSize: 11, fontWeight: "bold" },
 
     // Quick actions
-    quickActionsSection: { marginBottom: 16 },
+    quickActionsSection: { marginBottom: space[4] },
     quickActionsSectionHeader: {
-      marginBottom: 16,
+      marginBottom: space[4],
       flexDirection: "row",
       alignItems: "center",
     },
@@ -158,7 +159,7 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
     quickActionCardWrap: { width: quickActionCardWidth, marginBottom: 14 },
     quickActionGradientBar: { height: 4, width: "100%" },
     quickActionContent: {
-      paddingVertical: 20,
+      paddingVertical: space[5],
       paddingHorizontal: 14,
       alignItems: "center",
       justifyContent: "center",
@@ -166,7 +167,7 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
     quickActionIconWrap: {
       width: 50,
       height: 50,
-      borderRadius: 14,
+      borderRadius: radius.md,
       alignItems: "center",
       justifyContent: "center",
       marginBottom: 10,
@@ -180,37 +181,35 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
     },
     quickActionSubtitle: { fontSize: 11, color: t.muted, textAlign: "center" },
     quickActionArrowWrap: {
-      marginTop: 8,
+      marginTop: space[2],
       width: 24,
       height: 24,
-      borderRadius: 12,
-      backgroundColor: isDark
-        ? "rgba(168,85,247,0.15)"
-        : "rgba(124,58,237,0.08)",
+      borderRadius: radius.full,
+      backgroundColor: t.avatarBg,
       alignItems: "center",
       justifyContent: "center",
     },
 
     // Logout
-    logoutGradient: { borderRadius: 12, marginBottom: 16 },
+    logoutGradient: { borderRadius: radius.md, marginBottom: space[4] },
     logoutButton: {
       flexDirection: "row",
       alignItems: "center",
       justifyContent: "center",
-      padding: 16,
+      padding: space[4],
     },
-    logoutText: { fontSize: 16, fontWeight: "600", color: "#fff" },
+    logoutText: { fontSize: 16, fontWeight: "600", color: palette.white },
   });
 
   // Dynamic styles that depend on runtime values
   const statsIconWrap = (bgColor: string) => ({
     width: 32,
     height: 32,
-    borderRadius: 8,
+    borderRadius: radius.sm,
     backgroundColor: bgColor,
     alignItems: "center" as const,
     justifyContent: "center" as const,
-    marginBottom: 4,
+    marginBottom: space[1],
   });
 
   const scheduleItemRow = (isLast: boolean) => ({
@@ -224,10 +223,12 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
 
   const scheduleBadge = (status: string) => ({
     backgroundColor:
-      status === "Now" ? "#22c55e" : status === "Done" ? "#6b7280" : "#3b82f6",
-    borderRadius: 12,
+      status === "Now"  ? t.online :
+      status === "Done" ? palette.grayNeutral :
+                          t.scheduleLink,
+    borderRadius: radius.md,
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: space[1],
   });
 
   const quickActionPressable = (
@@ -236,7 +237,7 @@ export const getDashboardStyles = (t: ThemeMode, width: number, isDark: boolean)
   ) => ({
     width: "100%" as const,
     backgroundColor: t.surface,
-    borderRadius: 20,
+    borderRadius: radius.xl,
     borderWidth: 1,
     borderColor: pressed ? gradientColor : t.cardBorder,
     overflow: "hidden" as const,
