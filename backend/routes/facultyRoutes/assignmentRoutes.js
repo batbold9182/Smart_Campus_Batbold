@@ -442,7 +442,7 @@ router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("facu
 
 router.delete("/:assignmentId", auth, authorizeRoles("faculty"), async (req, res, next) => {
   try {
-    const assignment = await Assignment.findOneAndDelete({
+    const assignment = await Assignment.findOne({
       _id: req.params.assignmentId,
       faculty: req.user.id,
     }).lean();
@@ -450,6 +450,28 @@ router.delete("/:assignmentId", auth, authorizeRoles("faculty"), async (req, res
     if (!assignment) {
       return res.status(404).json({ message: "Assignment not found" });
     }
+
+    // Collect and destroy all Cloudinary files from submissions
+    const submissions = await AssignmentSubmission.find({ assignment: assignment._id })
+      .select("cloudinaryPublicId")
+      .lean();
+
+    const cloudinaryIds = submissions
+      .filter((s) => s.cloudinaryPublicId)
+      .map((s) => s.cloudinaryPublicId);
+
+    if (cloudinaryIds.length > 0 && hasCloudinaryConfig()) {
+      await Promise.allSettled(
+        cloudinaryIds.map((id) =>
+          cloudinary.uploader.destroy(id, { resource_type: "raw" })
+        )
+      );
+    }
+
+    await Promise.all([
+      AssignmentSubmission.deleteMany({ assignment: assignment._id }),
+      Assignment.findByIdAndDelete(assignment._id),
+    ]);
 
     res.json({ message: "Assignment deleted successfully" });
   } catch (err) {

@@ -2,6 +2,13 @@ const express = require("express");
 const Course = require("../models/adminModels/course");
 const User = require("../models/adminModels/user");
 const Notification = require("../models/adminModels/notification");
+const Enrollment = require("../models/adminModels/enrollment");
+const Schedule = require("../models/adminModels/schedule");
+const StudentSchedule = require("../models/adminModels/studentSchedule");
+const Assignment = require("../models/facultyModels/assignment");
+const AssignmentSubmission = require("../models/facultyModels/assignmentSubmission");
+const Grade = require("../models/facultyModels/grade");
+const { cloudinary, hasCloudinaryConfig } = require("../config/cloudinary");
 const auth = require("../middleware/authMiddleware");
 const authorizeRoles = require("../middleware/roleMiddleware");
 
@@ -229,13 +236,49 @@ router.get("/", auth, authorizeRoles("admin"), async (req, res, next) => {
  */
 /**
  * DELETE COURSE (ADMIN ONLY)
+ * Cascade-deletes all related documents and Cloudinary submission files.
  */
 router.delete("/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
+  const courseId = req.params.id;
   try {
-    const course = await Course.findByIdAndDelete(req.params.id).lean();
+    const course = await Course.findById(courseId).lean();
     if (!course) {
       return res.status(404).json({ message: "Course not found" });
     }
+
+    // Collect schedule IDs so StudentSchedule rows can be removed
+    const schedules = await Schedule.find({ course: courseId }).select("_id").lean();
+    const scheduleIds = schedules.map((s) => s._id);
+
+    // Collect Cloudinary public IDs from all submissions for this course
+    const submissions = await AssignmentSubmission.find({ course: courseId })
+      .select("cloudinaryPublicId")
+      .lean();
+    const cloudinaryIds = submissions
+      .filter((s) => s.cloudinaryPublicId)
+      .map((s) => s.cloudinaryPublicId);
+
+    // Delete Cloudinary files first (failures are non-fatal)
+    if (cloudinaryIds.length > 0 && hasCloudinaryConfig()) {
+      await Promise.allSettled(
+        cloudinaryIds.map((id) =>
+          cloudinary.uploader.destroy(id, { resource_type: "raw" })
+        )
+      );
+    }
+
+    // Delete all related documents and the course itself in parallel
+    await Promise.all([
+      Enrollment.deleteMany({ course: courseId }),
+      Assignment.deleteMany({ course: courseId }),
+      AssignmentSubmission.deleteMany({ course: courseId }),
+      Grade.deleteMany({ course: courseId }),
+      Schedule.deleteMany({ course: courseId }),
+      scheduleIds.length > 0
+        ? StudentSchedule.deleteMany({ schedule: { $in: scheduleIds } })
+        : Promise.resolve(),
+      Course.findByIdAndDelete(courseId),
+    ]);
 
     res.json({ message: "Course deleted" });
   } catch (err) {

@@ -46,7 +46,7 @@ const studentScheduleRoutes = require("./routes/studentRoutes/studentScheduleRou
 const adminStudentScheduleRoutes = require("./routes/adminRoutes/adminStudentScheduleRoutes");
 const lunchBuddyRoutes = require("./routes/studentRoutes/lunchBuddyRoutes");
 const partyBuddyRoutes = require("./routes/studentRoutes/partyBuddyRoutes");
-const learningBuddyRoutes = require("./routes/studentRoutes/learningBuddRoutes");
+const learningBuddyRoutes = require("./routes/studentRoutes/learningBuddyRoutes");
 const gradeRoutes = require("./routes/facultyRoutes/gradeRoutes");
 const libraryRoutes = require("./routes/studentRoutes/libraryRoutes");
 const attendanceRoutes = require("./routes/facultyRoutes/attendanceRoutes");
@@ -54,6 +54,17 @@ const assignmentRoutes = require("./routes/facultyRoutes/assignmentRoutes");
 
 
 const isProduction = process.env.NODE_ENV === "production";
+
+// Redirect HTTP → HTTPS when behind a reverse proxy in production.
+// Proxies (nginx, load balancers) set x-forwarded-proto on the request.
+if (isProduction) {
+  app.use((req, res, next) => {
+    if (req.headers["x-forwarded-proto"] === "http") {
+      return res.redirect(301, `https://${req.headers.host}${req.url}`);
+    }
+    next();
+  });
+}
 
 const allowedOrigins = process.env.ALLOWED_ORIGINS
   ? process.env.ALLOWED_ORIGINS.split(",")
@@ -71,6 +82,8 @@ app.use(
   helmet({
     crossOriginResourcePolicy: { policy: "cross-origin" },
     referrerPolicy: { policy: "strict-origin-when-cross-origin" },
+    frameguard: { action: "deny" },
+    hsts: isProduction ? { maxAge: 31536000, includeSubDomains: true } : false,
   })
 );
 app.use(
