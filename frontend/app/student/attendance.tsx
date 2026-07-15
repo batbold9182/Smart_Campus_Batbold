@@ -125,7 +125,7 @@ export default function StudentAttendance() {
 
 				<View className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
 					<Text className="mb-2 text-app-base font-semibold text-app-text">
-						Schedule Attendance{scheduleData?.day ? ` � ${scheduleData.day}` : ""}
+						Schedule Attendance{scheduleData?.day ? ` • ${scheduleData.day}` : ""}
 					</Text>
 
 					{!scheduleData?.items.length ? (
@@ -137,9 +137,9 @@ export default function StudentAttendance() {
 									<View className="flex-1">
 										<Text className="text-app-base font-semibold text-app-text">{item.course?.title || "Untitled Course"}</Text>
 										<Text className="mt-1 text-app-muted">
-											{item.course?.code || "No code"} � {item.schedule.startTime} - {item.schedule.endTime}
+											{item.course?.code || "No code"} • {item.schedule.startTime} - {item.schedule.endTime}
 										</Text>
-										<Text className="mt-1 text-app-placeholder">Room {item.schedule.room} � Faculty: {item.facultyName}</Text>
+										<Text className="mt-1 text-app-placeholder">Room {item.schedule.room} • Faculty: {item.facultyName}</Text>
 									</View>
 									<View className={`rounded-full px-3 py-2 ${getBadgeClassName(item.attendance?.status || null)}`}>
 										<Text className="text-app-xs font-semibold text-app-text">
@@ -170,7 +170,7 @@ export default function StudentAttendance() {
 								<View className="flex-row items-start justify-between gap-3">
 									<View className="flex-1">
 										<Text className="text-app-base font-semibold text-app-text">{item.course.title}</Text>
-										<Text className="mt-1 text-app-muted">{item.course.code} � Faculty: {item.course.facultyName}</Text>
+										<Text className="mt-1 text-app-muted">{item.course.code} • Faculty: {item.course.facultyName}</Text>
 									</View>
 									<View className="rounded-full bg-app-primary-bg px-3 py-2">
 										<Text className="text-app-xs font-semibold text-app-primary-dark">{item.summary.totalMarked} records</Text>

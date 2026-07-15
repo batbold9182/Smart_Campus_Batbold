@@ -9,6 +9,8 @@ import { useRouter } from "expo-router";
 import { unassignSchedule } from "@/services/scheduleService";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton, AppCard, AppModal } from "../../components/ui";
+import Toast from "react-native-toast-message";
+import { confirmAction } from "../../utils/confirm";
 
 export default function AssignScheduleScreen() {
   const [students, setStudents] = useState<any[]>([]);
@@ -89,10 +91,10 @@ export default function AssignScheduleScreen() {
       setStudents(studentsData);
       setSchedules(schedulesData);
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message ||
-        "Failed to load students or schedules";
-      alert(message);
+      Toast.show({
+        type: "error",
+        text1: error?.response?.data?.message || "Failed to load students or schedules",
+      });
     } finally {
       setLoading(false);
     }
@@ -100,18 +102,19 @@ export default function AssignScheduleScreen() {
 
   const handleAssign = async () => {
     if (!studentId || !scheduleId) {
-      alert("Select student and schedule");
+      Toast.show({ type: "error", text1: "Select student and schedule" });
       return;
     }
 
     try {
       setLoading(true);
       await assignSchedule(studentId, scheduleId);
-      alert("Schedule assigned");
+      Toast.show({ type: "success", text1: "Schedule assigned" });
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message || "Failed to assign schedule";
-      alert(message);
+      Toast.show({
+        type: "error",
+        text1: error?.response?.data?.message || "Failed to assign schedule",
+      });
     } finally {
       setLoading(false);
     }
@@ -119,18 +122,27 @@ export default function AssignScheduleScreen() {
 
   const handleUnassign = async () => {
     if (!studentId || !scheduleId) {
-      alert("Select student and schedule");
+      Toast.show({ type: "error", text1: "Select student and schedule" });
       return;
     }
+
+    const ok = await confirmAction(
+      "Unassign schedule",
+      "Remove this schedule from the selected student?",
+      "Unassign",
+      true
+    );
+    if (!ok) return;
 
     try {
       setLoading(true);
       await unassignSchedule(studentId, scheduleId);
-      alert("Schedule unassigned");
+      Toast.show({ type: "success", text1: "Schedule unassigned" });
     } catch (error: any) {
-      const message =
-        error?.response?.data?.message || "Failed to unassign schedule";
-      alert(message);
+      Toast.show({
+        type: "error",
+        text1: error?.response?.data?.message || "Failed to unassign schedule",
+      });
     } finally {
       setLoading(false);
     }
@@ -151,7 +163,7 @@ export default function AssignScheduleScreen() {
             onPress={() => setActiveSelector("student")}
           >
             <Text className={studentId ? "text-app-text" : "text-app-muted"}>{selectedStudentLabel}</Text>
-            <Text className="text-app-md text-app-muted">?</Text>
+            <Text className="text-app-md text-app-muted">▾</Text>
           </TouchableOpacity>
 
           <Text className="mb-1 text-app-sm font-semibold text-app-text-secondary">Schedule</Text>
@@ -160,7 +172,7 @@ export default function AssignScheduleScreen() {
             onPress={() => setActiveSelector("schedule")}
           >
             <Text className={scheduleId ? "text-app-text" : "text-app-muted"}>{selectedScheduleLabel}</Text>
-            <Text className="text-app-md text-app-muted">?</Text>
+            <Text className="text-app-md text-app-muted">▾</Text>
           </TouchableOpacity>
 
           <View className="gap-2">

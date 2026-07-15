@@ -72,7 +72,7 @@ export default function Grades() {
                 <View className="flex-row items-start justify-between gap-3">
                   <View className="flex-1">
                     <Text className="text-app-base font-semibold text-app-text">{item.course.title}</Text>
-                    <Text className="mt-1 text-app-muted">{item.course.code} � {item.course.credits} credits</Text>
+                    <Text className="mt-1 text-app-muted">{item.course.code} • {item.course.credits} credits</Text>
                     <Text className="mt-1 text-app-placeholder">Faculty: {item.course.facultyName}</Text>
                   </View>
                   <View className={`rounded-full px-3 py-2 ${badgeClassName}`}>

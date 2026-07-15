@@ -154,7 +154,7 @@ export default function DashboardTemplate({
           {/* Stats row */}
           <View style={s.statsRow}>
             <View style={s.statsCard}>
-              <View style={s.statsIconWrap(palette.blue600)}>
+              <View style={s.statsIconWrap(palette.teal600)}>
                 <Ionicons name="calendar" size={16} color={palette.white} />
               </View>
               <Text style={s.statsValue}>{todaySchedule.length}</Text>

@@ -23,7 +23,7 @@ export function ThemeTransitionOverlay() {
 
   useEffect(() => {
     if (isDark !== prevDark.current) {
-      bg.value = prevDark.current ? palette.purple950 : palette.appBg;
+      bg.value = prevDark.current ? palette.teal950 : palette.appBg;
       prevDark.current = isDark;
 
       fade.value = withSequence(

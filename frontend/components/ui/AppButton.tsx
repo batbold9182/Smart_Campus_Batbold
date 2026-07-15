@@ -80,7 +80,7 @@ export function AppButton({
     >
       {loading ? (
         <ActivityIndicator
-          color={variant === "outline" || variant === "ghost" ? palette.blue600 : palette.white}
+          color={variant === "outline" || variant === "ghost" ? palette.teal600 : palette.white}
         />
       ) : (
         <>
@@ -110,7 +110,7 @@ export function AppButton({
 
   const gradientColors =
     isDisabled
-      ? (["#93c5fd", "#a78bfa"] as const)
+      ? (["#5eead4", "#2dd4bf"] as const)
       : isDark
       ? gradients.primaryDark
       : gradients.primary;

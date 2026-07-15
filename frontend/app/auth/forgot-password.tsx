@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
@@ -19,7 +18,7 @@ export default function ForgotPasswordScreen() {
   const handleRequestReset = async () => {
     const cleanEmail = email.trim();
     if (!cleanEmail) {
-      Alert.alert("Email required", "Please enter your email.");
+      setMessage("Please enter your email.");
       return;
     }
 
@@ -80,9 +79,9 @@ export default function ForgotPasswordScreen() {
           ) : null}
 
           <AppButton
-            title="Back"
+            title="Back to login"
             variant="ghost"
-            onPress={() => router.replace("/auth/reset-password")}
+            onPress={() => router.replace("/auth/login")}
           />
         </AppCard>
       </ScrollView>

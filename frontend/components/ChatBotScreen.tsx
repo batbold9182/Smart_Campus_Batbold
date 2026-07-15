@@ -144,7 +144,7 @@ export default function ChatBotScreen() {
               <Text style={s.headerBackText}>← Back to Dashboard</Text>
             </TouchableOpacity>
             <TouchableOpacity onPress={toggleTheme} style={s.themeToggle}>
-              <Ionicons name={isDark ? "sunny" : "moon"} size={18} color={isDark ? "#facc15" : "#6b21a8"} />
+              <Ionicons name={isDark ? "sunny" : "moon"} size={18} color={isDark ? "#facc15" : "#0f766e"} />
             </TouchableOpacity>
           </View>
           <Text style={s.headerTitle}>Smart Campus Bot</Text>

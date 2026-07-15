@@ -7,6 +7,8 @@ import { AppButton, AppCard, AppInput } from "../../components/ui";
 import { SkeletonList } from "../../components/Skeleton";
 import UserListItem from "../../components/admin/UserListItem";
 import EditUserModal from "../../components/admin/EditUserModal";
+import Toast from "react-native-toast-message";
+import { confirmAction } from "../../utils/confirm";
 
 export default function AdminUsersScreen() {
   const [users, setUsers] = useState<any[]>([]);
@@ -35,6 +37,24 @@ export default function AdminUsersScreen() {
   useEffect(() => {
     loadUsers();
   }, [loadUsers]);
+
+  const handleDelete = async (id: string) => {
+    const target = users.find((u) => u._id === id);
+    const ok = await confirmAction(
+      "Delete user",
+      `Permanently delete ${target?.name || "this user"}? This cannot be undone.`,
+      "Delete",
+      true
+    );
+    if (!ok) return;
+    try {
+      await deleteUser(id);
+      Toast.show({ type: "success", text1: "User deleted" });
+      loadUsers();
+    } catch (err: any) {
+      Toast.show({ type: "error", text1: err?.response?.data?.message || "Failed to delete user" });
+    }
+  };
 
   const editingUser = users.find((u) => u._id === editingUserId);
 
@@ -143,7 +163,7 @@ export default function AdminUsersScreen() {
                   onToggle={(id) => setExpandedUserId((prev) => (prev === id ? null : id))}
                   onEdit={(u) => setEditingUserId(u._id)}
                   onToggleStatus={(id) => toggleUserStatus(id).then(loadUsers)}
-                  onDelete={(id) => deleteUser(id).then(loadUsers)}
+                  onDelete={handleDelete}
                 />
               )}
             />

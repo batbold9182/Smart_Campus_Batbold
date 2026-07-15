@@ -108,7 +108,7 @@ export default function Grades() {
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 pr-3">
                       <Text className="text-app-base font-semibold text-app-text">{course.title}</Text>
-                      <Text className="mt-1 text-app-muted">{course.code} � {course.credits} credits</Text>
+                      <Text className="mt-1 text-app-muted">{course.code} • {course.credits} credits</Text>
                     </View>
                     <Text className="text-app-xs font-semibold text-app-primary">Open</Text>
                   </View>
@@ -130,7 +130,7 @@ export default function Grades() {
               <View className="flex-row items-start justify-between">
                 <View className="flex-1 pr-3">
                   <Text className="text-app-md font-semibold text-app-text">{selectedCourse.course.title}</Text>
-                  <Text className="mt-1 text-app-muted">{selectedCourse.course.code} � {selectedCourse.course.credits} credits</Text>
+                  <Text className="mt-1 text-app-muted">{selectedCourse.course.code} • {selectedCourse.course.credits} credits</Text>
                 </View>
                 <TouchableOpacity onPress={() => setSelectedCourse(null)} className="rounded-full bg-app-primary-bg px-3 py-2">
                   <Text className="font-semibold text-app-primary">Courses</Text>
@@ -146,7 +146,7 @@ export default function Grades() {
               selectedCourse.students.map((item) => (
                 <View key={item.student.id} className="mb-4 rounded-xl bg-app-surface p-4 shadow-card">
                   <Text className="text-app-base font-semibold text-app-text">{item.student.name}</Text>
-                  <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` � Year ${item.student.yearLevel}` : ""}</Text>
+                  <Text className="mt-1 text-app-muted">{item.student.program || "Program not set"}{item.student.yearLevel ? ` • Year ${item.student.yearLevel}` : ""}</Text>
                   <Text className="mt-1 text-app-placeholder">{item.student.email}</Text>
 
                   <View className="mt-4">

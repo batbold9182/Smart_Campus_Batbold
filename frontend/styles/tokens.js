@@ -32,13 +32,30 @@ const palette = {
   slate300: "#cbd5e1",
   appBg: "#f5f7fb",       // light-mode page background
 
-  // Blue (primary)
+  // Blue (legacy — kept for reference; theme now uses teal below)
   blue50: "#eff6ff",
   blue100: "#dbeafe",
   blue200: "#bfdbfe",
   blue300: "#93c5fd",
   blue600: "#2563eb",
   blue700: "#1d4ed8",
+
+  // Teal (primary)
+  teal50:  "#f0fdfa",
+  teal100: "#ccfbf1",
+  teal200: "#99f6e4",
+  teal300: "#5eead4",
+  teal400: "#2dd4bf",
+  teal500: "#14b8a6",
+  teal600: "#0d9488",
+  teal700: "#0f766e",
+  teal800: "#115e59",
+  teal900: "#134e4a",
+  teal950: "#042f2e",
+
+  // Cyan / Sky (brand gradient + dark accents)
+  cyan600: "#0891b2",
+  sky600:  "#0284c7",
 
   // Red (error / danger)
   red50: "#fef2f2",
@@ -102,18 +119,18 @@ const light = {
   muted:         palette.gray600,
 
   // Schedule-specific
-  scheduleLink:  palette.blue600,
+  scheduleLink:  palette.teal600,
   prof:          palette.gray700,
   schedDivider:  palette.gray200,
   avatarBg:      palette.gray200,
   greenBorderBg: palette.appBg,
-  accentBar:     palette.purple600,
+  accentBar:     palette.teal600,
 
   // New semantic tokens
   online:           palette.green500,      // status dot
   divider:          palette.gray200,       // separator lines
   inputBorder:      palette.gray300,       // input default border
-  inputBorderFocus: palette.blue600,       // input focused border
+  inputBorderFocus: palette.teal600,       // input focused border
   skeleton:         palette.slate200,      // skeleton loading bg
   shadow:           "#0f172a",             // StyleSheet shadowColor
   error:            palette.red600,        // error text / borders
@@ -127,30 +144,30 @@ const light = {
 };
 
 const dark = {
-  // Backgrounds
-  bg:            palette.purple950,
-  surface:       palette.purple900,
-  cardBorder:    palette.purple700,
+  // Backgrounds — deep teal
+  bg:            palette.teal950,
+  surface:       palette.teal900,
+  cardBorder:    palette.teal800,
 
   // Text
   text:          palette.white,
-  muted:         palette.purple400,
+  muted:         palette.teal300,
 
   // Schedule-specific
-  scheduleLink:  palette.indigo400,
-  prof:          palette.purple300,
-  schedDivider:  palette.purple700,
-  avatarBg:      palette.purple800,
-  greenBorderBg: palette.purple950,
-  accentBar:     palette.purple500,
+  scheduleLink:  palette.teal300,
+  prof:          palette.teal200,
+  schedDivider:  palette.teal800,
+  avatarBg:      palette.teal800,
+  greenBorderBg: palette.teal950,
+  accentBar:     palette.teal400,
 
   // New semantic tokens
   online:           palette.green500,
-  divider:          palette.purple700,
-  inputBorder:      palette.purple700,
-  inputBorderFocus: palette.indigo400,
-  skeleton:         palette.purple800,
-  shadow:           palette.purple950,
+  divider:          palette.teal800,
+  inputBorder:      palette.teal800,
+  inputBorderFocus: palette.teal400,
+  skeleton:         palette.teal800,
+  shadow:           palette.teal950,
   error:            palette.red500,
   warningIcon:      palette.yellow400,
 
@@ -168,7 +185,7 @@ const base = {
   text:       palette.gray900,
   muted:      palette.gray600,
   border:     palette.gray300,
-  primary:    palette.blue600,
+  primary:    palette.teal600,
   danger:     palette.red700,
   fieldError: palette.fieldError,
 };
@@ -220,11 +237,11 @@ const space = {
 /*  All values reference palette.* — no raw hex literals here.        */
 /* ------------------------------------------------------------------ */
 const gradients = {
-  brand:       [palette.purple700, palette.magenta600, palette.pink600], // dashboard header
-  primary:     [palette.blue600,   palette.purple600],                   // screen headers light
-  primaryDark: [palette.purple700, palette.purple500],                   // screen headers dark
+  brand:       [palette.teal600, palette.cyan600, palette.sky600],       // dashboard header
+  primary:     [palette.teal600,   palette.cyan600],                     // screen headers light
+  primaryDark: [palette.teal700,   palette.teal500],                     // screen headers dark
   danger:      [palette.rose600,   palette.pink600],                     // logout / destructive
-  card:        [palette.blue50,    palette.purple50],                    // subtle card tint
+  card:        [palette.teal50,    palette.teal100],                     // subtle card tint
 };
 
 /* ------------------------------------------------------------------ */
@@ -258,13 +275,13 @@ const tailwind = {
   "app-text-secondary":  palette.gray700,
   "app-text-subtle":     palette.gray500,
 
-  // Primary blue (static accent)
-  "app-primary":         palette.blue600,
-  "app-primary-dark":    palette.blue700,
-  "app-primary-bg":      palette.blue50,
-  "app-primary-light":   palette.blue100,
-  "app-primary-muted":   palette.blue200,
-  "app-primary-loading": palette.blue300,
+  // Primary teal (static accent)
+  "app-primary":         palette.teal600,
+  "app-primary-dark":    palette.teal700,
+  "app-primary-bg":      palette.teal50,
+  "app-primary-light":   palette.teal100,
+  "app-primary-muted":   palette.teal200,
+  "app-primary-loading": palette.teal300,
 
   // Error / danger red (static accent)
   "app-error":           palette.red700,
@@ -296,13 +313,13 @@ const tailwind = {
   "app-online":       palette.green500,    // online status dot
   "app-warning-icon": palette.yellow400,   // warning / bell icons
 
-  // Dark purple theme
-  "dark-bg":      palette.purple950,
-  "dark-surface": palette.purple900,
-  "dark-card":    palette.purple800,
-  "dark-border":  palette.purple700,
+  // Dark teal theme
+  "dark-bg":      palette.teal950,
+  "dark-surface": palette.teal900,
+  "dark-card":    palette.teal800,
+  "dark-border":  palette.teal800,
   "dark-text":    palette.white,
-  "dark-muted":   palette.purple400,
+  "dark-muted":   palette.teal300,
 };
 
 module.exports = { palette, light, dark, base, type, radius, space, gradients, motion, tailwind };

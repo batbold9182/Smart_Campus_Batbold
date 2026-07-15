@@ -10,6 +10,7 @@ import { ErrorBoundary } from "../components/ErrorBoundary";
 import OfflineBanner from "../components/OfflineBanner";
 import Toast from "react-native-toast-message";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -37,16 +38,18 @@ function InnerLayout() {
 
 export default function RootLayout() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <SafeAreaProvider>
-        <ThemeProvider>
-          <AuthProvider>
-            <ErrorBoundary>
-              <InnerLayout />
-            </ErrorBoundary>
-          </AuthProvider>
-        </ThemeProvider>
-      </SafeAreaProvider>
-    </QueryClientProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <QueryClientProvider client={queryClient}>
+        <SafeAreaProvider>
+          <ThemeProvider>
+            <AuthProvider>
+              <ErrorBoundary>
+                <InnerLayout />
+              </ErrorBoundary>
+            </AuthProvider>
+          </ThemeProvider>
+        </SafeAreaProvider>
+      </QueryClientProvider>
+    </GestureHandlerRootView>
   );
 }

@@ -3,6 +3,7 @@
 node_modules/
 notes/
 CLAUDE.md
+documentation.md
 # Expo
 .expo/
 dist/

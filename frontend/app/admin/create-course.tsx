@@ -18,6 +18,7 @@ import {
 import { getUsers } from "../../services/adminServices/adminService";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton, AppInput, AppCard } from "../../components/ui";
+import { confirmAction } from "../../utils/confirm";
 
 type Faculty = {
   _id: string;
@@ -135,6 +136,14 @@ export default function AdminCreateCourse() {
   };
 
   const handleDelete = async (courseId: string) => {
+    const course = courses.find((c) => c._id === courseId);
+    const ok = await confirmAction(
+      "Delete course",
+      `Permanently delete ${course?.title || "this course"}? This also removes its enrollments, assignments, grades, and schedules.`,
+      "Delete",
+      true
+    );
+    if (!ok) return;
     try {
       setDeletingId(courseId);
       await deleteCourse(courseId);

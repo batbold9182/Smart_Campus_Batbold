@@ -3,7 +3,6 @@ import {
   View,
   Text,
   ScrollView,
-  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router, useLocalSearchParams } from "expo-router";
@@ -51,12 +50,12 @@ export default function ResetPasswordScreen() {
     setErrors({});
 
     if (!email || !cleanOtp || !newPassword || !confirmPassword) {
-      Alert.alert("Missing fields", "Email, OTP, new password, and confirm password are required.");
+      setMessage("Email, OTP, new password, and confirm password are required.");
       return;
     }
 
     if (cleanOtp.length !== 6) {
-      Alert.alert("Invalid OTP", "Please enter the 6-digit OTP.");
+      setMessage("Please enter the 6-digit OTP.");
       return;
     }
 

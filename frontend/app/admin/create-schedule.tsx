@@ -9,6 +9,8 @@ import { createSchedule, deleteSchedule, getAdminSchedules, getCourses } from ".
 import { useRouter } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { AppButton, AppInput, AppCard, AppModal } from "../../components/ui";
+import Toast from "react-native-toast-message";
+import { confirmAction } from "../../utils/confirm";
 
 export default function CreateScheduleScreen() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -46,14 +48,14 @@ export default function CreateScheduleScreen() {
 
   const handleCreate = async () => {
     if (!course || !day || !startTime || !endTime || !room) {
-      alert("All fields required");
+      Toast.show({ type: "error", text1: "All fields required" });
       return;
     }
 
     const facultyId = selectedCourse?.faculty?._id || selectedCourse?.faculty;
 
     if (!facultyId) {
-      alert("Selected course has no assigned faculty. Please assign faculty first.");
+      Toast.show({ type: "error", text1: "Selected course has no assigned faculty. Assign faculty first." });
       return;
     }
 
@@ -68,7 +70,7 @@ export default function CreateScheduleScreen() {
         room,
       });
 
-      alert("Schedule created");
+      Toast.show({ type: "success", text1: "Schedule created" });
       setCourse("");
       setDay("");
       setStartTime("");
@@ -81,13 +83,21 @@ export default function CreateScheduleScreen() {
   };
 
   const handleDelete = async (scheduleId: string) => {
+    const target = schedules.find((s) => s._id === scheduleId);
+    const ok = await confirmAction(
+      "Delete schedule",
+      `Delete this schedule slot${target?.course?.title ? ` for ${target.course.title}` : ""}? This cannot be undone.`,
+      "Delete",
+      true
+    );
+    if (!ok) return;
     try {
       setLoadingDeleteId(scheduleId);
       await deleteSchedule(scheduleId);
-      alert("Schedule deleted");
+      Toast.show({ type: "success", text1: "Schedule deleted" });
       await loadSchedules();
     } catch (err: any) {
-      alert(err?.response?.data?.message || "Failed to delete schedule");
+      Toast.show({ type: "error", text1: err?.response?.data?.message || "Failed to delete schedule" });
     } finally {
       setLoadingDeleteId(null);
     }

@@ -69,12 +69,40 @@ export const getBuildingMapStyles = (t: ThemeMode, isWide: boolean, isDark: bool
     backButtonText: { fontSize: 12, fontWeight: "600", color: palette.white },
     imageWrap: {
       flex: 1,
+      width: "100%",
+      minHeight: 220,
+      overflow: "hidden",
       alignItems: "center",
       justifyContent: "center",
       borderRadius: radius.md,
       backgroundColor: t.surface,
       borderWidth: 1,
       borderColor: t.cardBorder,
+    },
+    image: {
+      flex: 1,
+      width: "100%",
+    },
+    imageInner: {
+      width: "100%",
+      height: "100%",
+    },
+    zoomHint: {
+      position: "absolute",
+      bottom: space[2],
+      left: 0,
+      right: 0,
+      alignItems: "center",
+    },
+    zoomHintText: {
+      overflow: "hidden",
+      color: palette.white,
+      fontSize: 11,
+      fontWeight: "600",
+      backgroundColor: t.glassOverlay,
+      borderRadius: radius.full,
+      paddingHorizontal: space[3],
+      paddingVertical: space[1] + 2,
     },
   });
 

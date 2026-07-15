@@ -25,11 +25,11 @@
     --color-app-border: #d1d5db;
     --color-app-border-light: #e5e7eb;
 
-    /* Primary tinted areas */
-    --color-app-primary-bg: #eff6ff;
-    --color-app-primary-light: #dbeafe;
-    --color-app-primary-muted: #bfdbfe;
-    --color-app-primary-loading: #93c5fd;
+    /* Primary tinted areas — teal */
+    --color-app-primary-bg: #f0fdfa;
+    --color-app-primary-light: #ccfbf1;
+    --color-app-primary-muted: #99f6e4;
+    --color-app-primary-loading: #5eead4;
 
     /* Error tinted areas */
     --color-app-error-bg: #fee2e2;
@@ -51,7 +51,7 @@
 
     /* Input states */
     --color-app-input-border: #d1d5db;
-    --color-app-input-border-focus: #2563eb;
+    --color-app-input-border-focus: #0d9488;
 
     /* Skeleton */
     --color-app-skeleton: #e2e8f0;
@@ -66,28 +66,28 @@
   }
 
   .dark {
-    /* Backgrounds — purple palette */
-    --color-app-bg: #0d0221;
-    --color-app-surface: #1a0a3e;
-    --color-app-bg-muted: #231152;
-    --color-app-bg-subtle: #1a0a3e;
+    /* Backgrounds — deep teal */
+    --color-app-bg: #042f2e;
+    --color-app-surface: #134e4a;
+    --color-app-bg-muted: #115e59;
+    --color-app-bg-subtle: #134e4a;
 
     /* Text */
     --color-app-text: #ffffff;
-    --color-app-muted: #a78bfa;
-    --color-app-text-secondary: #c4b5fd;
-    --color-app-text-subtle: #a78bfa;
-    --color-app-placeholder: #a78bfa;
+    --color-app-muted: #5eead4;
+    --color-app-text-secondary: #99f6e4;
+    --color-app-text-subtle: #5eead4;
+    --color-app-placeholder: #2dd4bf;
 
     /* Borders */
-    --color-app-border: #6b21a8;
-    --color-app-border-light: #6b21a8;
+    --color-app-border: #115e59;
+    --color-app-border-light: #115e59;
 
-    /* Primary tinted areas — dark indigo */
-    --color-app-primary-bg: #231152;
-    --color-app-primary-light: #231152;
-    --color-app-primary-muted: #312e81;
-    --color-app-primary-loading: #4f46e5;
+    /* Primary tinted areas — dark teal */
+    --color-app-primary-bg: #134e4a;
+    --color-app-primary-light: #115e59;
+    --color-app-primary-muted: #0f766e;
+    --color-app-primary-loading: #14b8a6;
 
     /* Error tinted areas — dark red */
     --color-app-error-bg: #450a0a;
@@ -108,14 +108,14 @@
     --color-app-disabled: #374151;
 
     /* Input states */
-    --color-app-input-border: #6b21a8;
-    --color-app-input-border-focus: #818cf8;
+    --color-app-input-border: #115e59;
+    --color-app-input-border-focus: #2dd4bf;
 
     /* Skeleton */
-    --color-app-skeleton: #231152;
+    --color-app-skeleton: #134e4a;
 
     /* Divider */
-    --color-app-divider: #6b21a8;
+    --color-app-divider: #115e59;
 
     /* Glassmorphism */
     --color-app-glass-light: rgba(255, 255, 255, 0.05);

@@ -72,8 +72,8 @@ module.exports = {
         "app-glass-overlay": "var(--color-app-glass-overlay)",
 
         /* ── Static accent colours (same in light & dark) ── */
-        "app-primary":      palette.blue600,
-        "app-primary-dark": palette.blue700,
+        "app-primary":      palette.teal600,
+        "app-primary-dark": palette.teal700,
 
         "app-error":      palette.red700,
         "app-danger":     palette.red600,
@@ -91,12 +91,12 @@ module.exports = {
         "app-overlay-light": "rgba(255,255,255,0.2)", // button bg on gradients
 
         /* ── Dark-theme palette (explicit, for StyleSheet-hybrid pages) ── */
-        "dark-bg":      palette.purple950,
-        "dark-surface": palette.purple900,
-        "dark-card":    palette.purple800,
-        "dark-border":  palette.purple700,
+        "dark-bg":      palette.teal950,
+        "dark-surface": palette.teal900,
+        "dark-card":    palette.teal800,
+        "dark-border":  palette.teal800,
         "dark-text":    palette.white,
-        "dark-muted":   palette.purple400,
+        "dark-muted":   palette.teal300,
       },
 
       /* ── Typography scale ── */

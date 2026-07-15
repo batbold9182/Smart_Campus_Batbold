@@ -3,8 +3,8 @@
     "extra": {
       "API_URL": ""
     },
-    "name": "frontend",
-    "slug": "frontend",
+    "name": "Smart Campus",
+    "slug": "smart-campus",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -14,6 +14,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.batbold.smartcampus",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
