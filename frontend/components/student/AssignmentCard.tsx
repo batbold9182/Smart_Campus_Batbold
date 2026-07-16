@@ -1,15 +1,22 @@
 import { useState } from "react";
-import { Alert, Linking, Platform, Text, TouchableOpacity, View } from "react-native";
+import { Platform, Text, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { AppButton, AppInput } from "../ui";
-import type { DocumentPickerAsset } from "expo-document-picker";
+import { MAX_SUBMISSION_BYTES } from "../../constants/api";
+// Imported statically on purpose: a dynamic `await import()` inside the press
+// handler consumes the browser's user-gesture context on the first click, so the
+// web file input's .click() gets blocked and picking only works on the 2nd try.
+import * as DocumentPicker from "expo-document-picker";
 import {
-  downloadAssignmentSubmission,
-  getAssignmentSubmissionDownloadUrl,
   submitStudentAssignment,
   type AssignmentRecord,
 } from "../../services/facultyServices/assignmentService";
 
+type DocumentPickerAsset = DocumentPicker.DocumentPickerAsset;
+
 // ── helpers ──────────────────────────────────────────────────────────────────
+
+const MAX_SUBMISSION_MB = Math.round(MAX_SUBMISSION_BYTES / (1024 * 1024));
 
 const toDateKey = (date = new Date()) => {
   const year = date.getUTCFullYear();
@@ -95,7 +102,6 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
 
   const pickDocument = async () => {
     try {
-      const DocumentPicker = await import("expo-document-picker");
       const result = await DocumentPicker.getDocumentAsync({
         multiple: false,
         copyToCacheDirectory: true,
@@ -109,18 +115,35 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
         ],
       });
       if (result.canceled || !result.assets?.length) return;
-      setSelectedFile(result.assets[0]);
+
+      const asset = result.assets[0];
+      if (typeof asset.size === "number" && asset.size > MAX_SUBMISSION_BYTES) {
+        Toast.show({
+          type: "error",
+          text1: "File too large",
+          text2: `Choose a file under ${MAX_SUBMISSION_MB} MB.`,
+        });
+        return;
+      }
+
+      setSelectedFile(asset);
     } catch {
-      Alert.alert("Unable to pick file", "Please try again.");
+      Toast.show({ type: "error", text1: "Unable to pick file", text2: "Please try again." });
     }
   };
 
   const handleSubmit = async () => {
     const trimmedNotes = notes.trim();
     if (!trimmedNotes && !selectedFile) {
-      Alert.alert("Nothing to submit", "Add notes or choose a file before submitting.");
+      Toast.show({
+        type: "error",
+        text1: "Nothing to submit",
+        text2: "Add notes or choose a file before submitting.",
+      });
       return;
     }
+
+    const isResubmit = Boolean(assignment.submission);
 
     try {
       setSubmitting(true);
@@ -130,9 +153,17 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
 
       await submitStudentAssignment(assignment.id, formData);
       setSelectedFile(null);
+      Toast.show({
+        type: "success",
+        text1: isResubmit ? "Assignment resubmitted" : "Assignment submitted",
+      });
       onSubmitSuccess();
     } catch (error: any) {
-      Alert.alert("Unable to submit", error?.response?.data?.message || "Please try again.");
+      Toast.show({
+        type: "error",
+        text1: "Unable to submit",
+        text2: error?.response?.data?.message || "Please try again.",
+      });
     } finally {
       setSubmitting(false);
     }
@@ -220,7 +251,7 @@ export default function AssignmentCard({ assignment, onSubmitSuccess, onOpenFile
         <Text className="mt-2 text-app-muted">
           {selectedFile
             ? `${selectedFile.name}${selectedFile.size ? ` · ${Math.ceil(selectedFile.size / 1024)} KB` : ""}`
-            : "Choose a PDF, DOC, DOCX, TXT, JPG, PNG, WEBP, or GIF file up to 10 MB."}
+            : `Choose a PDF, DOC, DOCX, TXT, JPG, PNG, WEBP, or GIF file up to ${MAX_SUBMISSION_MB} MB.`}
         </Text>
         <View className="mt-3 flex-row gap-2">
           <TouchableOpacity

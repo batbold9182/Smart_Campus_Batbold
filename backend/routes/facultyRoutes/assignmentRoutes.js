@@ -271,10 +271,17 @@ router.put(
   authorizeRoles("faculty"),
   async (req, res, next) => {
     try {
-      const feedback = typeof req.body?.feedback === "string" ? req.body.feedback.trim() : "";
-      const rawScore = req.body?.score;
-      const hasScore = rawScore !== undefined && rawScore !== null && String(rawScore).trim() !== "";
-      const score = hasScore ? Number(rawScore) : null;
+      // A field is only written when the client actually sent it. This keeps an
+      // omitted `score` from silently erasing an existing grade, while still
+      // allowing an explicit `null`/"" to un-grade a submission.
+      const body = req.body || {};
+      const scoreProvided = Object.prototype.hasOwnProperty.call(body, "score");
+      const feedbackProvided = Object.prototype.hasOwnProperty.call(body, "feedback");
+
+      const rawScore = body.score;
+      const clearScore = scoreProvided && (rawScore === null || String(rawScore).trim() === "");
+      const hasNumericScore = scoreProvided && !clearScore;
+      const score = hasNumericScore ? Number(rawScore) : null;
 
       const assignment = await Assignment.findOne({
         _id: req.params.assignmentId,
@@ -287,7 +294,7 @@ router.put(
         return res.status(404).json({ message: "Assignment not found" });
       }
 
-      if (hasScore && (!Number.isFinite(score) || score < 0 || score > assignment.maxPoints)) {
+      if (hasNumericScore && (!Number.isFinite(score) || score < 0 || score > assignment.maxPoints)) {
         return res.status(400).json({ message: `Score must be between 0 and ${assignment.maxPoints}` });
       }
 
@@ -301,8 +308,13 @@ router.put(
         return res.status(404).json({ message: "Submission not found" });
       }
 
-      submission.score = score;
-      submission.feedback = feedback;
+      if (hasNumericScore) submission.score = score;
+      else if (clearScore) submission.score = null;
+
+      if (feedbackProvided) {
+        submission.feedback = typeof body.feedback === "string" ? body.feedback.trim() : "";
+      }
+
       submission.reviewedAt = new Date();
       await submission.save();
 
@@ -415,20 +427,20 @@ router.post("/faculty/courses/:courseId/assignments", auth, authorizeRoles("facu
         type: "announcement",
       }));
 
-    const session = await mongoose.startSession();
-    let assignment;
-    try {
-      await session.withTransaction(async () => {
-        [assignment] = await Assignment.create(
-          [{ title, description, dueDate, maxPoints, course: req.params.courseId, faculty: req.user.id }],
-          { session }
-        );
-        if (notificationDocs.length > 0) {
-          await Notification.insertMany(notificationDocs, { session });
-        }
-      });
-    } finally {
-      session.endSession();
+    // Standalone MongoDB does not support transactions (same reason enroll dropped
+    // them — see notes/fix_logs.md #16). Create the assignment first, then fan out
+    // notifications best-effort so a notification failure cannot fail the request.
+    const assignment = await Assignment.create({
+      title,
+      description,
+      dueDate,
+      maxPoints,
+      course: req.params.courseId,
+      faculty: req.user.id,
+    });
+
+    if (notificationDocs.length > 0) {
+      await Notification.insertMany(notificationDocs).catch(() => {});
     }
 
     res.status(201).json({

@@ -12,6 +12,17 @@ import { AppButton, AppInput, AppCard, AppModal } from "../../components/ui";
 import Toast from "react-native-toast-message";
 import { confirmAction } from "../../utils/confirm";
 
+// Must match the `day` enum in backend/models/adminModels/schedule.js
+const DAYS = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+
+// Backend stores 24-hour "HH:MM" strings and compares them lexically.
+const TIME_PATTERN = /^\d{1,2}:\d{2}$/;
+
+const normalizeTime = (value: string) => {
+  const [h, m] = value.trim().split(":");
+  return `${String(parseInt(h, 10)).padStart(2, "0")}:${m.padStart(2, "0")}`;
+};
+
 export default function CreateScheduleScreen() {
   const [courses, setCourses] = useState<any[]>([]);
   const [schedules, setSchedules] = useState<any[]>([]);
@@ -21,6 +32,7 @@ export default function CreateScheduleScreen() {
   const [endTime, setEndTime] = useState("");
   const [room, setRoom] = useState("");
   const [courseSelectorOpen, setCourseSelectorOpen] = useState(false);
+  const [daySelectorOpen, setDaySelectorOpen] = useState(false);
   const [loadingDeleteId, setLoadingDeleteId] = useState<string | null>(null);
   const [isCreating, setIsCreating] = useState(false);
   const router = useRouter();
@@ -39,7 +51,15 @@ export default function CreateScheduleScreen() {
   }, []);
 
   const loadAll = useCallback(async () => {
-    await Promise.all([loadCourses(), loadSchedules()]);
+    try {
+      await Promise.all([loadCourses(), loadSchedules()]);
+    } catch (err: any) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to load courses or schedules",
+        text2: err?.response?.data?.message || "Please try again.",
+      });
+    }
   }, [loadCourses, loadSchedules]);
 
   useEffect(() => {
@@ -49,6 +69,16 @@ export default function CreateScheduleScreen() {
   const handleCreate = async () => {
     if (!course || !day || !startTime || !endTime || !room) {
       Toast.show({ type: "error", text1: "All fields required" });
+      return;
+    }
+
+    if (!TIME_PATTERN.test(startTime.trim()) || !TIME_PATTERN.test(endTime.trim())) {
+      Toast.show({ type: "error", text1: "Invalid time", text2: "Use 24-hour HH:MM — e.g. 09:00" });
+      return;
+    }
+
+    if (normalizeTime(startTime) >= normalizeTime(endTime)) {
+      Toast.show({ type: "error", text1: "Invalid time range", text2: "End time must be after start time." });
       return;
     }
 
@@ -65,9 +95,9 @@ export default function CreateScheduleScreen() {
         courseId: course,
         facultyId,
         day,
-        startTime,
-        endTime,
-        room,
+        startTime: normalizeTime(startTime),
+        endTime: normalizeTime(endTime),
+        room: room.trim(),
       });
 
       Toast.show({ type: "success", text1: "Schedule created" });
@@ -77,6 +107,12 @@ export default function CreateScheduleScreen() {
       setEndTime("");
       setRoom("");
       await loadSchedules();
+    } catch (err: any) {
+      Toast.show({
+        type: "error",
+        text1: "Failed to create schedule",
+        text2: err?.response?.data?.message || "Please try again.",
+      });
     } finally {
       setIsCreating(false);
     }
@@ -124,9 +160,14 @@ export default function CreateScheduleScreen() {
             <Text className="text-app-md text-app-muted">▾</Text>
           </TouchableOpacity>
 
-          <View className="mb-3">
-            <AppInput label="Day" placeholder="e.g. Monday" value={day} onChangeText={setDay} />
-          </View>
+          <Text className="mb-1 text-app-sm font-semibold text-app-text-secondary">Day</Text>
+          <TouchableOpacity
+            className="mb-3 min-h-[50px] flex-row items-center justify-between rounded-xl border border-app-border bg-app-surface px-3"
+            onPress={() => setDaySelectorOpen(true)}
+          >
+            <Text className={day ? "text-app-text" : "text-app-muted"}>{day || "Select day"}</Text>
+            <Text className="text-app-md text-app-muted">▾</Text>
+          </TouchableOpacity>
           <View className="mb-3">
             <AppInput label="Start Time" placeholder="09:00" value={startTime} onChangeText={setStartTime} />
           </View>
@@ -176,6 +217,34 @@ export default function CreateScheduleScreen() {
             Create schedules only after courses are assigned to faculty.
           </Text>
         </View>
+
+        <AppModal open={daySelectorOpen} onClose={() => setDaySelectorOpen(false)} layout="bottom">
+          <View className="mb-2 flex-row items-center justify-between">
+            <Text className="text-app-md font-bold text-app-text">Select Day</Text>
+            <TouchableOpacity onPress={() => setDaySelectorOpen(false)}>
+              <Text className="text-app-sm font-semibold text-app-primary">Done</Text>
+            </TouchableOpacity>
+          </View>
+          <ScrollView showsVerticalScrollIndicator={false}>
+            {DAYS.map((d) => {
+              const active = day === d;
+              return (
+                <TouchableOpacity
+                  key={d}
+                  className={`mb-2 rounded-lg border px-3 py-3 ${
+                    active ? "border-app-primary bg-app-primary-bg" : "border-app-border-light bg-app-surface"
+                  }`}
+                  onPress={() => {
+                    setDay(d);
+                    setDaySelectorOpen(false);
+                  }}
+                >
+                  <Text className={`font-medium ${active ? "text-app-primary-dark" : "text-app-text"}`}>{d}</Text>
+                </TouchableOpacity>
+              );
+            })}
+          </ScrollView>
+        </AppModal>
 
         <AppModal open={courseSelectorOpen} onClose={() => setCourseSelectorOpen(false)} layout="bottom">
           <View className="mb-2 flex-row items-center justify-between">

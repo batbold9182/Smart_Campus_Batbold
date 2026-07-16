@@ -1,4 +1,5 @@
-import { Alert, Linking, Platform, Text, View } from "react-native";
+import { Linking, Platform, Text, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import ScreenLayout from "../../components/ScreenLayout";
@@ -16,7 +17,7 @@ export default function StudentAssignments() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const { data, isLoading } = useQuery({
+  const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["student-assignments"],
     queryFn: getStudentAssignments,
   });
@@ -41,7 +42,11 @@ export default function StudentAssignments() {
       const downloadUrl = await getAssignmentSubmissionDownloadUrl(submissionId);
       await Linking.openURL(downloadUrl || url);
     } catch {
-      Alert.alert("Unable to open file", "This file could not be downloaded on your device.");
+      Toast.show({
+        type: "error",
+        text1: "Unable to open file",
+        text2: "This file could not be downloaded on your device.",
+      });
     }
   };
 
@@ -51,6 +56,19 @@ export default function StudentAssignments() {
         <SkeletonStatRow count={3} />
         <SkeletonStatRow count={2} />
         <SkeletonList rows={3} />
+      </ScreenLayout>
+    );
+  }
+
+  if (isError) {
+    return (
+      <ScreenLayout title="Assignments" backRoute="/student/dashboard">
+        <View className="mb-3 rounded-xl bg-app-surface p-4 shadow-card">
+          <Text className="mb-3 text-center text-app-error">
+            Failed to load assignments. Please try again.
+          </Text>
+          <AppButton onPress={() => refetch()}>Retry</AppButton>
+        </View>
       </ScreenLayout>
     );
   }

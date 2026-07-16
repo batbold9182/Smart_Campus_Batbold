@@ -4,6 +4,7 @@ import { useRouter } from "expo-router";
 import ScreenLayout from "../../components/ScreenLayout";
 import { SkeletonStatRow, SkeletonList } from "../../components/Skeleton";
 import { AppButton, AppInput } from "../../components/ui";
+import Toast from "react-native-toast-message";
 import {
 	getStudentAttendanceSummary,
 	getStudentScheduleAttendance,
@@ -42,6 +43,7 @@ export default function StudentAttendance() {
 	const [scheduleData, setScheduleData] = useState<StudentAttendanceScheduleResponse | null>(null);
 	const [loading, setLoading] = useState(true);
 	const [reloadingSchedule, setReloadingSchedule] = useState(false);
+	const [error, setError] = useState("");
 
 	const loadSummary = async () => {
 		const response = await getStudentAttendanceSummary();
@@ -54,16 +56,22 @@ export default function StudentAttendance() {
 		setSelectedDate(response.date);
 	};
 
-	useEffect(() => {
-		const initialize = async () => {
-			try {
-				await Promise.all([loadSummary(), loadSchedule(selectedDate)]);
-			} finally {
-				setLoading(false);
-			}
-		};
+	const loadAll = async (date: string) => {
+		try {
+			setLoading(true);
+			setError("");
+			await Promise.all([loadSummary(), loadSchedule(date)]);
+		} catch {
+			setError("Failed to load attendance. Please try again.");
+		} finally {
+			setLoading(false);
+		}
+	};
 
-		initialize();
+	useEffect(() => {
+		// Initial load only — Retry and the date button handle refreshes.
+		loadAll(selectedDate);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
 	const handleReloadForDate = async () => {
@@ -74,6 +82,12 @@ export default function StudentAttendance() {
 		try {
 			setReloadingSchedule(true);
 			await loadSchedule(selectedDate);
+		} catch {
+			Toast.show({
+				type: "error",
+				text1: "Failed to load attendance for that date",
+				text2: "Please try again.",
+			});
 		} finally {
 			setReloadingSchedule(false);
 		}
@@ -84,6 +98,17 @@ export default function StudentAttendance() {
 			<ScreenLayout title="Attendance" backRoute="/student/dashboard">
 				<SkeletonStatRow count={3} />
 				<SkeletonList rows={3} />
+			</ScreenLayout>
+		);
+	}
+
+	if (error) {
+		return (
+			<ScreenLayout title="Attendance" backRoute="/student/dashboard">
+				<View className="mb-3 rounded-xl bg-app-surface p-4 shadow-card">
+					<Text className="mb-3 text-center text-app-error">{error}</Text>
+					<AppButton onPress={() => loadAll(selectedDate)}>Retry</AppButton>
+				</View>
 			</ScreenLayout>
 		);
 	}

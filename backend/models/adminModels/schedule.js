@@ -43,13 +43,14 @@ const normalizeTime = (t) => {
   return `${String(parseInt(h, 10)).padStart(2, "0")}:${m.padStart(2, "0")}`;
 };
 
-scheduleSchema.pre("validate", function (next) {
+// Mongoose 9 removed callback-style middleware — hooks must be sync/async and
+// must NOT take a `next` argument (it is undefined, so calling it throws).
+scheduleSchema.pre("validate", function () {
   if (this.startTime) this.startTime = normalizeTime(this.startTime);
   if (this.endTime) this.endTime = normalizeTime(this.endTime);
   if (this.startTime && this.endTime && this.startTime >= this.endTime) {
     this.invalidate("endTime", "End time must be after start time");
   }
-  next();
 });
 
 module.exports = mongoose.model("Schedule", scheduleSchema);

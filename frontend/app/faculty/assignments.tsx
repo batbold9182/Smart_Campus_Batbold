@@ -238,9 +238,10 @@ export default function Assignments() {
     }
 
     const rawScore = (draftScores[submissionId] || "").trim();
-    const numericScore = rawScore === "" ? 0 : Number(rawScore);
+    // An empty box means "ungraded" (null) — never 0, which would be a failing grade.
+    const parsedScore = rawScore === "" ? null : Number(rawScore);
 
-    if (rawScore !== "" && (!Number.isFinite(numericScore) || numericScore < 0 || numericScore > assignment.maxPoints)) {
+    if (parsedScore !== null && (!Number.isFinite(parsedScore) || parsedScore < 0 || parsedScore > assignment.maxPoints)) {
       Alert.alert("Invalid score", `Enter a number between 0 and ${assignment.maxPoints}.`);
       return;
     }
@@ -248,7 +249,7 @@ export default function Assignments() {
     try {
       setSavingSubmissionId(submissionId);
       await saveFacultyAssignmentReview(assignment.id, submissionId, {
-        score: numericScore,
+        score: parsedScore,
         feedback: draftFeedback[submissionId] || "",
       });
       await Promise.all([

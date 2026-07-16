@@ -1,6 +1,9 @@
 import { useEffect, useState } from "react";
 import { View, Text, Image, TouchableOpacity, Platform } from "react-native";
-import type * as ImagePicker from "expo-image-picker";
+// Imported statically on purpose: a dynamic `await import()` inside the press
+// handler consumes the browser's user-gesture context on the first click, so the
+// web file input's .click() gets blocked and picking only works on the 2nd try.
+import * as ImagePicker from "expo-image-picker";
 import { updateMyProfilePicture, type AppUserProfile } from "../services/userService";
 import { useTheme } from "../contexts/ThemeContext";
 import { getProfileCardStyles } from "../styles/components_style/profileCardStyles";
@@ -95,14 +98,13 @@ export default function ProfileCard({ user }: ProfileCardProps) {
 
   const chooseFromGallery = async () => {
     try {
-      const IP = await import("expo-image-picker");
-      const permission = await IP.requestMediaLibraryPermissionsAsync();
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (!permission.granted) {
         setStatusMessage("Gallery permission is required");
         return;
       }
 
-      const result = await IP.launchImageLibraryAsync({
+      const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ["images"],
         allowsEditing: true,
         quality: 0.7,
@@ -130,14 +132,13 @@ export default function ProfileCard({ user }: ProfileCardProps) {
     }
 
     try {
-      const IP = await import("expo-image-picker");
-      const permission = await IP.requestCameraPermissionsAsync();
+      const permission = await ImagePicker.requestCameraPermissionsAsync();
       if (!permission.granted) {
         setStatusMessage("Camera permission is required");
         return;
       }
 
-      const result = await IP.launchCameraAsync({
+      const result = await ImagePicker.launchCameraAsync({
         allowsEditing: true,
         quality: 0.7,
         base64: true,
