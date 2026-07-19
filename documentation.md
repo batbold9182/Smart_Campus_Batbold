@@ -7,7 +7,7 @@ This document is the single onboarding reference for the system. It describes ho
 codebase is structured, how the pieces fit together, and the current state of the project.
 It complements `CLAUDE.md` (AI-assistant guidance) and the internal `notes/` audit logs.
 
-*Last verified against the codebase: 2026-07-16.*
+*Last verified against the codebase: 2026-07-19.*
 
 ---
 
@@ -207,11 +207,11 @@ Smart_Campus_Batbold/
 
 ### 5.1 Server bootstrap & middleware pipeline
 
-`server.js` wires everything in a deliberate order (`server.js:1`–`237`):
+`server.js` wires everything in a deliberate order (229 lines):
 
 1. **`dotenv.config()`** then a **fail-fast JWT guard** — exits if `JWT_SECRET` is missing or `< 32` chars (`server.js:4`).
-2. **Sentry init** — only when `SENTRY_DSN` is set (`server.js:10`).
-3. **`compression()`** → **`morgan()`** (`combined` in prod, `dev` otherwise) → **request-id** middleware assigning `req.id = crypto.randomUUID()` (`server.js:34`).
+2. **Sentry init** — only when `SENTRY_DSN` is set (`server.js:11`).
+3. **`compression()`** → **`morgan()`** (`combined` in prod, `dev` otherwise) → **request-id** middleware assigning `req.id = crypto.randomUUID()` (`server.js:39`).
 4. **`connectDB()`** kicks off the Mongo connection with retry/backoff.
 5. **`app.set("trust proxy", TRUST_PROXY_HOPS)`** — default `0` (no proxy trusted, so `X-Forwarded-For` is ignored and cannot be forged). Logs a warning at boot if `NODE_ENV=production` while still `0`.
 6. **HTTPS redirect** (production only) keyed on `x-forwarded-proto`.
@@ -610,7 +610,7 @@ It supersedes any conflicting status in `notes/audit.md`.
 | 2 | **Token in query string** | `authMiddleware` accepts `?token=`, leaking the JWT into access/proxy logs and browser history. ⚠️ **Corrected 2026-07-19:** the earlier "nothing uses it — safe to remove" note was **wrong**. `getAssignmentSubmissionDownloadUrl` puts the full session JWT in the URL and both assignment screens use it on the **native** path (`Linking.openURL` cannot send headers), so this fires on every native download and **cannot be removed without a replacement auth path**. Options in `notes/audit.md` item 18. | `middleware/authMiddleware.js:6,12`, `services/facultyServices/assignmentService.ts:151` |
 | 3 | ✅ **Rate limiting gap — resolved 2026-07-19** | `apiLimiter` now guards all 14 previously-unthrottled data route mounts, and the outbound `/library/search` proxy gets its own tighter bucket (`libraryLimiter`). Runtime-verified. | `server.js` |
 | 4 | ✅ **No `trust proxy` — resolved 2026-07-19** | `app.set("trust proxy", TRUST_PROXY_HOPS)` (default **0**, never `true`). More importantly, authenticated traffic is now keyed by **user id** rather than IP, so limits stay correct behind a proxy and on shared campus NAT. Verified that a forged `X-Forwarded-For` cannot reset a bucket. | `server.js` |
-| 5 | ✅ **User delete doesn't cascade — resolved 2026-07-19** | Now **role-aware**, deliberately not a mirror of the course cascade. Students cascade across all 9 related collections (+ Cloudinary cleanup); faculty who still own courses/schedules/assignments are refused with **409** rather than having their courses deleted, which would destroy enrolled students' grades and submissions. Runtime-verified 11/11. ⚠️ **164 orphan rows from pre-fix deletes remain in the DB** (reported, not cleaned — 2 orphaned assignments still have live submissions attached, so blind cleanup is unsafe). | `routes/adminRoutes/adminRoutes.js:169` |
+| 5 | ✅ **User delete doesn't cascade — resolved 2026-07-19** | Now **role-aware**, deliberately not a mirror of the course cascade. Students cascade across all 9 related collections (+ Cloudinary cleanup); faculty who still own courses/schedules/assignments are refused with **409** rather than having their courses deleted, which would destroy enrolled students' grades and submissions. Runtime-verified 11/11. ⚠️ **164 orphan rows from pre-fix deletes remain in the DB** (reported, not cleaned — 2 orphaned assignments still have live submissions attached, so blind cleanup is unsafe). | `routes/adminRoutes/adminRoutes.js:195` |
 | 6 | **Startup navigation race (Bug 9)** | Cold-start and the AppState-active listener can both call `router.replace()`. Fix: an `isNavigating` guard ref. | `app/index.tsx:41,50` |
 | 7 | ✅ **Theme not persisted — resolved 2026-07-16** | Now persisted to AsyncStorage; hydrates from saved pref → OS scheme → dark. | `contexts/ThemeContext.tsx` |
 | 8 | **`logger.error` swallowed in prod** | Errors are `__DEV__`-gated, so nothing surfaces in production and no crash reporter is wired on the client. | `utils/logger.ts` |
