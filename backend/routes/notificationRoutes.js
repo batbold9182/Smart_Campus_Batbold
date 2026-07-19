@@ -53,9 +53,17 @@ router.get("/", auth, async (req, res, next) => {
 // Mark as read
 router.patch("/:id/read", auth, async (req, res, next) => {
   try {
-    await Notification.findByIdAndUpdate(req.params.id, {
-      isRead: true
-    });
+    // Scoped to the recipient so a user cannot flip another user's notification.
+    // 404 (not 403) on a miss so the response never confirms the id exists.
+    const notification = await Notification.findOneAndUpdate(
+      { _id: req.params.id, recipient: req.user.id },
+      { isRead: true },
+      { new: true }
+    ).lean();
+
+    if (!notification) {
+      return res.status(404).json({ message: "Notification not found" });
+    }
 
     res.json({ message: "Marked as read" });
   } catch (err) {

@@ -189,6 +189,10 @@ API documentation is available at `http://localhost:5000/api/docs` when the back
 | `ALLOWED_ORIGINS` | Yes | Comma-separated CORS origins |
 | `SENTRY_DSN` | No | Sentry DSN for error tracking |
 | `RATE_LIMIT_WINDOW_MS` | No | Rate limit window in ms (default 15 min) |
-| `RATE_LIMIT_MAX` | No | Max requests per window (default 100) |
+| `RATE_LIMIT_MAX` | No | Max requests per window on data routes (default 600, keyed per user) |
+| `LIBRARY_RATE_LIMIT_MAX` | No | Max OpenLibrary searches per window (default 30) |
+| `AUTH_RATE_LIMIT_MAX` | No | Max auth requests per window, IP-keyed (default 15) |
+| `OTP_RATE_LIMIT_MAX` | No | Max OTP requests per window, email-keyed (default 5) |
+| `TRUST_PROXY_HOPS` | No | Number of reverse proxies in front of the server (default 0). Set to 1 behind nginx / a load balancer / a PaaS router. Never set to `true` — that lets clients forge `X-Forwarded-For` and evade rate limits |
 | `RESET_TOKEN_TTL_MINUTES` | No | OTP expiry in minutes (default 15) |
 | `MAX_UPLOAD_BYTES` | No | Max upload size in bytes (default 10 MB) |

@@ -2,11 +2,11 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
-const rateLimit = require("express-rate-limit");
 // NOTE: crypto is still used only to generate the random OTP integer, not for hashing
 const nodemailer = require("nodemailer");
 const { body } = require("express-validator");
 const validate = require("../middleware/validate");
+const { otpLimiter } = require("../middleware/rateLimiters");
 const User = require("../models/adminModels/user");
 
 const router = express.Router();
@@ -29,16 +29,6 @@ const RESET_TOKEN_TTL_MINUTES = process.env.RESET_TOKEN_TTL_MINUTES
   ? Number(process.env.RESET_TOKEN_TTL_MINUTES)
   : 15;
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || "7d";
-
-// Per-email/IP OTP rate limiter: max 5 attempts per 15 minutes
-const otpLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 5,
-  standardHeaders: true,
-  legacyHeaders: false,
-  keyGenerator: (req) => (typeof req.body?.email === "string" ? req.body.email.trim().toLowerCase() : req.ip),
-  message: { message: "Too many OTP requests, please try again later" },
-});
 
 const transporter = nodemailer.createTransport({
   service: process.env.EMAIL_SERVICE || "gmail",

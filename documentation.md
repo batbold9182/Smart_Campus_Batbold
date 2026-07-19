@@ -174,6 +174,7 @@ Smart_Campus_Batbold/
 │   ├── middleware/
 │   │   ├── authMiddleware.js  roleMiddleware.js  errorHandler.js
 │   │   ├── validate.js  socketAuth.js  socketRateLimit.js
+│   │   ├── rateLimiters.js    # all HTTP limiters + trust-proxy config
 │   ├── models/
 │   │   ├── adminModels/       # user, course, enrollment, notification, schedule, studentSchedule
 │   │   ├── facultyModels/     # assignment, assignmentSubmission, attendance, grade
@@ -212,18 +213,19 @@ Smart_Campus_Batbold/
 2. **Sentry init** — only when `SENTRY_DSN` is set (`server.js:10`).
 3. **`compression()`** → **`morgan()`** (`combined` in prod, `dev` otherwise) → **request-id** middleware assigning `req.id = crypto.randomUUID()` (`server.js:34`).
 4. **`connectDB()`** kicks off the Mongo connection with retry/backoff.
-5. **HTTPS redirect** (production only) keyed on `x-forwarded-proto` (`server.js:60`).
-6. **CORS origin list** parsed from `ALLOWED_ORIGINS`; insecure `http://` origins are dropped in production (`server.js:69`).
-7. **`helmet()`** — `frameguard: deny`, HSTS (1 year, prod only), `crossOriginResourcePolicy: cross-origin`, `referrerPolicy: strict-origin-when-cross-origin` (`server.js:81`).
-8. **`cors()`** — `maxAge: 86400`, credentials, restricted methods (`server.js:89`).
-9. **Body parsers** — JSON + urlencoded, `10mb` limit for base64 image uploads (`server.js:98`).
-10. **Envelope `res.json` override** — wraps every response as `{ success, message, data }` (`server.js:104`).
-11. **Rate limiters** — `authLimiter` on `/auth`; `apiLimiter` on `/protected` (see the gap in [§10](#10-known-gaps-limitations--hardening-backlog)).
-12. **Route mounting** under `/api/v1/*`.
-13. **Swagger UI** at `/api/docs` — **non-production only** (`server.js:186`).
-14. **Health endpoints** — `GET /health` (liveness) and `GET /ready` (503 until Mongo `readyState === 1`).
-15. **Global error handler** (Sentry capture for 5xx).
-16. **Socket.io** namespaces registered; **SIGTERM/SIGINT** graceful shutdown (`server.js:226`).
+5. **`app.set("trust proxy", TRUST_PROXY_HOPS)`** — default `0` (no proxy trusted, so `X-Forwarded-For` is ignored and cannot be forged). Logs a warning at boot if `NODE_ENV=production` while still `0`.
+6. **HTTPS redirect** (production only) keyed on `x-forwarded-proto`.
+7. **CORS origin list** parsed from `ALLOWED_ORIGINS`; insecure `http://` origins are dropped in production.
+8. **`helmet()`** — `frameguard: deny`, HSTS (1 year, prod only), `crossOriginResourcePolicy: cross-origin`, `referrerPolicy: strict-origin-when-cross-origin`.
+9. **`cors()`** — `maxAge: 86400`, credentials, restricted methods.
+10. **Body parsers** — JSON + urlencoded, `10mb` limit for base64 image uploads.
+11. **Envelope `res.json` override** — wraps every response as `{ success, message, data }`.
+12. **Rate limiters** — imported from `middleware/rateLimiters.js`: `authLimiter` (IP-keyed, 15/window) on `/auth`; `apiLimiter` (`RATE_LIMIT_MAX`, default 600) on **every** data route; `libraryLimiter` (`LIBRARY_RATE_LIMIT_MAX`, default 30) stacked on top for `/library`. `otpLimiter` (email-keyed) is applied inside `authRoutes.js`. `apiLimiter` and `libraryLimiter` key on **user id** decoded from the JWT, falling back to `ipKeyGenerator(req.ip)` when unauthenticated.
+13. **Route mounting** under `/api/v1/*`.
+14. **Swagger UI** at `/api/docs` — **non-production only**.
+15. **Health endpoints** — `GET /health` (liveness) and `GET /ready` (503 until Mongo `readyState === 1`).
+16. **Global error handler** (Sentry capture for 5xx).
+17. **Socket.io** namespaces registered; **SIGTERM/SIGINT** graceful shutdown.
 
 ### 5.2 Configuration
 
@@ -244,6 +246,7 @@ Smart_Campus_Batbold/
 | `validate.js` | Runs `express-validator` results, returns first message + full `errors[]`. |
 | `socketAuth.js` | `getTokenFromSocket()` reads only `handshake.auth.token` or the `Authorization` header (never query string). |
 | `socketRateLimit.js` | Per-IP concurrent-connection cap (`SOCKET_MAX_CONN_PER_IP`, default 20). Per-user cap lives in the namespace factory (`SOCKET_MAX_CONN_PER_USER`, default 5). |
+| `rateLimiters.js` | **All HTTP rate limiting in one place** — `authLimiter`, `apiLimiter`, `libraryLimiter`, `otpLimiter`, the shared `keyByUserOrIp` strategy, and `configureTrustProxy(app)`. Proxy trust is deliberately co-located with the limiters: setting it wrong silently breaks every bucket in the file (too low behind a proxy → one shared bucket for all users; `true` → forgeable `X-Forwarded-For`). |
 
 ### 5.4 Data models
 
@@ -401,6 +404,7 @@ Per namespace, the factory:
 - **CORS:** explicit allow-list; insecure origins rejected in production.
 - **JWT:** 32-char-minimum secret enforced at boot; expiry from `JWT_EXPIRES_IN` (default `7d`).
 - **Passwords & OTP:** bcrypt-hashed; OTP compared with `bcrypt.compare`, never returned by the API, 15-minute expiry, send throttled.
+- **Rate limiting:** every data route is throttled (`RATE_LIMIT_MAX`, default 600/15 min), with a tighter bucket on the outbound `/library` proxy (default 30). Authenticated traffic is keyed by **user id**, not IP — correct behind a reverse proxy and on shared campus NAT. `trust proxy` defaults to `0`, so `X-Forwarded-For` cannot be forged to reset a bucket.
 - **Input:** `express-validator` on auth/admin routes; password complexity (≥8, upper/digit/special); XSS sanitization on chat.
 - **Uploads:** 10 MB body cap; Cloudinary access guarded.
 - **Monitoring:** Sentry captures 5xx.
@@ -433,7 +437,7 @@ again whenever the app returns to the foreground (`AppState` "active" listener).
 | Auth | `contexts/AuthContext.tsx` | `useAuth()` → `{ user, refreshUser, signOut }`; `user` is the decoded JWT (`id`, `role`, `exp`). |
 | Theme | `contexts/ThemeContext.tsx` | `useTheme()` → `{ isDark, t, toggleTheme }`. |
 | Client state | `store/` (Zustand) | `useUserStore` (profile), `useNotificationStore` (unread count), `useScheduleStore` (today's schedule). |
-| Server state | TanStack Query | Notifications & assignments screens use `useQuery`/`invalidateQueries`. |
+| Server state | TanStack Query | Configured in `app/_layout.tsx` (`staleTime` 30 s, `gcTime` 5 min, `retry` 2, `refetchOnWindowFocus: false`) but **adopted by only 3 screens** — `admin/notifications`, `student/assignments`, `student/notifications`. Roughly 18 other data screens still fetch by hand in `useEffect`. See the caching note in [§10](#10-known-gaps-limitations--hardening-backlog). |
 
 ### 6.4 Design system & theming
 
@@ -521,9 +525,10 @@ EMAIL_USER=
 EMAIL_PASS=
 ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8081
 SENTRY_DSN=
-# Optional tuning: RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX, MAX_UPLOAD_BYTES,
-# OPEN_LIBRARY_TIMEOUT_MS, RESET_TOKEN_TTL_MINUTES,
+# Optional tuning: RATE_LIMIT_WINDOW_MS, RATE_LIMIT_MAX, LIBRARY_RATE_LIMIT_MAX,
+# MAX_UPLOAD_BYTES, OPEN_LIBRARY_TIMEOUT_MS, RESET_TOKEN_TTL_MINUTES,
 # SOCKET_MAX_CONN_PER_USER, SOCKET_MAX_CONN_PER_IP
+# TRUST_PROXY_HOPS=0   # set to 1 when deploying behind nginx / a load balancer
 ```
 
 **Frontend `.env`**:
@@ -601,11 +606,11 @@ It supersedes any conflicting status in `notes/audit.md`.
 
 | # | Area | Detail | Location |
 |---|---|---|---|
-| 1 | **Broken access control (IDOR)** | Mark-as-read is not scoped to the owner — any authenticated user can flip any notification's `isRead`. Fix: `findOneAndUpdate({ _id, recipient: req.user.id }, …)`. | `routes/notificationRoutes.js:56` |
-| 2 | **Token in query string** | `authMiddleware` accepts `?token=`, which leaks the JWT into access/proxy logs and browser history. Nothing in the app uses it — safe to remove. | `middleware/authMiddleware.js:6,12` |
-| 3 | **Rate limiting gap** | `apiLimiter` is attached only to `/protected`; all data routes (incl. the outbound `/library/search` proxy) are unthrottled. Only `/auth` is limited. | `server.js:151` |
-| 4 | **No `trust proxy`** | Prod HTTPS-redirect and rate limiters assume a reverse proxy, but `app.set('trust proxy', …)` is never called → per-IP limits bucket all users together behind a proxy. | `server.js` |
-| 5 | **User delete doesn't cascade** | Deleting a user orphans enrollments, grades, attendance, submissions (+ Cloudinary files), schedules, notifications — unlike course delete. | `routes/adminRoutes/adminRoutes.js:169` |
+| 1 | ✅ **Broken access control (IDOR) — resolved 2026-07-19** | Mark-as-read is now scoped to the owner via `findOneAndUpdate({ _id, recipient: req.user.id }, …)`, returning 404 on a miss. Runtime-verified against the live DB (attacker 404 + victim row untouched; baseline confirmed the old code returned 200 and flipped the row). A sweep of all 18 route files found **no other IDOR** — see `notes/audit.md` → "IDOR Sweep". | `routes/notificationRoutes.js:54` |
+| 2 | **Token in query string** | `authMiddleware` accepts `?token=`, leaking the JWT into access/proxy logs and browser history. ⚠️ **Corrected 2026-07-19:** the earlier "nothing uses it — safe to remove" note was **wrong**. `getAssignmentSubmissionDownloadUrl` puts the full session JWT in the URL and both assignment screens use it on the **native** path (`Linking.openURL` cannot send headers), so this fires on every native download and **cannot be removed without a replacement auth path**. Options in `notes/audit.md` item 18. | `middleware/authMiddleware.js:6,12`, `services/facultyServices/assignmentService.ts:151` |
+| 3 | ✅ **Rate limiting gap — resolved 2026-07-19** | `apiLimiter` now guards all 14 previously-unthrottled data route mounts, and the outbound `/library/search` proxy gets its own tighter bucket (`libraryLimiter`). Runtime-verified. | `server.js` |
+| 4 | ✅ **No `trust proxy` — resolved 2026-07-19** | `app.set("trust proxy", TRUST_PROXY_HOPS)` (default **0**, never `true`). More importantly, authenticated traffic is now keyed by **user id** rather than IP, so limits stay correct behind a proxy and on shared campus NAT. Verified that a forged `X-Forwarded-For` cannot reset a bucket. | `server.js` |
+| 5 | ✅ **User delete doesn't cascade — resolved 2026-07-19** | Now **role-aware**, deliberately not a mirror of the course cascade. Students cascade across all 9 related collections (+ Cloudinary cleanup); faculty who still own courses/schedules/assignments are refused with **409** rather than having their courses deleted, which would destroy enrolled students' grades and submissions. Runtime-verified 11/11. ⚠️ **164 orphan rows from pre-fix deletes remain in the DB** (reported, not cleaned — 2 orphaned assignments still have live submissions attached, so blind cleanup is unsafe). | `routes/adminRoutes/adminRoutes.js:169` |
 | 6 | **Startup navigation race (Bug 9)** | Cold-start and the AppState-active listener can both call `router.replace()`. Fix: an `isNavigating` guard ref. | `app/index.tsx:41,50` |
 | 7 | ✅ **Theme not persisted — resolved 2026-07-16** | Now persisted to AsyncStorage; hydrates from saved pref → OS scheme → dark. | `contexts/ThemeContext.tsx` |
 | 8 | **`logger.error` swallowed in prod** | Errors are `__DEV__`-gated, so nothing surfaces in production and no crash reporter is wired on the client. | `utils/logger.ts` |
@@ -613,6 +618,51 @@ It supersedes any conflicting status in `notes/audit.md`.
 | 10 | **EAS not provisioned** | No `projectId`/`owner`; `eas build` fails until `eas init` runs. | `eas.json` / `app.json` |
 | 11 | **Dead code** | `course.students[]` is never written; `config/http.ts` is an empty file. | `models/adminModels/course.js`, `frontend/config/http.ts` |
 | 12 | **No test suite** | Neither backend nor frontend has a test framework. | repo-wide |
+
+### Caching — audit note, 2026-07-19 (nothing implemented)
+
+Findings from a caching review. **No code was changed**; recorded so the next pass has the
+analysis rather than re-deriving it.
+
+**Measured, not assumed:** ETag/304 revalidation already works, but a `304` takes the *same* time
+as a `200` (~5.7 ms vs ~5.9 ms) and the route handler still runs — Express computes the ETag from
+the response body, so the Mongo query has already happened. **HTTP caching saves client bandwidth,
+never server load.**
+
+| Target | Verdict |
+|---|---|
+| **Buddy chat — cursor pages** | ⭐ **The one real win.** `GET /{buddy}/messages?before=<id>` is **immutable by construction**: the socket only handles `message:send`, there is no edit or delete, and the sole mutation is the user-delete cascade (item 21). Same request → same result, forever. Scrollback and screen re-entry currently refetch these pages from Mongo every time. |
+| **Buddy chat — first page** | ❌ Never cache. Changes on every message, and the socket already pushes `message:new`, so caching would fight it. |
+| **Building map** | ✅ **No action — nothing to cache.** Floor plans are `require()`'d into the bundle (296 KB total, 7 files); the screen makes **zero** network calls. No header could affect it. |
+| **`GET /admin/academic-options`** | Returns `config/academicHierarchy.js` verbatim — identical for every user, changes only on deploy. The one clean `max-age` candidate. |
+| **`GET /library/search`** | Deterministic per query, hits a third party. Wants a **server-side** TTL cache, not headers. |
+| Everything else (grades, attendance, notifications, submissions) | Per-user and volatile — not cacheable at any layer. |
+
+**Recommendation — prefer TanStack Query over HTTP headers here.** `Cache-Control` is unreliable on
+React Native: iOS honours it via `NSURLSession`'s shared `URLCache`, but Android's OkHttp in RN has
+no disk cache enabled by default, so headers may do nothing on most devices. Web works properly.
+A client-side cache is platform-independent and prevents the request entirely rather than making it
+cheap.
+
+Concretely: migrate `useBuddySocket`'s history fetch to `useQuery` keyed on the cursor with
+`staleTime: Infinity` (safe — those pages never change), and adopt `useQuery` across the ~18 screens
+still hand-rolling `useEffect` fetches. That is the actual performance work; HTTP caching is a
+sideshow for this app.
+
+### Missing `Cache-Control` — open security item, 2026-07-19
+
+Separate from the performance question above. The backend sets **no `Cache-Control` anywhere**.
+Authenticated responses return only `Vary: Origin, Accept-Encoding` + `ETag` — **`Vary` omits
+`Authorization`**, so the cache key ignores who asked. RFC 9111 §3.5 stops a correctly-implemented
+shared cache from storing responses to requests bearing `Authorization`, but CDNs configured to
+cache by path routinely ignore that, and private browser caches store the JSON regardless — student
+records persist on disk after logout on a shared machine. Now that `TRUST_PROXY_HOPS` exists in
+anticipation of a reverse proxy, this becomes live surface.
+
+Suggested fix: `no-store` on `/auth`, `private, no-cache` on data routes (preserves the working
+304s), `Vary: Authorization`, and `private, max-age=3600` on `/admin/academic-options`.
+*(Login is a POST, so the JWT is less exposed than the bare headers suggest — POST responses are not
+cacheable without explicit freshness directives.)*
 
 ### Architectural notes (accepted / by design)
 

@@ -194,13 +194,32 @@ router.get("/faculty/courses/:courseId/assignments", auth, authorizeRoles("facul
       .lean();
 
     const assignmentIds = assignments.map((assignment) => assignment._id);
+
+    // Submissions whose student no longer exists are excluded from the detail list,
+    // so they must be excluded from these counts too — otherwise an assignment
+    // advertises more submissions than can ever be opened. The $lookup drops any row
+    // whose student reference does not resolve to a live user.
+    const dropDeletedStudents = [
+      {
+        $lookup: {
+          from: "users",
+          localField: "student",
+          foreignField: "_id",
+          as: "studentDoc",
+        },
+      },
+      { $match: { "studentDoc.0": { $exists: true } } },
+    ];
+
     const [submissionCounts, reviewedCounts] = await Promise.all([
       AssignmentSubmission.aggregate([
         { $match: { assignment: { $in: assignmentIds } } },
+        ...dropDeletedStudents,
         { $group: { _id: "$assignment", count: { $sum: 1 } } },
       ]),
       AssignmentSubmission.aggregate([
         { $match: { assignment: { $in: assignmentIds }, reviewedAt: { $ne: null } } },
+        ...dropDeletedStudents,
         { $group: { _id: "$assignment", count: { $sum: 1 } } },
       ]),
     ]);
@@ -244,10 +263,16 @@ router.get(
         return res.status(404).json({ message: "Assignment not found" });
       }
 
-      const submissions = await AssignmentSubmission.find({ assignment: assignment._id })
+      const allSubmissions = await AssignmentSubmission.find({ assignment: assignment._id })
         .populate("student", "name email program yearLevel studentId")
         .sort({ submittedAt: -1, updatedAt: -1 })
         .lean();
+
+      // Rows whose student no longer exists cannot be rendered or reviewed, so they are
+      // dropped once here and every count below is derived from the same filtered set.
+      // Counting before the filter made the header advertise submissions the list could
+      // not show.
+      const submissions = allSubmissions.filter((submission) => submission.student);
 
       res.json({
         assignment: {
@@ -255,9 +280,7 @@ router.get(
           submissionCount: submissions.length,
           reviewedCount: submissions.filter((submission) => submission.reviewedAt).length,
         },
-        submissions: submissions
-          .filter((submission) => submission.student)
-          .map((submission) => formatFacultySubmission(submission)),
+        submissions: submissions.map((submission) => formatFacultySubmission(submission)),
       });
     } catch (err) {
       next(err);

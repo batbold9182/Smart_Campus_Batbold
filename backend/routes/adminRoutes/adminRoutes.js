@@ -2,6 +2,18 @@ const express = require("express");
 const bcrypt = require("bcryptjs");
 const User = require("../../models/adminModels/user");
 const Course = require("../../models/adminModels/course");
+const Enrollment = require("../../models/adminModels/enrollment");
+const Schedule = require("../../models/adminModels/schedule");
+const StudentSchedule = require("../../models/adminModels/studentSchedule");
+const Notification = require("../../models/adminModels/notification");
+const Assignment = require("../../models/facultyModels/assignment");
+const AssignmentSubmission = require("../../models/facultyModels/assignmentSubmission");
+const Attendance = require("../../models/facultyModels/attendance");
+const Grade = require("../../models/facultyModels/grade");
+const LunchBuddyMessage = require("../../models/studentModels/lunchBuddyMessage");
+const LearningBuddyMessage = require("../../models/studentModels/learningBuddyMessage");
+const PartyBuddyMessage = require("../../models/studentModels/partyBuddyMessage");
+const { cloudinary, hasCloudinaryConfig } = require("../../config/cloudinary");
 const auth = require("../../middleware/authMiddleware");
 const authorizeRoles = require("../../middleware/roleMiddleware");
 const academicHierarchy = require("../../config/academicHierarchy");
@@ -165,7 +177,21 @@ router.get("/users", auth, authorizeRoles("admin"), async (req, res, next) => {
 });
 
 
-// ❌ DELETE USER (admin only)
+/**
+ * DELETE USER (admin only) — role-aware cascade.
+ *
+ * Students and faculty are deliberately NOT symmetric:
+ *
+ *  - A student's related documents all *belong to them* (their enrollments, grades,
+ *    attendance, submissions, notifications), so they cascade safely.
+ *
+ *  - A faculty member *owns containers holding other people's data*. A course carries
+ *    every enrolled student's enrollment, grade, attendance and submission. Cascading a
+ *    faculty delete into their courses would therefore destroy third-party academic
+ *    records as a side effect of removing one employee. Instead we refuse the delete
+ *    while they still own teaching artefacts and tell the admin to reassign first.
+ *    (`PATCH /users/:id/toggle` already exists for the "this person has left" case.)
+ */
 router.delete("/users/:id", auth, authorizeRoles("admin"), async (req, res, next) => {
   try {
     // prevent admin deleting themselves
@@ -173,7 +199,66 @@ router.delete("/users/:id", auth, authorizeRoles("admin"), async (req, res, next
       return res.status(400).json({ message: "Cannot delete yourself" });
     }
 
-    await User.findByIdAndDelete(req.params.id);
+    const userId = req.params.id;
+    const user = await User.findById(userId).select("role name").lean();
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    if (user.role === "faculty") {
+      const [courses, schedules, assignments] = await Promise.all([
+        Course.countDocuments({ faculty: userId }),
+        Schedule.countDocuments({ faculty: userId }),
+        Assignment.countDocuments({ faculty: userId }),
+      ]);
+
+      if (courses > 0 || schedules > 0 || assignments > 0) {
+        const owned = [
+          courses && `${courses} course(s)`,
+          schedules && `${schedules} schedule(s)`,
+          assignments && `${assignments} assignment(s)`,
+        ].filter(Boolean).join(", ");
+
+        return res.status(409).json({
+          message:
+            `Cannot delete ${user.name}: they still own ${owned}. ` +
+            "Reassign or delete those first, or disable the account instead.",
+        });
+      }
+    }
+
+    // Cloudinary files hang off the user's own submissions. Destroy them before the
+    // rows go, otherwise the public_ids become unreachable and the files leak.
+    const submissions = await AssignmentSubmission.find({ student: userId })
+      .select("cloudinaryPublicId")
+      .lean();
+
+    const cloudinaryIds = submissions
+      .filter((s) => s.cloudinaryPublicId)
+      .map((s) => s.cloudinaryPublicId);
+
+    if (cloudinaryIds.length > 0 && hasCloudinaryConfig()) {
+      // Failures are non-fatal — a leaked file must not block the delete.
+      await Promise.allSettled(
+        cloudinaryIds.map((id) =>
+          cloudinary.uploader.destroy(id, { resource_type: "raw" })
+        )
+      );
+    }
+
+    await Promise.all([
+      Enrollment.deleteMany({ student: userId }),
+      StudentSchedule.deleteMany({ student: userId }),
+      Notification.deleteMany({ recipient: userId }),
+      Grade.deleteMany({ student: userId }),
+      Attendance.deleteMany({ student: userId }),
+      AssignmentSubmission.deleteMany({ student: userId }),
+      LunchBuddyMessage.deleteMany({ sender: userId }),
+      LearningBuddyMessage.deleteMany({ sender: userId }),
+      PartyBuddyMessage.deleteMany({ sender: userId }),
+      User.findByIdAndDelete(userId),
+    ]);
 
     res.json({ message: "User deleted" });
   } catch (err) {

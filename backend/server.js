@@ -18,7 +18,12 @@ const compression = require("compression");
 const morgan = require("morgan");
 const cors = require("cors");
 const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
+const {
+  configureTrustProxy,
+  authLimiter,
+  apiLimiter,
+  libraryLimiter,
+} = require("./middleware/rateLimiters");
 const { Server } = require("socket.io");
 const connectDB = require("./config/db");
 const errorHandler = require("./middleware/errorHandler");
@@ -54,6 +59,10 @@ const assignmentRoutes = require("./routes/facultyRoutes/assignmentRoutes");
 
 
 const isProduction = process.env.NODE_ENV === "production";
+
+// Proxy trust — must be configured before the rate limiters read req.ip.
+// See middleware/rateLimiters.js for why this lives alongside them.
+configureTrustProxy(app);
 
 // Redirect HTTP → HTTPS when behind a reverse proxy in production.
 // Proxies (nginx, load balancers) set x-forwarded-proto on the request.
@@ -125,62 +134,45 @@ app.use((_req, res, next) => {
   next();
 });
 
-const RATE_LIMIT_WINDOW_MS = Number(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000;
-const RATE_LIMIT_MAX = Number(process.env.RATE_LIMIT_MAX) || 100;
-
-// Strict rate limit for auth endpoints (login, register, forgot-password)
-const authLimiter = rateLimit({
-  windowMs: RATE_LIMIT_WINDOW_MS,
-  max: 15,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: "Too many requests, please try again later" },
-});
-
-// General API rate limit
-const apiLimiter = rateLimit({
-  windowMs: RATE_LIMIT_WINDOW_MS,
-  max: RATE_LIMIT_MAX,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: { message: "Too many requests, please try again later" },
-});
+// Rate limiters (authLimiter / apiLimiter / libraryLimiter) and the keying strategy
+// they share are defined in middleware/rateLimiters.js.
 
 app.use("/api/v1/auth", authLimiter, require("./routes/authRoutes"));
 
 app.use("/api/v1/protected", apiLimiter, require("./routes/protectedRoutes"));
 
-app.use("/api/v1/admin", require("./routes/adminRoutes/adminRoutes"));
+app.use("/api/v1/admin", apiLimiter, require("./routes/adminRoutes/adminRoutes"));
 
-app.use("/api/v1/admin", adminCourseRoutes);
+app.use("/api/v1/admin", apiLimiter, adminCourseRoutes);
 
-app.use("/api/v1/admin", adminEnrollRoutes);
+app.use("/api/v1/admin", apiLimiter, adminEnrollRoutes);
 
-app.use("/api/v1/courses", require("./routes/courseRoutes"));
+app.use("/api/v1/courses", apiLimiter, require("./routes/courseRoutes"));
 
-app.use("/api/v1/admin", adminNotificationRoutes);
+app.use("/api/v1/admin", apiLimiter, adminNotificationRoutes);
 
-app.use("/api/v1/notifications", notificationRoutes);
+app.use("/api/v1/notifications", apiLimiter, notificationRoutes);
 
-app.use("/api/v1/admin", scheduleRoutes);
+app.use("/api/v1/admin", apiLimiter, scheduleRoutes);
 
-app.use("/api/v1/schedule", studentScheduleRoutes);
+app.use("/api/v1/schedule", apiLimiter, studentScheduleRoutes);
 
-app.use("/api/v1/admin", adminStudentScheduleRoutes);
+app.use("/api/v1/admin", apiLimiter, adminStudentScheduleRoutes);
 
-app.use("/api/v1/lunch-buddy", lunchBuddyRoutes);
+app.use("/api/v1/lunch-buddy", apiLimiter, lunchBuddyRoutes);
 
-app.use("/api/v1/learning-buddy", learningBuddyRoutes);
+app.use("/api/v1/learning-buddy", apiLimiter, learningBuddyRoutes);
 
-app.use("/api/v1/party-buddy", partyBuddyRoutes);
+app.use("/api/v1/party-buddy", apiLimiter, partyBuddyRoutes);
 
-app.use("/api/v1/grades", gradeRoutes);
+app.use("/api/v1/grades", apiLimiter, gradeRoutes);
 
-app.use("/api/v1/library", libraryRoutes);
+// libraryLimiter first: the tighter outbound-proxy bucket, on top of the general one.
+app.use("/api/v1/library", apiLimiter, libraryLimiter, libraryRoutes);
 
-app.use("/api/v1/attendance", attendanceRoutes);
+app.use("/api/v1/attendance", apiLimiter, attendanceRoutes);
 
-app.use("/api/v1/assignments", assignmentRoutes);
+app.use("/api/v1/assignments", apiLimiter, assignmentRoutes);
 
 // API documentation – only expose in non-production by default
 if (process.env.NODE_ENV !== "production") {
